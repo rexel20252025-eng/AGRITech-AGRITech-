@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Roue AGRITech</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --gold:   #c9933a;
+    --gold-l: #f2c96e;
+    --green:  #1b5e33;
+    --mid:    #2d8a56;
+    --light:  #4db87a;
+    --red:    #c0392b;
+    --bg:     #071a0c;
+    --card:   #0e2518;
+    --card2:  #132e1c;
+    --border: rgba(201,147,58,0.2);
+  }
+  html, body { overflow-x: hidden; }
+  body { background: var(--bg); min-height: 100vh; font-family: 'DM Sans', sans-serif; color: #e0e0e0; overflow-y: scroll; }
+
+  /* LOADING */
+  .loading-screen { position: fixed; inset: 0; background: var(--bg); z-index: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; }
+  .loading-logo { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; color: var(--gold-l); }
+  .loading-spinner { width: 44px; height: 44px; border: 3px solid rgba(201,147,58,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-screen p { color: rgba(255,255,255,0.4); font-size: 0.85rem; }
+
+  /* LOGIN */
+  .login-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+  .login-box { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 3rem 2.5rem; width: min(420px, 95%); box-shadow: 0 32px 80px rgba(0,0,0,0.5); }
+  .login-box h2 { font-family: 'Cormorant Garamond', serif; color: var(--gold-l); text-align: center; font-size: 1.8rem; margin-bottom: 0.3rem; }
+  .login-box p { text-align: center; color: rgba(255,255,255,0.3); font-size: 0.82rem; margin-bottom: 2rem; }
+  .field { margin-bottom: 1.2rem; }
+  .field label { display: block; font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.4); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .field input { width: 100%; padding: 0.85rem 1rem; background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.1); border-radius: 12px; color: #e0e0e0; font-size: 0.9rem; outline: none; transition: border 0.2s; }
+  .field input:focus { border-color: var(--gold); background: rgba(201,147,58,0.06); }
+  .field input::placeholder { color: rgba(255,255,255,0.2); }
+  .btn-primary { width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--green), var(--mid), var(--light)); color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; box-shadow: 0 6px 24px rgba(45,138,86,0.4); transition: transform 0.15s; }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .login-err { color: #ff6b6b; font-size: 0.82rem; text-align: center; margin-top: 0.8rem; min-height: 1.2rem; }
+
+  /* HEADER */
+  .header { padding: 1rem 2rem; background: rgba(7,26,12,0.95); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); }
+  .header-title { font-family: 'Cormorant Garamond', serif; color: var(--gold-l); font-size: 1.2rem; font-weight: 700; }
+  .header-title span { color: rgba(255,255,255,0.35); font-size: 0.72rem; font-family: 'DM Sans', sans-serif; display: block; margin-top: 2px; }
+  .btn-logout { background: none; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); padding: 0.4rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s; }
+  .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+  /* CONTENT */
+  .content { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* STATS */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.3rem 1.5rem; }
+  .stat-label { font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-value { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 700; color: var(--gold-l); margin-top: 0.3rem; }
+
+  /* CARD */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 1.8rem; margin-bottom: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--gold-l); font-weight: 700; margin-bottom: 1.4rem; padding-bottom: 0.9rem; border-bottom: 1px solid var(--border); }
+
+  /* SEARCH */
+  .search-row { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+  .search-row input { flex: 1; min-width: 180px; padding: 0.8rem 1rem; background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.1); border-radius: 12px; color: #e0e0e0; font-size: 0.9rem; outline: none; transition: border 0.2s; }
+  .search-row input:focus { border-color: var(--gold); }
+  .search-row input::placeholder { color: rgba(255,255,255,0.2); }
+  .btn-search { padding: 0.8rem 1.6rem; background: var(--gold); color: #000; border: none; border-radius: 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: transform 0.15s; }
+  .btn-search:hover { transform: translateY(-1px); }
+
+  /* FOUND USER */
+  .found-user { margin-top: 1.2rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.4rem; }
+  .found-user-name { font-size: 1.05rem; font-weight: 700; color: #e0e0e0; margin-bottom: 0.3rem; }
+  .found-user-meta { font-size: 0.8rem; color: rgba(255,255,255,0.35); line-height: 1.8; }
+  .found-user-meta strong { color: var(--gold-l); }
+
+  /* TOURS BUILDER */
+  .tours-builder { margin-top: 1.4rem; }
+  .tours-title { font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.8rem; }
+  .tour-row { display: flex; align-items: center; gap: 0.8rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 0.9rem 1rem; margin-bottom: 0.6rem; }
+  .tour-num { width: 28px; height: 28px; border-radius: 50%; background: var(--gold); color: #000; font-weight: 700; font-size: 0.78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .tour-label { font-size: 0.82rem; color: rgba(255,255,255,0.4); flex-shrink: 0; min-width: 55px; }
+  .prize-select { flex: 1; padding: 0.55rem 0.9rem; background: var(--card2); border: 1.5px solid var(--border); border-radius: 10px; color: #e0e0e0; font-size: 0.88rem; font-weight: 600; outline: none; cursor: pointer; }
+  .prize-select:focus { border-color: var(--gold); }
+  .remove-btn { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; background: rgba(192,57,43,0.1); border: 1px solid rgba(192,57,43,0.2); color: var(--red); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .remove-btn:hover { background: var(--red); color: #fff; }
+  .add-tour-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(201,147,58,0.07); border: 1.5px dashed rgba(201,147,58,0.3); color: var(--gold); border-radius: 12px; padding: 0.7rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; width: 100%; margin-top: 0.2rem; transition: background 0.2s; }
+  .add-tour-btn:hover { background: rgba(201,147,58,0.14); }
+  .btn-give { width: 100%; margin-top: 1.2rem; padding: 1rem; background: linear-gradient(135deg, var(--green), var(--mid)); color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: transform 0.15s; box-shadow: 0 6px 20px rgba(45,138,86,0.35); }
+  .btn-give:hover { transform: translateY(-2px); }
+  .give-msg { margin-top: 0.8rem; font-size: 0.85rem; font-weight: 600; min-height: 1.2rem; text-align: center; }
+  .give-msg.ok { color: var(--light); }
+  .give-msg.err { color: var(--red); }
+
+  /* TABLE */
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+  thead th { padding: 0.7rem 0.8rem; text-align: left; font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 0.8rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 50px; font-size: 0.72rem; font-weight: 700; }
+  .badge-turns { background: rgba(201,147,58,0.15); color: var(--gold-l); }
+  .badge-zero  { background: rgba(150,150,150,0.08); color: #444; }
+  .balance-text { color: var(--light); font-weight: 700; font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; }
+
+  /* QUEUE */
+  .queue-wrap { display: flex; flex-wrap: wrap; gap: 3px; max-width: 220px; }
+  .queue-tag { font-size: 0.68rem; color: rgba(255,255,255,0.5); background: rgba(100,180,130,0.08); padding: 0.18rem 0.5rem; border-radius: 6px; border: 1px solid rgba(77,184,122,0.2); display: inline-flex; align-items: center; gap: 0.25rem; }
+  .del-q-btn { background: none; border: none; color: rgba(192,57,43,0.4); cursor: pointer; font-size: 0.7rem; padding: 0; line-height: 1; }
+  .del-q-btn:hover { color: var(--red); }
+
+  /* ACTION BUTTONS */
+  .act-btn { display: block; width: 100%; padding: 0.3rem 0.5rem; border-radius: 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; border: 1px solid; margin-bottom: 4px; text-align: center; transition: all 0.15s; }
+  .act-btn.gold  { background: rgba(201,147,58,0.08); color: var(--gold-l); border-color: rgba(201,147,58,0.25); }
+  .act-btn.gold:hover  { background: var(--gold); color: #000; }
+  .act-btn.red   { background: rgba(192,57,43,0.07); color: var(--red); border-color: rgba(192,57,43,0.2); }
+  .act-btn.red:hover   { background: var(--red); color: #fff; }
+  .act-btn.green { background: rgba(77,184,122,0.07); color: var(--light); border-color: rgba(77,184,122,0.2); }
+  .act-btn.green:hover { background: var(--light); color: #000; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 400; display: flex; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(6px); }
+  .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; width: min(560px, 100%); max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .modal-head { padding: 1.3rem 1.6rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .modal-head h3 { font-family: 'Cormorant Garamond', serif; color: var(--gold-l); font-size: 1.1rem; }
+  .modal-close { background: none; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .modal-close:hover { border-color: var(--red); color: var(--red); }
+  .modal-body { padding: 1.2rem 1.6rem; overflow-y: auto; flex: 1; }
+  .modal-foot { padding: 1rem 1.6rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; }
+  .btn-del-all { padding: 0.6rem 1.3rem; background: rgba(192,57,43,0.12); color: var(--red); border: 1px solid rgba(192,57,43,0.3); border-radius: 10px; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; }
+  .btn-del-all:hover { background: var(--red); color: #fff; }
+  .spin-item { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 0.8rem; }
+  .spin-item:last-child { border-bottom: none; }
+  .spin-prize { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; color: var(--light); }
+  .spin-date { font-size: 0.72rem; color: rgba(255,255,255,0.3); margin-top: 2px; }
+  .spin-del-btn { background: none; border: 1px solid rgba(192,57,43,0.2); color: rgba(192,57,43,0.5); border-radius: 8px; padding: 0.3rem 0.7rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .spin-del-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
+  .no-data { text-align: center; color: rgba(255,255,255,0.2); padding: 2.5rem; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">🌾 AGRITech</div>
+  <div class="loading-spinner"></div>
+  <p>Chargement...</p>
+</div>
+
+<div class="login-overlay" id="loginOverlay" style="display:none">
+  <div class="login-box">
+    <h2>🌾 Admin AGRITech</h2>
+    <p>Connectez-vous avec votre compte administrateur</p>
+    <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="votre@email.com"></div>
+    <div class="field"><label>Mot de passe</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+    <button class="btn-primary" id="loginBtn">Se connecter</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<div class="header" id="mainHeader" style="display:none">
+  <div class="header-title">🌾 Admin — Roue AGRITech<span id="headerEmail"></span></div>
+  <button class="btn-logout" id="logoutBtn">Déconnexion</button>
+</div>
+
+<div class="content" id="mainContent" style="display:none">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Utilisateurs</div><div class="stat-value" id="statUsers">0</div></div>
+    <div class="stat-card"><div class="stat-label">Tours en attente</div><div class="stat-value" id="statTurns">0</div></div>
+    <div class="stat-card"><div class="stat-label">Total crédités</div><div class="stat-value" id="statBalance">0 FCFA</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Donner des tours à un utilisateur</div>
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="Téléphone ou email...">
+      <button class="btn-search" id="searchBtn">Rechercher</button>
+    </div>
+    <div id="foundUser" style="display:none" class="found-user">
+      <div class="found-user-name" id="foundName"></div>
+      <div class="found-user-meta" id="foundMeta"></div>
+      <div class="tours-builder">
+        <div class="tours-title">Choisir le montant de chaque tour</div>
+        <div id="toursList"></div>
+        <button class="add-tour-btn" id="addTourBtn">+ Ajouter un tour</button>
+      </div>
+      <button class="btn-give" id="giveTurnsBtn">✅ Confirmer et donner les tours</button>
+      <div class="give-msg" id="giveMsg"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tous les utilisateurs</div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Nom</th><th>Tél</th><th>Email</th>
+            <th>Balance</th><th>Tours</th><th>File d'attente</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="usersTable">
+          <tr><td colspan="7" class="no-data">Chargement...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="historyModal" style="display:none">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Historique — <span id="modalUserName"></span></h3>
+      <button class="modal-close" id="modalCloseBtn">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <div class="no-data">Chargement...</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-del-all" id="clearHistoryBtn">Supprimer tout l'historique</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }  from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getAnalytics }   from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { getDatabase, ref, get, update, set, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+/* ── FIREBASE CONFIG (AGRITech) ─────────────────────── */
+const firebaseConfig = {
+  apiKey:            "AIzaSyDaFEepJKO8TbePfgnYlX0N3-CcaV75fy4",
+  authDomain:        "agri-5af15.firebaseapp.com",
+  databaseURL:       "https://agri-5af15-default-rtdb.firebaseio.com",
+  projectId:         "agri-5af15",
+  storageBucket:     "agri-5af15.firebasestorage.app",
+  messagingSenderId: "1010902928190",
+  appId:             "1:1010902928190:web:57d2555d69e2c023057a6f",
+  measurementId:     "G-XYB13DQZSP"
+};
+
+/* ── PRIZES (identiques à roue-agritech.html) ───────── */
+const PRIZES = [
+  { label: 'Aléatoire',       value: null   },
+  { label: '+50 FCFA',        value: 50     },
+  { label: '+100 FCFA',       value: 100    },
+  { label: '+300 FCFA',       value: 300    },
+  { label: '+1 000 FCFA',     value: 1000   },
+  { label: '+10 000 FCFA',    value: 10000  },
+  { label: '+410 000 FCFA',   value: 410000 },
+  { label: '+530 000 FCFA',   value: 530000 },
+];
+
+const app  = initializeApp(firebaseConfig);
+getAnalytics(app);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+
+let allUsers          = {};
+let foundUserId       = null;
+let tourCounter       = 0;
+let currentHistoryUid = null;
+let currentHistory    = {};
+
+/* ── AUTH ───────────────────────────────────────────── */
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  try { await signInWithEmailAndPassword(auth, email, pass); }
+  catch(e) { document.getElementById('loginErr').textContent = 'Email ou mot de passe incorrect.'; }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => { await signOut(auth); });
+
+onAuthStateChanged(auth, async (user) => {
+  document.getElementById('loadingScreen').style.display = 'none';
+  if (user) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('mainHeader').style.display   = 'flex';
+    document.getElementById('mainContent').style.display  = '';
+    document.getElementById('headerEmail').textContent    = user.email;
+    await loadAllUsers();
+  } else {
+    document.getElementById('loginOverlay').style.display = 'flex';
+    document.getElementById('mainHeader').style.display   = 'none';
+    document.getElementById('mainContent').style.display  = 'none';
+  }
+});
+
+/* ── TOURS BUILDER ──────────────────────────────────── */
+document.getElementById('addTourBtn').addEventListener('click', addTourRow);
+document.getElementById('searchBtn').addEventListener('click', searchUser);
+document.getElementById('giveTurnsBtn').addEventListener('click', giveTurns);
+document.getElementById('modalCloseBtn').addEventListener('click', () => {
+  document.getElementById('historyModal').style.display = 'none';
+});
+document.getElementById('clearHistoryBtn').addEventListener('click', clearAllHistory);
+document.getElementById('historyModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('historyModal'))
+    document.getElementById('historyModal').style.display = 'none';
+});
+
+function addTourRow() {
+  tourCounter++;
+  const list  = document.getElementById('toursList');
+  const count = list.querySelectorAll('.tour-row').length + 1;
+  const row   = document.createElement('div');
+  row.className    = 'tour-row';
+  row.dataset.tid  = 'tour_' + tourCounter;
+
+  const numDiv = document.createElement('div');
+  numDiv.className = 'tour-num'; numDiv.textContent = count;
+
+  const labelDiv = document.createElement('div');
+  labelDiv.className = 'tour-label'; labelDiv.textContent = 'Tour ' + count;
+
+  const select = document.createElement('select');
+  select.className = 'prize-select';
+  PRIZES.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.value === null ? 'null' : String(p.value);
+    opt.textContent = p.label;
+    select.appendChild(opt);
+  });
+
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'remove-btn'; removeBtn.textContent = '✕';
+  removeBtn.addEventListener('click', () => { row.remove(); renumberTours(); });
+
+  row.appendChild(numDiv); row.appendChild(labelDiv);
+  row.appendChild(select); row.appendChild(removeBtn);
+  list.appendChild(row);
+}
+
+function renumberTours() {
+  document.querySelectorAll('.tour-row').forEach((row, i) => {
+    row.querySelector('.tour-num').textContent   = i + 1;
+    row.querySelector('.tour-label').textContent = 'Tour ' + (i + 1);
+  });
+}
+
+function initTours(count) {
+  document.getElementById('toursList').innerHTML = '';
+  tourCounter = 0;
+  for (let i = 0; i < count; i++) addTourRow();
+}
+
+/* ── LOAD USERS ─────────────────────────────────────── */
+async function loadAllUsers() {
+  const snap = await get(ref(db, 'users'));
+  if (!snap.exists()) { renderTable({}); return; }
+  allUsers = snap.val();
+  renderTable(allUsers);
+  computeStats(allUsers);
+}
+
+function computeStats(users) {
+  const uids = Object.keys(users);
+  let totalTurns = 0, totalBalance = 0;
+  uids.forEach(uid => {
+    totalTurns   += users[uid].turns   || 0;
+    totalBalance += users[uid].balance || 0;
+  });
+  document.getElementById('statUsers').textContent   = uids.length;
+  document.getElementById('statTurns').textContent   = totalTurns;
+  document.getElementById('statBalance').textContent = totalBalance.toLocaleString('fr-FR') + ' FCFA';
+}
+
+function renderTable(users) {
+  const tbody = document.getElementById('usersTable');
+  const uids  = Object.keys(users);
+  tbody.innerHTML = '';
+
+  if (!uids.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="no-data">Aucun utilisateur.</td></tr>';
+    return;
+  }
+
+  uids.forEach(uid => {
+    const u     = users[uid];
+    const turns = u.turns || 0;
+    const bal   = (u.balance || 0).toLocaleString('fr-FR');
+    const queue = Array.isArray(u.prizeQueue) ? u.prizeQueue : [];
+    const tr    = document.createElement('tr');
+
+    // Nom
+    const tdName = document.createElement('td');
+    tdName.innerHTML = '<strong>' + (u.name || '—') + '</strong>';
+
+    // Tél
+    const tdPhone = document.createElement('td');
+    tdPhone.textContent = u.phoneNumber || '—';
+
+    // Email
+    const tdEmail = document.createElement('td');
+    tdEmail.textContent = u.email || '—';
+    tdEmail.style.cssText = 'font-size:0.75rem;color:rgba(255,255,255,0.3)';
+
+    // Balance
+    const tdBal = document.createElement('td');
+    tdBal.className = 'balance-text';
+    tdBal.textContent = bal + ' FCFA';
+
+    // Tours
+    const tdTurns = document.createElement('td');
+    const badge = document.createElement('span');
+    badge.className = 'badge ' + (turns > 0 ? 'badge-turns' : 'badge-zero');
+    badge.textContent = turns;
+    tdTurns.appendChild(badge);
+
+    // File d'attente
+    const tdQueue = document.createElement('td');
+    const qwrap   = document.createElement('div');
+    qwrap.className = 'queue-wrap';
+    if (queue.length > 0) {
+      queue.forEach((v, i) => {
+        const tag = document.createElement('span');
+        tag.className = 'queue-tag';
+        tag.textContent = 'T' + (i+1) + ': ' + (v === null ? 'Aléat.' : v.toLocaleString('fr-FR') + ' FCFA');
+        const delBtn = document.createElement('button');
+        delBtn.className = 'del-q-btn'; delBtn.textContent = '✕'; delBtn.title = 'Supprimer';
+        delBtn.addEventListener('click', () => deleteTurn(uid, i));
+        tag.appendChild(delBtn);
+        qwrap.appendChild(tag);
+      });
+    } else {
+      const dash = document.createElement('span');
+      dash.textContent = '—'; dash.style.cssText = 'color:rgba(255,255,255,0.15);font-size:0.75rem';
+      qwrap.appendChild(dash);
+    }
+    tdQueue.appendChild(qwrap);
+
+    // Actions
+    const tdAct = document.createElement('td');
+    const btnAdd = document.createElement('button');
+    btnAdd.className = 'act-btn gold'; btnAdd.textContent = '+1 Aléatoire';
+    btnAdd.addEventListener('click', () => quickAdd(uid));
+
+    const btnClear = document.createElement('button');
+    btnClear.className = 'act-btn red'; btnClear.textContent = 'Vider les tours';
+    btnClear.addEventListener('click', () => clearAllTurns(uid));
+
+    const btnHist = document.createElement('button');
+    btnHist.className = 'act-btn green'; btnHist.textContent = 'Historique';
+    btnHist.addEventListener('click', () => openHistory(uid));
+
+    tdAct.appendChild(btnAdd); tdAct.appendChild(btnClear); tdAct.appendChild(btnHist);
+
+    tr.appendChild(tdName); tr.appendChild(tdPhone); tr.appendChild(tdEmail);
+    tr.appendChild(tdBal);  tr.appendChild(tdTurns); tr.appendChild(tdQueue); tr.appendChild(tdAct);
+    tbody.appendChild(tr);
+  });
+}
+
+/* ── ACTIONS ────────────────────────────────────────── */
+async function quickAdd(uid) {
+  const u = allUsers[uid];
+  const newTurns = (u.turns || 0) + 1;
+  const newQueue = (Array.isArray(u.prizeQueue) ? u.prizeQueue : []).concat([null]);
+  await update(ref(db, 'users/' + uid), { turns: newTurns, prizeQueue: newQueue });
+  allUsers[uid].turns = newTurns; allUsers[uid].prizeQueue = newQueue;
+  renderTable(allUsers); computeStats(allUsers);
+}
+
+async function deleteTurn(uid, idx) {
+  const u = allUsers[uid];
+  const queue = (Array.isArray(u.prizeQueue) ? u.prizeQueue : []).slice();
+  if (idx < 0 || idx >= queue.length) return;
+  queue.splice(idx, 1);
+  const newTurns = Math.max(0, (u.turns || 0) - 1);
+  await update(ref(db, 'users/' + uid), { turns: newTurns, prizeQueue: queue });
+  allUsers[uid].turns = newTurns; allUsers[uid].prizeQueue = queue;
+  renderTable(allUsers); computeStats(allUsers);
+}
+
+async function clearAllTurns(uid) {
+  if (!confirm('Vider tous les tours de cet utilisateur ?')) return;
+  await update(ref(db, 'users/' + uid), { turns: 0, prizeQueue: [] });
+  allUsers[uid].turns = 0; allUsers[uid].prizeQueue = [];
+  renderTable(allUsers); computeStats(allUsers);
+}
+
+/* ── SEARCH ─────────────────────────────────────────── */
+function searchUser() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!q) return;
+  foundUserId = null;
+  document.getElementById('foundUser').style.display = 'none';
+  document.getElementById('giveMsg').textContent = '';
+
+  const uid = Object.keys(allUsers).find(id => {
+    const u = allUsers[id];
+    return (u.phoneNumber && u.phoneNumber.replace(/\s/g,'').toLowerCase().includes(q.replace(/\s/g,'')))
+        || (u.email && u.email.toLowerCase().includes(q));
+  });
+
+  if (!uid) { alert('Utilisateur introuvable.'); return; }
+  foundUserId = uid;
+  const u = allUsers[uid];
+  document.getElementById('foundName').textContent = u.name || u.email;
+  document.getElementById('foundMeta').innerHTML =
+    'Tél: <strong>' + (u.phoneNumber || '—') + '</strong> &nbsp;|&nbsp; ' +
+    'Balance: <strong>' + (u.balance || 0).toLocaleString('fr-FR') + ' FCFA</strong> &nbsp;|&nbsp; ' +
+    'Tours: <strong>' + (u.turns || 0) + '</strong>';
+  initTours(2);
+  document.getElementById('foundUser').style.display = '';
+}
+
+/* ── GIVE TURNS ─────────────────────────────────────── */
+async function giveTurns() {
+  if (!foundUserId) return;
+  const msg  = document.getElementById('giveMsg');
+  const rows = document.querySelectorAll('.tour-row');
+  msg.textContent = '...'; msg.className = 'give-msg';
+
+  if (!rows.length) {
+    msg.textContent = 'Ajoutez au moins 1 tour.'; msg.className = 'give-msg err'; return;
+  }
+
+  const newPrizes = [];
+  rows.forEach(row => {
+    const val = row.querySelector('.prize-select').value;
+    newPrizes.push(val === 'null' ? null : parseInt(val));
+  });
+
+  try {
+    const u        = allUsers[foundUserId];
+    const oldQueue = Array.isArray(u.prizeQueue) ? u.prizeQueue : [];
+    const newQueue = oldQueue.concat(newPrizes);
+    const newTurns = (u.turns || 0) + newPrizes.length;
+
+    await update(ref(db, 'users/' + foundUserId), { turns: newTurns, prizeQueue: newQueue });
+    await set(ref(db, 'adminActions/' + Date.now()), {
+      action: 'add_turns', uid: foundUserId,
+      added: newPrizes.length,
+      byAdmin: auth.currentUser ? auth.currentUser.email : '?',
+      at: serverTimestamp()
+    });
+
+    allUsers[foundUserId].turns      = newTurns;
+    allUsers[foundUserId].prizeQueue = newQueue;
+    renderTable(allUsers); computeStats(allUsers);
+
+    const summary = newPrizes.map((v, i) =>
+      'Tour ' + (i+1) + ': ' + (v === null ? 'Aléatoire' : v.toLocaleString('fr-FR') + ' FCFA')
+    ).join(' | ');
+
+    msg.textContent = newPrizes.length + ' tour(s) ajouté(s) — ' + summary;
+    msg.className   = 'give-msg ok';
+  } catch(e) {
+    msg.textContent = 'Erreur : ' + e.message; msg.className = 'give-msg err';
+  }
+}
+
+/* ── HISTORIQUE ─────────────────────────────────────── */
+async function openHistory(uid) {
+  currentHistoryUid = uid;
+  const u = allUsers[uid];
+  document.getElementById('modalUserName').textContent = u.name || u.email;
+  document.getElementById('historyModal').style.display = 'flex';
+  document.getElementById('modalBody').innerHTML = '<div class="no-data">Chargement...</div>';
+  const snap = await get(ref(db, 'spinHistory/' + uid));
+  if (!snap.exists()) {
+    document.getElementById('modalBody').innerHTML = '<div class="no-data">Aucun historique.</div>';
+    return;
+  }
+  currentHistory = snap.val();
+  renderHistory(currentHistory);
+}
+
+function renderHistory(history) {
+  const keys = Object.keys(history).sort((a, b) => b - a);
+  const body = document.getElementById('modalBody');
+  body.innerHTML = '';
+  if (!keys.length) { body.innerHTML = '<div class="no-data">Aucun historique.</div>'; return; }
+  keys.forEach(key => {
+    const s    = history[key];
+    const date = new Date(parseInt(key)).toLocaleString('fr-FR');
+    const item = document.createElement('div');
+    item.className = 'spin-item';
+    const info = document.createElement('div');
+    info.innerHTML = '<div class="spin-prize">' + (s.prize || '—') + '</div><div class="spin-date">' + date + '</div>';
+    const delBtn = document.createElement('button');
+    delBtn.className = 'spin-del-btn'; delBtn.textContent = 'Supprimer';
+    delBtn.addEventListener('click', () => deleteSpinEntry(key));
+    item.appendChild(info); item.appendChild(delBtn);
+    body.appendChild(item);
+  });
+}
+
+async function deleteSpinEntry(key) {
+  if (!currentHistoryUid) return;
+  await set(ref(db, 'spinHistory/' + currentHistoryUid + '/' + key), null);
+  delete currentHistory[key];
+  renderHistory(currentHistory);
+}
+
+async function clearAllHistory() {
+  if (!currentHistoryUid || !confirm("Supprimer tout l'historique ?")) return;
+  await set(ref(db, 'spinHistory/' + currentHistoryUid), null);
+  currentHistory = {};
+  renderHistory(currentHistory);
+}
+</script>
+</body>
+</html>

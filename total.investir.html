@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGRITech — Admin Investissements</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green:       #2d6a4f;
+      --green-light: #52b788;
+      --gold:        #b7882c;
+      --bg:          #0f1a13;
+      --surface:     #172218;
+      --surface2:    #1e2e21;
+      --border:      #2a3d2d;
+      --text:        #e8f5ea;
+      --muted:       #7aad82;
+      --danger:      #e55353;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 28px 18px; z-index: 100; }
+    .sidebar-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 36px; }
+    .logo-icon { width: 38px; height: 38px; background: linear-gradient(135deg, var(--green), var(--green-light)); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(45,106,79,0.4); flex-shrink: 0; }
+    .logo-name { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); letter-spacing: 2px; }
+    .logo-badge { font-size: 0.55rem; font-weight: 700; background: rgba(82,183,136,0.2); color: var(--green-light); padding: 2px 7px; border-radius: 10px; letter-spacing: 1px; margin-top: -4px; }
+    .nav-section-title { font-size: 0.6rem; font-weight: 700; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; padding-left: 10px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.82rem; font-weight: 500; color: var(--muted); transition: all 0.2s; margin-bottom: 4px; text-decoration: none; }
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: rgba(45,106,79,0.25); color: var(--green-light); }
+    .sidebar-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); }
+    .admin-chip { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface2); border-radius: 10px; }
+    .admin-avatar { width: 32px; height: 32px; background: linear-gradient(135deg, var(--green), var(--green-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: white; flex-shrink: 0; }
+    .admin-name-txt { font-size: 0.78rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .admin-role { font-size: 0.62rem; color: var(--muted); }
+
+    /* ── MAIN ── */
+    .main { margin-left: 220px; padding: 28px; min-height: 100vh; }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .topbar-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 700; }
+    .topbar-sub { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+    .live-badge { display: flex; align-items: center; gap: 7px; font-size: 0.7rem; color: var(--muted); background: var(--surface); border: 1px solid var(--border); padding: 6px 14px; border-radius: 8px; }
+    .live-dot { width: 7px; height: 7px; background: var(--green-light); border-radius: 50%; animation: blink 2s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ── HERO ── */
+    .hero-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 22px; }
+    .hc { border-radius: 18px; padding: 20px; border: 1px solid var(--border); animation: fadeUp 0.4s ease both; position: relative; overflow: hidden; }
+    .hc:nth-child(2){animation-delay:.06s} .hc:nth-child(3){animation-delay:.12s} .hc:nth-child(4){animation-delay:.18s}
+    .hc::before { content:''; position:absolute; top:-40px; right:-40px; width:100px; height:100px; border-radius:50%; opacity:0.08; }
+    .hc-a { background: linear-gradient(135deg,#1a3a28,#213d2d); } .hc-a::before { background: var(--green-light); }
+    .hc-b { background: linear-gradient(135deg,#1a3a2a,#1f4730); } .hc-b::before { background: var(--green-light); }
+    .hc-c { background: linear-gradient(135deg,#2a2010,#332510); } .hc-c::before { background: var(--gold); }
+    .hc-d { background: linear-gradient(135deg,#2a1a1a,#331f1f); } .hc-d::before { background: var(--danger); }
+    .hc-icon { font-size: 1.2rem; margin-bottom: 14px; display: block; }
+    .hc-val { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; line-height: 1; margin-bottom: 5px; }
+    .hc-a .hc-val,.hc-b .hc-val { color: var(--green-light); }
+    .hc-c .hc-val { color: var(--gold); font-size: 1.3rem; }
+    .hc-d .hc-val { color: #ff8888; font-size: 1.3rem; }
+    .hc-label { font-size: 0.68rem; color: var(--muted); font-weight: 500; }
+
+    /* ── MACHINE BARS ── */
+    .surface-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 22px; margin-bottom: 22px; animation: fadeUp 0.4s 0.22s ease both; }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 700; }
+    .card-sub { font-size: 0.68rem; color: var(--muted); }
+    .mb-row { display: flex; align-items: center; gap: 12px; margin-bottom: 11px; }
+    .mb-name { font-size: 0.72rem; font-weight: 600; width: 130px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mb-track { flex: 1; height: 8px; background: var(--surface2); border-radius: 10px; overflow: hidden; }
+    .mb-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--green), var(--green-light)); transition: width 0.8s ease; }
+    .mb-count { font-size: 0.7rem; font-weight: 700; color: var(--green-light); width: 28px; text-align: right; flex-shrink: 0; }
+    .mb-price { font-size: 0.64rem; color: var(--muted); width: 90px; text-align: right; flex-shrink: 0; }
+
+    /* ── SPLIT ── */
+    .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
+    .table-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; animation: fadeUp 0.4s 0.3s ease both; }
+    .table-card:nth-child(2) { animation-delay: 0.38s; }
+    .tc-header { padding: 16px 20px 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+    .tc-title { display: flex; align-items: center; gap: 8px; font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; }
+    .tc-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-g { background: var(--green-light); box-shadow: 0 0 8px rgba(82,183,136,0.6); }
+    .dot-r { background: var(--danger); box-shadow: 0 0 8px rgba(229,83,83,0.5); }
+    .tc-count { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 700; }
+    .tc-count.g { color: var(--green-light); } .tc-count.r { color: var(--danger); }
+    .table-scroll { max-height: 360px; overflow-y: auto; }
+    .it { width: 100%; border-collapse: collapse; }
+    .it th { font-size: 0.6rem; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; padding: 8px 16px; text-align: left; background: var(--surface2); }
+    .it td { padding: 11px 16px; font-size: 0.78rem; border-bottom: 1px solid rgba(42,61,45,0.4); color: var(--text); }
+    .it tbody tr:last-child td { border-bottom: none; }
+    .it tbody tr:hover { background: var(--surface2); }
+
+    /* ── BIG TABLE ── */
+    .full-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; animation: fadeUp 0.4s 0.44s ease both; }
+    .fc-header { padding: 18px 22px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+    .search-wrap { position: relative; }
+    .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    .search-input { padding: 8px 10px 8px 32px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.75rem; color: var(--text); outline: none; width: 200px; transition: border-color 0.2s; }
+    .search-input::placeholder { color: var(--muted); }
+    .search-input:focus { border-color: var(--green-light); }
+    .bt { width: 100%; border-collapse: collapse; }
+    .bt th { font-size: 0.6rem; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; padding: 10px 18px; text-align: left; background: var(--surface2); }
+    .bt td { padding: 12px 18px; font-size: 0.78rem; border-bottom: 1px solid rgba(42,61,45,0.4); color: var(--text); }
+    .bt tbody tr:last-child td { border-bottom: none; }
+    .bt tbody tr:hover { background: var(--surface2); }
+
+    /* ── MISC ── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 0.62rem; font-weight: 700; }
+    .b-active    { background: rgba(82,183,136,0.15); color: var(--green-light); }
+    .b-completed { background: rgba(183,136,44,0.15); color: var(--gold); }
+    .b-pending   { background: rgba(229,83,83,0.12); color: var(--danger); }
+    .phone-val   { font-family: 'Cormorant Garamond', serif; font-size: 0.92rem; font-weight: 600; }
+    .val-gold    { font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; font-weight: 700; color: var(--gold); }
+    .val-green   { font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; font-weight: 700; color: var(--green-light); }
+    .prog-mini   { display: inline-block; width: 80px; height: 5px; background: var(--surface2); border-radius: 10px; overflow: hidden; vertical-align: middle; margin-right: 5px; }
+    .prog-mini-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--green), var(--green-light)); }
+    .empty-state { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 0.8rem; }
+
+    .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(15,26,19,0.85); backdrop-filter: blur(6px); z-index: 1000; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
+    .loading-overlay.active { display: flex; }
+    .spinner { width: 48px; height: 48px; border: 3px solid var(--border); border-top: 3px solid var(--green-light); border-radius: 50%; animation: spin 0.75s linear infinite; }
+    .loading-text { font-size: 0.8rem; font-weight: 600; color: var(--green-light); }
+
+    @keyframes spin   { to { transform: rotate(360deg); } }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+    @media (max-width:1100px) { .hero-grid { grid-template-columns: repeat(2,1fr); } .tables-grid { grid-template-columns: 1fr; } }
+    @media (max-width:800px)  { .sidebar { display:none; } .main { margin-left:0; } }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C8 2 5 6 5 10c0 5 7 12 7 12s7-7 7-12c0-4-3-8-7-8z" fill="white" opacity="0.9"/>
+        <circle cx="12" cy="10" r="3" fill="rgba(255,255,255,0.5)"/>
+      </svg>
+    </div>
+    <div><div class="logo-name">AGRITech</div><div class="logo-badge">ADMIN</div></div>
+  </div>
+
+  <div class="nav-section-title">Général</div>
+  <a class="nav-item" href="admin.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/></svg>
+    Tableau de bord
+  </a>
+  <a class="nav-item" href="admin.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/></svg>
+    Utilisateurs
+  </a>
+  <a class="nav-item active" href="#">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17,6 23,6 23,12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Investissements
+  </a>
+  <a class="nav-item" href="#">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><line x1="12" y1="1" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    Transactions
+  </a>
+  <div class="nav-section-title" style="margin-top:20px;">Système</div>
+  <a class="nav-item" href="#">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    Paramètres
+  </a>
+
+  <div class="sidebar-footer">
+    <div class="admin-chip">
+      <div class="admin-avatar" id="admin-initials">A</div>
+      <div>
+        <div class="admin-name-txt" id="admin-name">Admin</div>
+        <div class="admin-role">Super Admin</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Suivi des Investissements</div>
+      <div class="topbar-sub">Données réelles · 7 machines · investments/{uid}</div>
+    </div>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      <span id="last-update">Temps réel</span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero-grid">
+    <div class="hc hc-a">
+      <span class="hc-icon">👥</span>
+      <div class="hc-val" id="hc-members">--</div>
+      <div class="hc-label">Membres investis</div>
+    </div>
+    <div class="hc hc-b">
+      <span class="hc-icon">🟢</span>
+      <div class="hc-val" id="hc-active">--</div>
+      <div class="hc-label">Machines actives</div>
+    </div>
+    <div class="hc hc-c">
+      <span class="hc-icon">💰</span>
+      <div class="hc-val" id="hc-capital">--</div>
+      <div class="hc-label">Capital total investi</div>
+    </div>
+    <div class="hc hc-d">
+      <span class="hc-icon">🏆</span>
+      <div class="hc-val" id="hc-collected">--</div>
+      <div class="hc-label">Total collecté</div>
+    </div>
+  </div>
+
+  <!-- REPARTITION MACHINES -->
+  <div class="surface-card">
+    <div class="card-header">
+      <div class="card-title">Répartition par machine</div>
+      <div class="card-sub">Nombre d'investissements actifs par niveau</div>
+    </div>
+    <div id="machine-bars"><div class="empty-state">Chargement…</div></div>
+  </div>
+
+  <!-- SPLIT : investis / non investis -->
+  <div class="tables-grid">
+    <div class="table-card">
+      <div class="tc-header">
+        <div class="tc-title"><div class="tc-dot dot-g"></div>Membres investis</div>
+        <div class="tc-count g" id="cnt-inv">0</div>
+      </div>
+      <div class="table-scroll">
+        <table class="it">
+          <thead><tr><th>Numéro</th><th>Machines</th><th>Capital</th><th>Collecté</th></tr></thead>
+          <tbody id="list-inv"><tr><td colspan="4" class="empty-state">Chargement…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="tc-header">
+        <div class="tc-title"><div class="tc-dot dot-r"></div>Pas encore investis</div>
+        <div class="tc-count r" id="cnt-not">0</div>
+      </div>
+      <div class="table-scroll">
+        <table class="it">
+          <thead><tr><th>Numéro</th><th>Email</th><th>Compte</th></tr></thead>
+          <tbody id="list-not"><tr><td colspan="3" class="empty-state">Chargement…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLEAU COMPLET -->
+  <div class="full-card">
+    <div class="fc-header">
+      <div>
+        <div class="card-title">Tous les investissements</div>
+        <div class="card-sub" id="full-count" style="margin-top:2px">--</div>
+      </div>
+      <div class="search-wrap">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="#7aad82" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="#7aad82" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="text" id="search-all" class="search-input" placeholder="Numéro, machine…">
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="bt">
+        <thead>
+          <tr>
+            <th>Membre</th><th>Machine</th><th>Capital</th>
+            <th>Gain/jour</th><th>Collecté</th><th>Progression</th>
+            <th>Statut</th><th>Début</th>
+          </tr>
+        </thead>
+        <tbody id="full-list"><tr><td colspan="8" class="empty-state">Chargement…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- LOADING -->
+<div class="loading-overlay active" id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Chargement des investissements…</div>
+</div>
+
+<script type="module">
+import { initializeApp }
+  from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getAuth, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { getDatabase, ref, onValue }
+  from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDaFEepJKO8TbePfgnYlX0N3-CcaV75fy4",
+  authDomain: "agri-5af15.firebaseapp.com",
+  databaseURL: "https://agri-5af15-default-rtdb.firebaseio.com",
+  projectId: "agri-5af15",
+  storageBucket: "agri-5af15.firebasestorage.app",
+  messagingSenderId: "1010902928190",
+  appId: "1:1010902928190:web:57d2555d69e2c023057a6f",
+  measurementId: "G-XYB13DQZSP"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+
+/* ── PRODUCT CONFIG — identique à la page Mes Machines ── */
+const PRODUCT_CONFIG = {
+  1: { name:'Machine Bronze',  price:3000,   dailyRevenue:400,   cycleDuration:60, totalRevenue:24000   },
+  2: { name:'Machine Argent',  price:6000,   dailyRevenue:1000,  cycleDuration:60, totalRevenue:60000   },
+  3: { name:'Machine Or',      price:12000,  dailyRevenue:2000,  cycleDuration:60, totalRevenue:120000  },
+  4: { name:'Machine Platine', price:20000,  dailyRevenue:3000,  cycleDuration:60, totalRevenue:180000  },
+  5: { name:'Machine Diamant', price:50000,  dailyRevenue:7000,  cycleDuration:60, totalRevenue:420000  },
+  6: { name:'Machine Légende', price:100000, dailyRevenue:15000, cycleDuration:60, totalRevenue:900000  },
+  7: { name:'Machine Elite',   price:500000, dailyRevenue:65000, cycleDuration:60, totalRevenue:3900000 },
+};
+
+/* ── UTILS ── */
+const fmt   = n => Math.round(parseFloat(n||0)).toLocaleString('fr-FR');
+const short = n => {
+  if (n>=1000000) return (n/1000000).toFixed(1).replace('.0','')+'M';
+  if (n>=1000)    return Math.floor(n/1000)+'k';
+  return String(Math.floor(n));
+};
+const extractPhone = d => {
+  const cc  = d.countryCode || d.profile?.countryCode || '+225';
+  const num = d.phoneNumber || d.telephone || d.numero || d.tel || d.phone || d.profile?.phoneNumber || null;
+  if (!num) return d.email || '—';
+  return `${cc}${num.replace(/\D/g,'')}`;
+};
+const getProgress = inv => {
+  const total  = inv.remainingDays || inv.cycleDuration || 60;
+  const passed = Math.min(total, Math.floor((Date.now()-new Date(inv.startDate))/86400000));
+  return { passed, total, pct: Math.round((passed/total)*100) };
+};
+
+/* ── STATE ── */
+let allUsers = {}, allInvs = {}, flatRows = [];
+let usersOk = false, invsOk = false;
+
+/* ── MACHINE BARS ── */
+const renderMachineBars = () => {
+  const counts = {};
+  Object.values(allInvs).forEach(ui =>
+    Object.values(ui).forEach(inv => {
+      if (inv.status !== 'completed') counts[inv.productId] = (counts[inv.productId]||0)+1;
+    })
+  );
+  const maxC = Math.max(1,...Object.values(counts));
+  const el   = document.getElementById('machine-bars');
+  const keys = Object.keys(PRODUCT_CONFIG);
+  if (!keys.some(k => counts[k])) {
+    el.innerHTML = '<div class="empty-state">Aucun investissement actif</div>'; return;
+  }
+  el.innerHTML = keys.map(id => {
+    const cfg = PRODUCT_CONFIG[id], cnt = counts[id]||0;
+    return `<div class="mb-row">
+      <div class="mb-name">${cfg.name}</div>
+      <div class="mb-track"><div class="mb-fill" style="width:${Math.round((cnt/maxC)*100)}%"></div></div>
+      <div class="mb-count">${cnt}</div>
+      <div class="mb-price">${short(cfg.price)} FCFA</div>
+    </div>`;
+  }).join('');
+};
+
+/* ── SPLIT TABLES ── */
+const renderSplit = () => {
+  const inv=[], notInv=[];
+  Object.entries(allUsers).forEach(([uid,ud]) => {
+    const ui    = allInvs[uid];
+    const phone = extractPhone(ud);
+    const email = ud.email||'—';
+    if (ui && Object.keys(ui).length) {
+      const list  = Object.values(ui);
+      const cap   = list.reduce((s,i)=>s+parseFloat(i.amount||0),0);
+      const col   = list.reduce((s,i)=>s+parseFloat(i.totalCollected||0),0);
+      const activ = list.filter(i=>i.status!=='completed').length;
+      inv.push({phone,machines:list.length,activ,cap,col});
+    } else {
+      notInv.push({phone,email,active:ud.status!=='inactive'});
+    }
+  });
+  inv.sort((a,b)=>b.cap-a.cap);
+
+  document.getElementById('cnt-inv').textContent = inv.length;
+  document.getElementById('cnt-not').textContent = notInv.length;
+
+  document.getElementById('list-inv').innerHTML = inv.length
+    ? inv.map(m=>`<tr>
+        <td class="phone-val">${m.phone}</td>
+        <td><span style="color:var(--green-light);font-weight:700">${m.activ}</span><span style="color:var(--muted);font-size:0.65rem"> / ${m.machines}</span></td>
+        <td class="val-gold">${fmt(m.cap)}</td>
+        <td class="val-green">${fmt(m.col)}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="4" class="empty-state">Aucun membre investi</td></tr>';
+
+  document.getElementById('list-not').innerHTML = notInv.length
+    ? notInv.map(m=>`<tr>
+        <td class="phone-val">${m.phone}</td>
+        <td style="font-size:0.72rem;color:var(--muted)">${m.email}</td>
+        <td><span class="badge ${m.active?'b-active':'b-pending'}">${m.active?'Actif':'Inactif'}</span></td>
+      </tr>`).join('')
+    : '<tr><td colspan="3" class="empty-state" style="color:var(--green-light)">🎉 Tous investis !</td></tr>';
+};
+
+/* ── FULL TABLE ── */
+const renderFull = rows => {
+  const tbody = document.getElementById('full-list');
+  if (!rows.length) { tbody.innerHTML='<tr><td colspan="8" class="empty-state">Aucun résultat</td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => {
+    const {passed,total,pct} = getProgress(r.inv);
+    const cfg  = PRODUCT_CONFIG[r.inv.productId]||{};
+    const name = r.inv.productName || cfg.name || 'Machine';
+    const sc   = r.inv.status==='completed'?'b-completed': r.inv.status==='active'?'b-active':'b-pending';
+    const sl   = r.inv.status==='completed'?'✅ Terminé': r.inv.status==='active'?'🟢 Actif':'⏳ En attente';
+    const date = r.inv.startDate ? new Date(r.inv.startDate).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+    return `<tr>
+      <td class="phone-val">${r.phone}</td>
+      <td><div style="font-weight:600;font-size:0.78rem">${name}</div><div style="font-size:0.62rem;color:var(--muted)">Niveau ${r.inv.productId||'—'}</div></td>
+      <td class="val-gold">${fmt(r.inv.amount)}</td>
+      <td style="color:var(--green-light);font-weight:600">+${fmt(r.inv.dailyRevenue)}</td>
+      <td class="val-green">${fmt(r.inv.totalCollected)}</td>
+      <td><div style="display:flex;align-items:center;gap:5px"><div class="prog-mini"><div class="prog-mini-fill" style="width:${pct}%"></div></div><span style="font-size:0.64rem;color:var(--muted)">${passed}/${total}j</span></div></td>
+      <td><span class="badge ${sc}">${sl}</span></td>
+      <td style="font-size:0.72rem;color:var(--muted)">${date}</td>
+    </tr>`;
+  }).join('');
+};
+
+/* ── HERO ── */
+const updateHero = () => {
+  const membersWithInv = Object.keys(allInvs).filter(uid=>allInvs[uid]&&Object.keys(allInvs[uid]).length).length;
+  let active=0, capital=0, collected=0;
+  flatRows.forEach(r=>{
+    if (r.inv.status!=='completed') active++;
+    capital   += parseFloat(r.inv.amount||0);
+    collected += parseFloat(r.inv.totalCollected||0);
+  });
+  document.getElementById('hc-members').textContent  = membersWithInv;
+  document.getElementById('hc-active').textContent   = active;
+  document.getElementById('hc-capital').textContent  = short(capital)+' FCFA';
+  document.getElementById('hc-collected').textContent= short(collected)+' FCFA';
+  const n = new Date();
+  document.getElementById('last-update').textContent = `Mis à jour ${n.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
+};
+
+/* ── BUILD + REFRESH ── */
+const build = () => {
+  flatRows = [];
+  Object.entries(allInvs).forEach(([uid,ui])=>{
+    const ud = allUsers[uid]||{};
+    const phone = extractPhone(ud);
+    Object.entries(ui).forEach(([key,inv])=>flatRows.push({uid,key,phone,inv}));
+  });
+  flatRows.sort((a,b)=>{
+    if (a.inv.status==='active'&&b.inv.status!=='active') return -1;
+    if (b.inv.status==='active'&&a.inv.status!=='active') return 1;
+    return new Date(b.inv.startDate)-new Date(a.inv.startDate);
+  });
+  document.getElementById('full-count').textContent =
+    `${flatRows.length} investissement${flatRows.length>1?'s':''} au total`;
+};
+
+const refresh = () => {
+  if (!usersOk||!invsOk) return;
+  build();
+  updateHero();
+  renderMachineBars();
+  renderSplit();
+  renderFull(flatRows);
+  document.getElementById('loading-overlay').classList.remove('active');
+};
+
+/* ── SEARCH ── */
+document.getElementById('search-all').addEventListener('input', e=>{
+  const q = e.target.value.trim().toLowerCase();
+  renderFull(q ? flatRows.filter(r=>
+    r.phone.toLowerCase().includes(q)||
+    (r.inv.productName||'').toLowerCase().includes(q)||
+    String(r.inv.productId||'').includes(q)
+  ) : flatRows);
+});
+
+/* ── FIREBASE ── */
+onValue(ref(db,'users'), snap=>{
+  allUsers = snap.val()||{};
+  usersOk  = true;
+  refresh();
+});
+onValue(ref(db,'investments'), snap=>{
+  allInvs = snap.val()||{};
+  invsOk  = true;
+  refresh();
+});
+
+/* ── AUTH ── */
+onAuthStateChanged(auth, user=>{
+  if (!user) return;
+  document.getElementById('admin-name').textContent     = user.email||'Admin';
+  document.getElementById('admin-initials').textContent = (user.email||'A')[0].toUpperCase();
+});
+</script>
+</body>
+</html>

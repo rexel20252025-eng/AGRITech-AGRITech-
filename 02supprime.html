@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGRITech — Supprimer mes Retraits</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --g1: #0d5c2e;
+  --g2: #1a8c4e;
+  --g3: #25b96a;
+  --gold: #e2b04a;
+  --gold2: #f5d48a;
+  --dark: #071a0f;
+  --bg: #eef7f2;
+  --card: #ffffff;
+  --muted: #7a9688;
+  --border: #d0e8da;
+  --pending: #d4840a;
+  --pending-bg: #fff8ec;
+  --pending-border: #f0cc80;
+  --success: #0d7a3c;
+  --success-bg: #edfaf3;
+  --success-border: #a8e6c0;
+  --rejected: #b82020;
+  --rejected-bg: #fff0f0;
+  --rejected-border: #f0a8a8;
+  --danger: #c0392b;
+  --danger-bg: #fff5f5;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 16px 40px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed; top: -180px; left: -180px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(26,140,78,.13) 0%, transparent 65%);
+  pointer-events: none; z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed; bottom: -120px; right: -100px;
+  width: 440px; height: 440px;
+  background: radial-gradient(circle, rgba(226,176,74,.1) 0%, transparent 65%);
+  pointer-events: none; z-index: 0;
+}
+
+/* LOADING */
+#loadingOverlay {
+  position: fixed; inset: 0;
+  background: rgba(238,247,242,.95);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 9999; backdrop-filter: blur(6px);
+  transition: opacity .4s;
+}
+#loadingOverlay.hidden { opacity: 0; pointer-events: none; }
+.spinner {
+  width: 44px; height: 44px;
+  border: 3px solid var(--border);
+  border-top-color: var(--g2);
+  border-radius: 50%;
+  animation: spin .75s linear infinite;
+  margin-bottom: 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 13px; color: var(--muted); font-style: italic; }
+
+/* HEADER */
+.header {
+  width: 100%; max-width: 460px;
+  padding: 36px 0 20px;
+  text-align: center;
+  position: relative; z-index: 1;
+  animation: fadeDown .6s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.logo-ring {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(145deg, var(--g1), var(--g2));
+  box-shadow: 0 8px 28px rgba(26,140,78,.36), 0 0 0 7px rgba(26,140,78,.09);
+  margin-bottom: 12px;
+  animation: pulse 3s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 8px 28px rgba(26,140,78,.36), 0 0 0 7px rgba(26,140,78,.09); }
+  50%      { box-shadow: 0 10px 36px rgba(26,140,78,.5),  0 0 0 12px rgba(26,140,78,.05); }
+}
+.logo-ring svg { width: 28px; height: 28px; }
+.brand { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 25px; color: var(--dark); letter-spacing: -0.02em; }
+.brand span { color: var(--g2); }
+.tagline { font-size: 12px; color: var(--muted); margin-top: 3px; letter-spacing: .05em; font-style: italic; }
+
+/* SECTION HEADER */
+.section-header {
+  width: 100%; max-width: 460px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px; padding: 0 2px;
+  position: relative; z-index: 1;
+  animation: slideUp .5s .1s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700; font-size: 15px; color: var(--g1);
+  display: flex; align-items: center; gap: 8px;
+}
+.count-pill {
+  background: var(--danger); color: white;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 50px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* WARNING BANNER */
+.warn-banner {
+  width: 100%; max-width: 460px;
+  background: var(--danger-bg);
+  border: 1px solid #f5c6c6;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+  position: relative; z-index: 1;
+  animation: slideUp .5s .05s cubic-bezier(.22,1,.36,1) both;
+}
+.warn-icon { font-size: 20px; flex-shrink: 0; }
+.warn-text { font-size: 12px; color: var(--danger); font-weight: 600; line-height: 1.4; }
+
+/* LIST */
+.withdraw-list {
+  width: 100%; max-width: 460px;
+  display: flex; flex-direction: column; gap: 12px;
+  position: relative; z-index: 1;
+}
+
+/* CARD */
+.wd-card {
+  background: var(--card); border-radius: 18px;
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--danger);
+  box-shadow: 0 4px 18px rgba(13,92,46,.07);
+  overflow: hidden;
+  animation: popIn .4s cubic-bezier(.22,1,.36,1) both;
+  transition: transform .2s, box-shadow .2s;
+}
+.wd-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(13,92,46,.12); }
+@keyframes popIn {
+  from { opacity: 0; transform: scale(.95) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Status-specific top borders */
+.wd-card.status-pending  { border-top-color: var(--pending); }
+.wd-card.status-success  { border-top-color: var(--success); }
+.wd-card.status-rejected { border-top-color: var(--rejected); }
+
+.wd-top {
+  padding: 14px 16px 10px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px;
+}
+.wd-amount {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-weight: 800; color: var(--dark);
+  letter-spacing: -0.02em;
+}
+.wd-net { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.wd-net strong { color: var(--success); }
+
+.status-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 11px; border-radius: 50px;
+  font-size: 11px; font-weight: 700;
+  white-space: nowrap;
+}
+.status-badge.pending  { background: var(--pending-bg);  color: var(--pending);  border: 1px solid var(--pending-border); }
+.status-badge.success  { background: var(--success-bg);  color: var(--success);  border: 1px solid var(--success-border); }
+.status-badge.rejected { background: var(--rejected-bg); color: var(--rejected); border: 1px solid var(--rejected-border); }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; }
+.status-dot.pending  { background: var(--pending); animation: blink 1.2s infinite; }
+.status-dot.success  { background: var(--success); }
+.status-dot.rejected { background: var(--rejected); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.wd-divider { height: 1px; background: var(--border); margin: 0 16px; }
+
+.wd-bottom {
+  padding: 10px 16px 13px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+}
+.wd-account { display: flex; align-items: center; gap: 10px; }
+.wd-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 12px; font-weight: 800; color: white; flex-shrink: 0;
+}
+.wd-acc-name { font-size: 12px; font-weight: 600; color: var(--dark); }
+.wd-acc-num  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.op-pill-sm  { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 50px; color: white; }
+
+.wd-meta { text-align: right; flex-shrink: 0; }
+.wd-date { font-size: 10px; color: var(--muted); }
+.wd-fee  { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* DELETE BUTTON */
+.wd-delete-row {
+  padding: 0 16px 13px;
+  display: flex; justify-content: flex-end;
+}
+.delete-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 50px;
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1.5px solid #f5c6c6;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+}
+.delete-btn:hover {
+  background: var(--danger); color: white;
+  border-color: var(--danger);
+  transform: scale(1.03);
+}
+.delete-btn:disabled {
+  opacity: .5; cursor: not-allowed; transform: none;
+}
+
+/* EMPTY STATE */
+.empty-state {
+  width: 100%; max-width: 460px;
+  text-align: center; padding: 48px 20px;
+  background: var(--card); border-radius: 20px;
+  border: 1.5px dashed var(--border);
+  position: relative; z-index: 1;
+  animation: slideUp .5s .15s cubic-bezier(.22,1,.36,1) both;
+}
+.empty-icon  { font-size: 48px; margin-bottom: 12px; }
+.empty-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+.empty-sub   { font-size: 13px; color: var(--muted); }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(7,26,15,.55); backdrop-filter: blur(4px);
+  z-index: 8888; display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--card); border-radius: 20px;
+  padding: 28px 24px; max-width: 360px; width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  transform: scale(.92) translateY(12px);
+  transition: transform .3s cubic-bezier(.22,1,.36,1);
+}
+.modal-overlay.show .modal { transform: scale(1) translateY(0); }
+.modal-icon { font-size: 40px; text-align: center; margin-bottom: 12px; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 800; color: var(--dark); text-align: center; margin-bottom: 8px; }
+.modal-sub { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 22px; line-height: 1.5; }
+.modal-amount { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 800; color: var(--danger); text-align: center; margin-bottom: 22px; }
+.modal-btns { display: flex; gap: 10px; }
+.modal-cancel {
+  flex: 1; padding: 12px; border-radius: 12px;
+  border: 1.5px solid var(--border); background: var(--bg);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; font-weight: 700; color: var(--muted);
+  cursor: pointer; transition: all .2s;
+}
+.modal-cancel:hover { border-color: var(--muted); color: var(--dark); }
+.modal-confirm {
+  flex: 1; padding: 12px; border-radius: 12px;
+  border: none; background: var(--danger);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; font-weight: 700; color: white;
+  cursor: pointer; transition: all .2s;
+}
+.modal-confirm:hover { background: #a93226; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 26px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--g1); color: white;
+  padding: 12px 24px; border-radius: 50px;
+  font-size: 12px; font-weight: 600;
+  box-shadow: 0 8px 28px rgba(0,0,0,.18);
+  transition: transform .35s cubic-bezier(.22,1,.36,1);
+  z-index: 9999; white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Chargement de vos retraits…</div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-ring">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 3C8.5 3 6 5 5 7.5C4 10 4.5 12.5 6 14.5C7 16 8.5 17 8.5 19H15.5C15.5 17 17 16 18 14.5C19.5 12.5 20 10 19 7.5C18 5 15.5 3 12 3Z" fill="#e2b04a"/>
+      <rect x="9" y="19" width="6" height="2" rx="1" fill="#e2b04a"/>
+      <rect x="10" y="21" width="4" height="1.5" rx=".75" fill="#c8932a"/>
+      <line x1="12" y1="8" x2="12" y2="15" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="9.5" y1="10.5" x2="12" y2="8" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="14.5" y1="11.5" x2="12" y2="9" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="brand">AGRI<span>Tech</span></div>
+  <div class="tagline">Supprimer une demande de retrait</div>
+</div>
+
+<!-- WARNING BANNER -->
+<div class="warn-banner">
+  <div class="warn-icon">⚠️</div>
+  <div class="warn-text">La suppression est irréversible. Seuls les retraits <strong>en cours</strong> ou <strong>refusés</strong> peuvent être supprimés.</div>
+</div>
+
+<!-- SECTION HEADER -->
+<div class="section-header">
+  <div class="section-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--danger)"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+    Mes retraits
+    <span class="count-pill" id="countPill">0</span>
+  </div>
+</div>
+
+<!-- LIST -->
+<div class="withdraw-list" id="withdrawList"></div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-icon">🗑️</div>
+    <div class="modal-title">Confirmer la suppression</div>
+    <div class="modal-sub">Êtes-vous sûr de vouloir supprimer ce retrait ? Cette action est <strong>irréversible</strong>.</div>
+    <div class="modal-amount" id="modalAmount"></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" id="modalCancel">Annuler</button>
+      <button class="modal-confirm" id="modalConfirm">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp }               from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getAnalytics }                from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDaFEepJKO8TbePfgnYlX0N3-CcaV75fy4",
+  authDomain: "agri-5af15.firebaseapp.com",
+  databaseURL: "https://agri-5af15-default-rtdb.firebaseio.com",
+  projectId: "agri-5af15",
+  storageBucket: "agri-5af15.firebasestorage.app",
+  messagingSenderId: "1010902928190",
+  appId: "1:1010902928190:web:57d2555d69e2c023057a6f",
+  measurementId: "G-XYB13DQZSP"
+};
+
+const app  = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+
+/* ── UTILS ── */
+const fmt = (n) => Math.round(n).toLocaleString('fr-FR') + ' FCFA';
+const esc = (s) => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const initials = (n) => String(n||'').trim().split(' ').slice(0,2).map(w=>w[0]?.toUpperCase()||'').join('');
+const formatDate = (ts) => {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' })
+    + ' · ' + d.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+};
+
+const OP_GRAD = {
+  MTN      : 'linear-gradient(135deg,#ffd600,#ff9800)',
+  Moov     : 'linear-gradient(135deg,#1565c0,#42a5f5)',
+  Orange   : 'linear-gradient(135deg,#e65100,#ff8f00)',
+  Wave     : 'linear-gradient(135deg,#283593,#5c6bc0)',
+  'T-Money': 'linear-gradient(135deg,#00695c,#26a69a)'
+};
+
+const STATUS_LABEL = {
+  pending : '⏳ En cours',
+  success : '✅ Validé',
+  rejected: '❌ Refusé'
+};
+
+/* ── TOAST ── */
+const showToast = (msg, success = true) => {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = success ? 'var(--g1)' : 'var(--danger)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+};
+
+/* ── MODAL ── */
+let pendingDeleteId  = null;
+let pendingDeleteRef = null;
+
+const openModal = (id, amount, dbRef) => {
+  pendingDeleteId  = id;
+  pendingDeleteRef = dbRef;
+  document.getElementById('modalAmount').textContent = fmt(amount);
+  document.getElementById('modalOverlay').classList.add('show');
+};
+const closeModal = () => {
+  document.getElementById('modalOverlay').classList.remove('show');
+  pendingDeleteId  = null;
+  pendingDeleteRef = null;
+};
+
+document.getElementById('modalCancel').onclick  = closeModal;
+document.getElementById('modalOverlay').onclick = (e) => { if (e.target === e.currentTarget) closeModal(); };
+
+document.getElementById('modalConfirm').onclick = async () => {
+  if (!pendingDeleteRef) return;
+  const btn = document.getElementById('modalConfirm');
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    await remove(pendingDeleteRef);
+    closeModal();
+    showToast('✅ Retrait supprimé avec succès');
+  } catch (err) {
+    closeModal();
+    showToast('❌ Erreur : ' + err.message, false);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Supprimer';
+  }
+};
+
+/* ── RENDER ── */
+const render = (list) => {
+  const container = document.getElementById('withdrawList');
+  document.getElementById('countPill').textContent = list.length;
+
+  if (!list.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🗑️</div>
+        <div class="empty-title">Aucun retrait trouvé</div>
+        <div class="empty-sub">Vous n'avez encore aucune demande de retrait à supprimer.</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = list.map((w, idx) => {
+    const st  = w.status || 'pending';
+    const acc = w.account || {};
+    const fee = w.fee || 0;
+    const net = w.net || (w.amount - fee);
+    const canDelete = true;
+    return `
+    <div class="wd-card status-${st}" data-id="${w.id}" style="animation-delay:${idx * 0.06}s">
+      <div class="wd-top">
+        <div>
+          <div class="wd-amount">${fmt(w.amount)}</div>
+          <div class="wd-net">Vous recevrez : <strong>${fmt(net)}</strong></div>
+        </div>
+        <div class="status-badge ${st}">
+          <span class="status-dot ${st}"></span>
+          ${STATUS_LABEL[st] || st}
+        </div>
+      </div>
+      <div class="wd-divider"></div>
+      <div class="wd-bottom">
+        <div class="wd-account">
+          <div class="wd-avatar" style="background:${OP_GRAD[acc.operator]||'#555'}">${initials(acc.owner||'?')}</div>
+          <div>
+            <div class="wd-acc-name">${esc(acc.owner || '—')}</div>
+            <div class="wd-acc-num">
+              ${acc.number ? esc(acc.number) : '—'}
+              ${acc.operator ? `<span class="op-pill-sm" style="background:${OP_GRAD[acc.operator]||'#555'}">${esc(acc.operator)}</span>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="wd-meta">
+          <div class="wd-date">${formatDate(w.createdAt)}</div>
+          <div class="wd-fee">Frais : ${fmt(fee)}</div>
+        </div>
+      </div>
+      <div class="wd-divider"></div>
+      <div class="wd-delete-row">
+        <button class="delete-btn" data-id="${w.id}" data-amount="${w.amount}" ${canDelete ? '' : 'disabled title="Impossible de supprimer un retrait validé"'}>
+          🗑 ${canDelete ? 'Supprimer' : 'Non supprimable'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Attach delete events
+  document.querySelectorAll('.delete-btn:not([disabled])').forEach(btn => {
+    btn.onclick = (e) => {
+      const id     = btn.dataset.id;
+      const amount = parseFloat(btn.dataset.amount);
+      const user   = auth.currentUser;
+      if (!user) { showToast('❌ Utilisateur non connecté', false); return; }
+      openModal(id, amount, ref(db, `withdrawals/${user.uid}/${id}`));
+    };
+  });
+};
+
+/* ── AUTH ── */
+onAuthStateChanged(auth, (user) => {
+  if (!user) { window.location.href = 'index.html'; return; }
+
+  onValue(ref(db, `withdrawals/${user.uid}`), (snap) => {
+    let list = [];
+    if (snap.exists()) {
+      snap.forEach(s => {
+        const val = s.val();
+        if (val) list.push({ id: s.key, ...val });
+      });
+      list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    }
+    render(list);
+
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.classList.add('hidden');
+    setTimeout(() => overlay.style.display = 'none', 400);
+  });
+});
+</script>
+</body>
+</html>

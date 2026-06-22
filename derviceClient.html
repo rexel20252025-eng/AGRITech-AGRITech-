@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGRITech – Service Client</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --green: #1a5c35;
+  --green2: #2d8a52;
+  --lime: #3db864;
+  --lime-light: #e8f8ed;
+  --gold: #c9a84c;
+  --dark: #0d2b18;
+  --text: #1e3d29;
+  --text-mid: #4a7a5e;
+  --text-light: #8ab09a;
+  --border: rgba(45,138,82,0.15);
+}
+body {
+  font-family: 'Outfit', sans-serif;
+  background: #ffffff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: var(--text);
+}
+/* Subtle background */
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  animation: drift 14s ease-in-out infinite alternate;
+}
+.orb1 { width: 700px; height: 700px; background: radial-gradient(circle, rgba(61,184,100,0.1), transparent 70%); top: -300px; left: -200px; }
+.orb2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(26,92,53,0.07), transparent 70%); bottom: -200px; right: -150px; animation-delay: -5s; }
+.orb3 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(201,168,76,0.06), transparent 70%); top: 35%; left: 50%; animation-delay: -9s; }
+@keyframes drift {
+  from { transform: translate(0,0); }
+  to   { transform: translate(25px, 35px); }
+}
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(61,184,100,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(61,184,100,0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+/* Floating leaves */
+.leaf-float {
+  position: absolute;
+  animation: floatLeaf linear infinite;
+  pointer-events: none;
+  opacity: 0;
+}
+@keyframes floatLeaf {
+  from { transform: translateY(105vh) rotate(0deg); opacity: 0; }
+  8%   { opacity: 0.12; }
+  92%  { opacity: 0.12; }
+  to   { transform: translateY(-5vh) rotate(320deg); opacity: 0; }
+}
+/* ─── WRAPPER ─── */
+.wrapper {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 70px 24px 80px;
+}
+/* ─── HEADER ─── */
+header { text-align: center; margin-bottom: 64px; }
+.logo-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--lime-light);
+  border: 1px solid rgba(61,184,100,0.3);
+  padding: 10px 22px;
+  border-radius: 100px;
+  margin-bottom: 32px;
+  animation: fadeDown 0.8s ease both;
+}
+.logo-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--lime), var(--green));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.logo-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--green);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(50px, 10vw, 88px);
+  font-weight: 800;
+  line-height: 0.95;
+  color: var(--dark);
+  margin-bottom: 20px;
+  animation: fadeDown 0.8s 0.1s ease both;
+}
+h1 .accent {
+  background: linear-gradient(135deg, var(--lime), var(--green2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.tagline {
+  font-size: 17px; font-weight: 300;
+  color: var(--text-mid);
+  max-width: 360px; margin: 0 auto; line-height: 1.7;
+  animation: fadeDown 0.8s 0.2s ease both;
+}
+/* ─── STATUS PILL ─── */
+.status-pill {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--lime-light);
+  border: 1px solid rgba(61,184,100,0.35);
+  border-radius: 100px;
+  padding: 11px 22px;
+  margin-bottom: 56px;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+.dot-live {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--lime);
+  animation: livePulse 2s infinite;
+}
+@keyframes livePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(61,184,100,0.7); }
+  70%  { box-shadow: 0 0 0 8px rgba(61,184,100,0); }
+  100% { box-shadow: 0 0 0 0 rgba(61,184,100,0); }
+}
+.status-pill span { font-size: 13px; font-weight: 500; color: var(--text-mid); }
+.status-pill strong { color: var(--lime); }
+/* ─── HOURS BANNER ─── */
+.hours-banner {
+  position: relative;
+  background: linear-gradient(135deg, var(--green) 0%, #0f3d22 100%);
+  border-radius: 28px;
+  padding: 48px 52px;
+  margin-bottom: 22px;
+  display: flex; align-items: center; justify-content: space-between; gap: 32px;
+  overflow: hidden;
+  animation: fadeUp 0.8s 0.4s ease both;
+  box-shadow: 0 20px 60px rgba(26,92,53,0.2);
+}
+.hours-banner::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(61,184,100,0.5), transparent);
+}
+.hours-banner::after {
+  content: '24/24';
+  position: absolute; right: -20px; bottom: -50px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 190px; font-weight: 800;
+  color: rgba(255,255,255,0.04); pointer-events: none; line-height: 1;
+}
+.hours-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.7); font-size: 11px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 5px 12px; border-radius: 20px; margin-bottom: 14px;
+}
+.hours-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 38px; font-weight: 700; color: #ffffff; line-height: 1.1; margin-bottom: 10px;
+}
+.hours-desc {
+  font-size: 15px; font-weight: 300;
+  color: rgba(255,255,255,0.55); line-height: 1.6; max-width: 340px;
+}
+.hours-clock {
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px; padding: 28px 38px; text-align: center;
+}
+.clock-number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 62px; font-weight: 800;
+  color: #ffffff; line-height: 1;
+}
+.clock-slash { color: rgba(61,184,100,0.9); }
+.clock-label {
+  font-size: 11px; font-weight: 500;
+  color: rgba(255,255,255,0.45); letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;
+}
+@media (max-width: 620px) {
+  .hours-banner { flex-direction: column; padding: 36px 28px; text-align: center; }
+  .hours-desc { max-width: 100%; }
+}
+/* ─── CARDS ─── */
+.cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  animation: fadeUp 0.8s 0.52s ease both;
+}
+@media (max-width: 580px) { .cards { grid-template-columns: 1fr; } }
+.card {
+  background: #ffffff;
+  border: 1.5px solid var(--border);
+  border-radius: 24px; padding: 36px 32px;
+  position: relative; overflow: hidden;
+  transition: transform 0.3s cubic-bezier(.22,.8,.25,1), border-color 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 20px rgba(26,92,53,0.06);
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  opacity: 0; transition: opacity 0.3s;
+}
+.card-tg::before { background: linear-gradient(90deg, #0088cc, #00aaff); }
+.card-grp::before { background: linear-gradient(90deg, var(--lime), var(--green)); }
+.card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(61,184,100,0.3);
+  box-shadow: 0 20px 50px rgba(26,92,53,0.12);
+}
+.card:hover::before { opacity: 1; }
+.card-glow {
+  position: absolute; width: 220px; height: 220px; border-radius: 50%;
+  filter: blur(70px); top: -80px; right: -60px; opacity: 0.08;
+  transition: opacity 0.3s; pointer-events: none;
+}
+.glow-blue { background: #0088cc; }
+.glow-green { background: var(--lime); }
+.card:hover .card-glow { opacity: 0.18; }
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 22px; }
+.card-icon-wrap {
+  width: 54px; height: 54px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center; font-size: 24px;
+}
+.icon-tg { background: rgba(0,136,204,0.08); border: 1.5px solid rgba(0,136,204,0.18); }
+.icon-grp { background: var(--lime-light); border: 1.5px solid rgba(61,184,100,0.25); }
+.card-arrow {
+  width: 32px; height: 32px;
+  background: #f5f5f5; border: 1px solid #e8e8e8;
+  border-radius: 9px; display: flex; align-items: center; justify-content: center;
+  color: #bbb; font-size: 14px; transition: all 0.3s;
+}
+.card:hover .card-arrow { background: var(--lime-light); border-color: rgba(61,184,100,0.3); color: var(--lime); }
+.card h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; font-weight: 700; color: var(--dark); margin-bottom: 9px; line-height: 1.1;
+}
+.card p {
+  font-size: 14px; font-weight: 300; color: var(--text-mid); line-height: 1.65; margin-bottom: 24px;
+}
+.badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 26px; }
+.badge { font-size: 11px; font-weight: 500; letter-spacing: 0.3px; padding: 5px 11px; border-radius: 20px; }
+.badge-blue { background: rgba(0,136,204,0.07); border: 1px solid rgba(0,136,204,0.18); color: #0077b3; }
+.badge-green { background: var(--lime-light); border: 1px solid rgba(61,184,100,0.25); color: var(--green2); }
+/* ─── BUTTONS ─── */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 14px;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+  text-decoration: none; border: none; cursor: pointer;
+  transition: all 0.28s cubic-bezier(.22,.8,.25,1);
+}
+.btn-tg {
+  background: linear-gradient(135deg, #0088cc, #0070aa);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0,136,204,0.25);
+}
+.btn-tg:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(0,136,204,0.38); }
+.btn-grp {
+  background: linear-gradient(135deg, var(--lime), #28a050);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(61,184,100,0.25);
+}
+.btn-grp:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(61,184,100,0.38); }
+.tg-icon { width: 19px; height: 19px; flex-shrink: 0; }
+/* ─── FOOTER ─── */
+footer {
+  text-align: center; margin-top: 52px;
+  animation: fadeUp 0.8s 0.65s ease both;
+}
+.footer-line {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 22px; color: #ddd;
+}
+.footer-line::before, .footer-line::after { content: ''; flex: 1; height: 1px; background: #ebebeb; }
+.footer-logo { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.footer-logo-icon {
+  width: 26px; height: 26px;
+  background: linear-gradient(135deg, var(--lime), var(--green));
+  border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px;
+}
+.footer-logo-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px; font-weight: 700; color: var(--text-light); letter-spacing: 2px;
+}
+footer p { font-size: 12px; color: var(--text-light); }
+/* ─── ANIMATIONS ─── */
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp   { from { opacity: 0; transform: translateY(18px);  } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="bg-grid"></div>
+  <div class="bg-orb orb1"></div>
+  <div class="bg-orb orb2"></div>
+  <div class="bg-orb orb3"></div>
+  <div class="leaf-float" style="left:8%;font-size:22px;animation-duration:18s;animation-delay:0s;">🌿</div>
+  <div class="leaf-float" style="left:27%;font-size:17px;animation-duration:24s;animation-delay:-6s;">🌱</div>
+  <div class="leaf-float" style="left:53%;font-size:20px;animation-duration:19s;animation-delay:-11s;">🍃</div>
+  <div class="leaf-float" style="left:76%;font-size:19px;animation-duration:21s;animation-delay:-4s;">🌿</div>
+  <div class="leaf-float" style="left:91%;font-size:15px;animation-duration:26s;animation-delay:-15s;">🌱</div>
+</div>
+
+<div class="wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="logo-row">
+      <div class="logo-icon">🌾</div>
+      <div class="logo-text">AGRITech</div>
+    </div>
+    <h1>Service<br><span class="accent">Client</span></h1>
+    <p class="tagline">Une équipe dédiée à votre satisfaction, disponible à tout moment.</p>
+  </header>
+
+  <!-- Status -->
+  <div style="text-align:center;">
+    <div class="status-pill">
+      <div class="dot-live"></div>
+      <span>Équipe en ligne · Disponible <strong>maintenant</strong></span>
+    </div>
+  </div>
+
+  <!-- Hours banner -->
+  <div class="hours-banner">
+    <div>
+      <div class="hours-eyebrow">⏰ Disponibilité</div>
+      <div class="hours-title">Toujours là<br>pour vous</div>
+      <div class="hours-desc">Notre support ne s'arrête jamais. Jours fériés, weekends, nuits — nous sommes présents à chaque instant.</div>
+    </div>
+    <div class="hours-clock">
+      <div class="clock-number">24<span class="clock-slash">/</span>24</div>
+      <div class="clock-label">7 jours / 7</div>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div class="cards">
+
+    <div class="card card-tg">
+      <div class="card-glow glow-blue"></div>
+      <div class="card-top">
+        <div class="card-icon-wrap icon-tg">✈️</div>
+        <div class="card-arrow">↗</div>
+      </div>
+      <h2>Support Telegram</h2>
+      <p>Contactez notre agent directement sur Telegram pour une assistance personnalisée, rapide et efficace.</p>
+      <div class="badge-row">
+        <span class="badge badge-blue">Réponse rapide</span>
+        <span class="badge badge-blue">Agent dédié</span>
+        <span class="badge badge-blue">24/24</span>
+      </div>
+      <a href="https://t.me/AGRITech23" target="_blank" class="btn btn-tg">
+        <svg class="tg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.88 13.67l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.268.889z"/></svg>
+        Contacter le Support
+      </a>
+    </div>
+
+    <div class="card card-grp">
+      <div class="card-glow glow-green"></div>
+      <div class="card-top">
+        <div class="card-icon-wrap icon-grp">👥</div>
+        <div class="card-arrow">↗</div>
+      </div>
+      <h2>Groupe AGRITech</h2>
+      <p>Rejoignez notre communauté officielle sur Telegram et restez informé de toutes les actualités en temps réel.</p>
+      <div class="badge-row">
+        <span class="badge badge-green">Communauté</span>
+        <span class="badge badge-green">Annonces</span>
+        <span class="badge badge-green">Entraide</span>
+      </div>
+      <a href="https://t.me/+HXxeFEMN2x9jMDA0" target="_blank" class="btn btn-grp">
+        <svg class="tg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.88 13.67l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.268.889z"/></svg>
+        Rejoindre le Groupe
+      </a>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-line">❖</div>
+    <div class="footer-logo">
+      <div class="footer-logo-icon">🌾</div>
+      <div class="footer-logo-name">AGRITECH</div>
+    </div>
+    <p>© 2025 AGRITech · Service client disponible 24h/24, 7j/7</p>
+  </footer>
+
+</div>
+</body>
+</html>

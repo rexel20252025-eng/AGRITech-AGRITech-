@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Gestion des Retraits</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 { color: #667eea; font-size: 24px; }
+
+        .back-btn {
+            background: #667eea; color: white;
+            border: none; padding: 10px 20px;
+            border-radius: 5px; cursor: pointer; font-size: 14px;
+        }
+        .back-btn:hover { background: #5568d3; }
+
+        .card {
+            background: white; padding: 20px;
+            border-radius: 10px; margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 15px;
+            padding-bottom: 15px; border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-title { font-size: 18px; font-weight: 600; color: #333; }
+
+        .row {
+            display: flex; justify-content: space-between;
+            padding: 10px 0; border-bottom: 1px solid #f0f0f0;
+        }
+        .row:last-child { border-bottom: none; }
+
+        .label { color: #666; font-size: 14px; }
+        .value { color: #333; font-weight: 500; font-size: 14px; }
+
+        .badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .badge-success  { background: #d4edda; color: #155724; }
+        .badge-pending  { background: #fff3cd; color: #856404; }
+        .badge-rejected { background: #f8d7da; color: #721c24; }
+
+        .edit-section {
+            margin-top: 15px; padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label {
+            display: block; margin-bottom: 5px;
+            color: #666; font-size: 14px; font-weight: 500;
+        }
+        .form-group input {
+            width: 100%; padding: 10px;
+            border: 1px solid #ddd; border-radius: 5px; font-size: 14px;
+        }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 5px;
+            cursor: pointer; font-size: 14px; font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-primary  { background: #667eea; color: white; flex: 1; }
+        .btn-primary:hover  { background: #5568d3; }
+        .btn-secondary { background: #6c757d; color: white; flex: 1; }
+        .btn-secondary:hover { background: #5a6268; }
+
+        .no-history {
+            text-align: center; padding: 40px; color: #666;
+            background: white; border-radius: 10px;
+        }
+
+        .success-message {
+            background: #d4edda; color: #155724;
+            padding: 15px; border-radius: 5px;
+            margin-bottom: 15px; display: none;
+        }
+
+        .edit-mode { background: #f8f9fa; padding: 15px; border-radius: 5px; }
+
+        .acc-info {
+            display: flex; align-items: center; gap: 10px; margin-top: 4px;
+        }
+        .op-badge {
+            padding: 2px 8px; border-radius: 50px;
+            font-size: 11px; font-weight: 700;
+            color: white; background: #555;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🔧 Administration — Gestion des Retraits</h1>
+        <button class="back-btn" onclick="history.back()">← Retour</button>
+    </div>
+
+    <div class="success-message" id="success-message">✓ Date et heure modifiées avec succès !</div>
+
+    <div id="history-container"></div>
+</div>
+
+<script type="module">
+import { initializeApp }        from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getAnalytics }         from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDaFEepJKO8TbePfgnYlX0N3-CcaV75fy4",
+    authDomain: "agri-5af15.firebaseapp.com",
+    databaseURL: "https://agri-5af15-default-rtdb.firebaseio.com",
+    projectId: "agri-5af15",
+    storageBucket: "agri-5af15.firebasestorage.app",
+    messagingSenderId: "1010902928190",
+    appId: "1:1010902928190:web:57d2555d69e2c023057a6f",
+    measurementId: "G-XYB13DQZSP"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+
+let currentUserId    = null;
+let editingStates    = {};
+let withdrawalData   = {};   // clé → objet retrait
+
+// ── Helpers ────────────────────────────────────────────────────────────
+const fmt = (n) => Math.round(n || 0).toLocaleString('fr-FR') + ' FCFA';
+const esc = (s) => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function formatDate(ts) {
+    if (!ts) return 'Date inconnue';
+    return new Date(Number(ts)).toLocaleString('fr-FR', {
+        day:'2-digit', month:'2-digit', year:'numeric',
+        hour:'2-digit', minute:'2-digit'
+    });
+}
+
+function formatDateForInput(ts) {
+    if (!ts) return '';
+    const d = new Date(Number(ts));
+    const pad = (n) => String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function statusBadge(status) {
+    const s = (status || '').toLowerCase();
+    if (s === 'success')  return `<span class="badge badge-success">✅ Validé</span>`;
+    if (s === 'pending')  return `<span class="badge badge-pending">⏳ En cours</span>`;
+    if (s === 'rejected') return `<span class="badge badge-rejected">❌ Refusé</span>`;
+    return `<span class="badge badge-pending">${esc(status)}</span>`;
+}
+
+// ── Mise à jour date dans withdrawals/${uid}/${key} ────────────────────
+async function updateWithdrawalDate(key, newTimestamp) {
+    try {
+        const updates = {};
+        updates[`withdrawals/${currentUserId}/${key}/createdAt`] = newTimestamp;
+        await update(ref(db), updates);
+        showSuccess();
+        editingStates[key] = false;
+        renderAll();
+    } catch (err) {
+        alert('Erreur : ' + err.message);
+    }
+}
+
+function showSuccess() {
+    const el = document.getElementById('success-message');
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 3000);
+}
+
+// ── Card HTML ──────────────────────────────────────────────────────────
+function buildCard(key, w) {
+    const acc  = w.account || {};
+    const fee  = w.fee  || 0;
+    const net  = w.net  || (w.amount - fee);
+    const ts   = w.createdAt || Date.now();
+    const isEditing = !!editingStates[key];
+
+    const editForm = isEditing ? `
+        <div class="edit-mode">
+            <div class="form-group">
+                <label for="date-${key}">📅 Modifier la date et l'heure :</label>
+                <input type="datetime-local" id="date-${key}" value="${formatDateForInput(ts)}">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary"   onclick="saveDate('${key}')">💾 Enregistrer</button>
+                <button class="btn btn-secondary" onclick="cancelEdit('${key}')">✖ Annuler</button>
+            </div>
+        </div>
+    ` : `
+        <button class="btn btn-primary" onclick="toggleEdit('${key}')" style="width:100%">
+            ✏️ Modifier la date
+        </button>
+    `;
+
+    return `
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Retrait #${key.substring(0,8)}</div>
+            ${statusBadge(w.status)}
+        </div>
+        <div class="row"><span class="label">Montant retiré :</span><span class="value">− ${fmt(w.amount)}</span></div>
+        <div class="row"><span class="label">Frais :</span><span class="value">− ${fmt(fee)}</span></div>
+        <div class="row"><span class="label">Montant reçu :</span><span class="value">${fmt(net)}</span></div>
+        <div class="row">
+            <span class="label">Compte :</span>
+            <span class="value">
+                ${esc(acc.owner || '—')}
+                ${acc.number   ? ' · ' + esc(acc.number) : ''}
+                ${acc.operator ? `<span class="op-badge">${esc(acc.operator)}</span>` : ''}
+            </span>
+        </div>
+        <div class="row"><span class="label">Date :</span><span class="value">${formatDate(ts)}</span></div>
+        <div class="edit-section">${editForm}</div>
+    </div>`;
+}
+
+// ── Rendu complet ──────────────────────────────────────────────────────
+function renderAll() {
+    const container = document.getElementById('history-container');
+    const entries   = Object.entries(withdrawalData);
+
+    if (!entries.length) {
+        container.innerHTML = '<div class="no-history">Aucun retrait disponible.</div>';
+        return;
+    }
+
+    entries
+        .sort(([,a],[,b]) => (b.createdAt || 0) - (a.createdAt || 0))
+        .forEach(([key, w]) => {
+            container.innerHTML += buildCard(key, w);
+        });
+}
+
+// ── Fonctions globales (appelées depuis onclick HTML) ──────────────────
+window.toggleEdit = (key) => {
+    editingStates[key] = !editingStates[key];
+    document.getElementById('history-container').innerHTML = '';
+    renderAll();
+};
+window.cancelEdit = (key) => {
+    editingStates[key] = false;
+    document.getElementById('history-container').innerHTML = '';
+    renderAll();
+};
+window.saveDate = async (key) => {
+    const input = document.getElementById(`date-${key}`);
+    const ts    = new Date(input.value).getTime();
+    if (isNaN(ts)) { alert('Date invalide'); return; }
+    await updateWithdrawalDate(key, ts);
+};
+
+// ── Auth + listener temps réel ─────────────────────────────────────────
+onAuthStateChanged(auth, (user) => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUserId = user.uid;
+
+    // 🔑 Même chemin que la page "Mes Retraits" : withdrawals/${uid}
+    onValue(ref(db, `withdrawals/${user.uid}`), (snap) => {
+        withdrawalData = {};
+        if (snap.exists()) {
+            snap.forEach(child => {
+                if (child.val()) withdrawalData[child.key] = child.val();
+            });
+        }
+        document.getElementById('history-container').innerHTML = '';
+        renderAll();
+    });
+});
+</script>
+</body>
+</html>

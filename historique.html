@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGRITech — Historique</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --green:  #1a7a3c;
+  --green2: #2db85e;
+  --gold:   #c8961e;
+  --gold2:  #f0c040;
+  --bg:     #f2f7f4;
+  --white:  #ffffff;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 0 0 40px;
+  color: #1a2e20;
+}
+
+/* ── HEADER ─────────────────────────── */
+.top-bar {
+  background: linear-gradient(135deg, #0d5c2a 0%, #1a7a3c 60%, #22a050 100%);
+  padding: 20px 24px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(13,92,42,.3);
+}
+
+.brand-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 3px;
+}
+.brand-name span { color: #6fe89a; }
+.brand-sub { font-size: 9px; color: rgba(255,255,255,.4); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 10px;
+  padding: 8px 14px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .2s;
+}
+.back-btn:hover { background: rgba(255,255,255,.2); }
+
+/* ── PAGE TITLE ──────────────────────── */
+.page-header {
+  max-width: 560px;
+  margin: 28px auto 0;
+  padding: 0 16px;
+}
+
+.page-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--green);
+  margin-bottom: 4px;
+}
+
+.page-sub {
+  font-size: 13px;
+  color: rgba(0,0,0,.4);
+}
+
+/* ── STATS BAND ──────────────────────── */
+.stats-band {
+  max-width: 560px;
+  margin: 18px auto 0;
+  padding: 0 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stat-card {
+  background: #fff;
+  border: 1px solid rgba(26,122,60,.12);
+  border-radius: 14px;
+  padding: 14px 16px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(26,122,60,.07);
+}
+
+.stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--green);
+  display: block;
+}
+
+.stat-lbl {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(0,0,0,.3);
+  margin-top: 3px;
+  display: block;
+}
+
+/* ── FILTER BAR ──────────────────────── */
+.filter-bar {
+  max-width: 560px;
+  margin: 18px auto 0;
+  padding: 0 16px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+
+.filter-btn {
+  flex-shrink: 0;
+  background: #fff;
+  border: 1.5px solid rgba(0,0,0,.08);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(0,0,0,.4);
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.filter-btn:hover { border-color: var(--green); color: var(--green); }
+.filter-btn.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+
+/* ── LIST ────────────────────────────── */
+.list-wrap {
+  max-width: 560px;
+  margin: 16px auto 0;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── HISTORY ITEM ────────────────────── */
+.history-item {
+  background: #fff;
+  border: 1px solid rgba(26,122,60,.1);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 2px 10px rgba(26,122,60,.06);
+  animation: fadeUp .4s ease both;
+  transition: box-shadow .2s, transform .2s;
+}
+.history-item:hover {
+  box-shadow: 0 6px 20px rgba(26,122,60,.12);
+  transform: translateY(-1px);
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* Icône opérateur */
+.op-badge {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+
+/* Infos */
+.history-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.info-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(0,0,0,.28);
+  margin-bottom: 2px;
+}
+.info-label i { margin-right: 3px; }
+
+.info-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a2e20;
+}
+
+.info-value.amount {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  color: var(--green);
+}
+
+.info-date {
+  font-size: 11px;
+  color: rgba(0,0,0,.3);
+  margin-top: 5px;
+}
+
+/* ── STATUS BADGE ────────────────────── */
+.status {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+.status-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid rgba(46,125,50,.2);
+}
+
+.status-failed {
+  background: #ffeaed;
+  color: #c62828;
+  border: 1px solid rgba(198,40,40,.2);
+}
+
+.status-pending {
+  background: #fffbea;
+  color: #9a7010;
+  border: 1px solid rgba(200,150,30,.25);
+}
+
+/* ── EMPTY STATE ─────────────────────── */
+.no-records {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(0,0,0,.3);
+}
+.no-records-icon { font-size: 48px; margin-bottom: 14px; opacity: .4; }
+.no-records-text { font-size: 14px; font-weight: 500; }
+
+/* ── LOADING SKELETON ────────────────── */
+.skeleton {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px 18px;
+  border: 1px solid rgba(0,0,0,.06);
+  display: flex; align-items: center; gap: 14px;
+  animation: fadeUp .4s ease both;
+}
+.sk-circle { width:44px; height:44px; border-radius:50%; background:#f0f0f0; flex-shrink:0; animation: pulse 1.4s ease-in-out infinite; }
+.sk-lines { flex:1; display:flex; flex-direction:column; gap:8px; }
+.sk-line { height:11px; border-radius:6px; background:#f0f0f0; animation: pulse 1.4s ease-in-out infinite; }
+.sk-line.short { width: 55%; }
+.sk-line.shorter { width: 35%; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.45;} }
+
+/* ── NOTIFICATION ────────────────────── */
+#notification {
+  display: none;
+  position: fixed;
+  top: 20px; left: 50%; transform: translateX(-50%);
+  z-index: 9999;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-size: 13px; font-weight: 600; color: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+  text-align: center; max-width: 90vw;
+}
+</style>
+</head>
+<body>
+
+<!-- Notification -->
+<div id="notification"></div>
+
+<!-- ── TOP BAR ─────────────────────── -->
+<div class="top-bar">
+  <div>
+    <div class="brand-name">AGRI<span>Tech</span></div>
+    <div class="brand-sub">Historique de recharge</div>
+  </div>
+  <a href="agritech-recharge.html" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Retour
+  </a>
+</div>
+
+<!-- ── PAGE HEADER ────────────────── -->
+<div class="page-header">
+  <div class="page-title">Mes Transactions</div>
+  <div class="page-sub">Retrouvez toutes vos recharges effectuées</div>
+</div>
+
+<!-- ── STATS ──────────────────────── -->
+<div class="stats-band">
+  <div class="stat-card">
+    <span class="stat-num" id="statTotal">—</span>
+    <span class="stat-lbl">Total</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-num" id="statApprouves">—</span>
+    <span class="stat-lbl">Approuvés</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-num" id="statAttente">—</span>
+    <span class="stat-lbl">En attente</span>
+  </div>
+</div>
+
+<!-- ── FILTRES ─────────────────────── -->
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterItems('all', this)">Tous</button>
+  <button class="filter-btn" onclick="filterItems('success', this)">✅ Approuvés</button>
+  <button class="filter-btn" onclick="filterItems('pending', this)">⏳ En attente</button>
+  <button class="filter-btn" onclick="filterItems('failed', this)">❌ Rejetés</button>
+</div>
+
+<!-- ── LISTE ───────────────────────── -->
+<div class="list-wrap" id="historyList">
+  <!-- Skeletons de chargement -->
+  <div class="skeleton"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line"></div><div class="sk-line short"></div><div class="sk-line shorter"></div></div></div>
+  <div class="skeleton" style="animation-delay:.1s"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line"></div><div class="sk-line short"></div><div class="sk-line shorter"></div></div></div>
+  <div class="skeleton" style="animation-delay:.2s"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line"></div><div class="sk-line short"></div><div class="sk-line shorter"></div></div></div>
+</div>
+
+
+<!-- ════════════════════════════════════
+     SCRIPT FIREBASE — Historique
+     ════════════════════════════════════ -->
+<script type="module">
+import { initializeApp }           from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { getDatabase, ref, query, orderByChild, equalTo, onValue }
+       from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+
+/* ── Config Firebase ── */
+const firebaseConfig = {
+  apiKey:            "AIzaSyATz_ogu08DUoKSYKy6t2cHWdleUD-Fbrk",
+  authDomain:        "schweppes-15df3.firebaseapp.com",
+  databaseURL:       "https://schweppes-15df3-default-rtdb.firebaseio.com",
+  projectId:         "schweppes-15df3",
+  storageBucket:     "schweppes-15df3.firebasestorage.app",
+  messagingSenderId: "1011077098372",
+  appId:             "1:1011077098372:web:64f9ad3a8e93f68c070bd1"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+
+/* ── Couleurs par opérateur ── */
+const opColors = {
+  mtn:    'linear-gradient(135deg,#f5a623,#e07800)',
+  moov:   'linear-gradient(135deg,#0096c7,#023e8a)',
+  orange: 'linear-gradient(135deg,#ff6b00,#c1440e)',
+  wave:   'linear-gradient(135deg,#00b4d8,#005f73)',
+  tmoney: 'linear-gradient(135deg,#9b2dca,#4a0060)',
+};
+const opLabels = {
+  mtn:'MTN', moov:'MOV', orange:'ORG', wave:'WAV', tmoney:'T-M'
+};
+
+/* ── Utilitaires ── */
+function formatDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric'})
+       + ' ' +
+       d.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+}
+
+function statusInfo(status) {
+  if (status === 'success') return { cls:'status-success', label:'Approuvé' };
+  if (status === 'failed')  return { cls:'status-failed',  label:'Rejeté' };
+  return { cls:'status-pending', label:'En attente' };
+}
+
+function showNotification(msg, type='success') {
+  const n = document.getElementById('notification');
+  if (!n) return;
+  n.textContent = msg;
+  n.style.background = type === 'success' ? '#43a047' : '#d32f2f';
+  n.style.display = 'block';
+  clearTimeout(n._t);
+  n._t = setTimeout(() => n.style.display = 'none', 4000);
+}
+
+/* ── Données globales ── */
+let allTransactions = [];
+let currentFilter   = 'all';
+
+/* ── Filtre ── */
+window.filterItems = function(status, btn) {
+  currentFilter = status;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderList(allTransactions, status);
+};
+
+/* ── Rendu liste ── */
+function renderList(txs, filter = 'all') {
+  const list = document.getElementById('historyList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  const filtered = filter === 'all' ? txs : txs.filter(tx => tx.status === filter);
+
+  if (filtered.length === 0) {
+    list.innerHTML = `
+      <div class="no-records">
+        <div class="no-records-icon">📭</div>
+        <div class="no-records-text">Aucune transaction trouvée</div>
+      </div>`;
+    return;
+  }
+
+  filtered.forEach((tx, i) => {
+    const opKey   = (tx.operator || '').toLowerCase();
+    const opBg    = opColors[opKey]  || 'linear-gradient(135deg,#aaa,#888)';
+    const opLbl   = opLabels[opKey]  || (tx.operator || '?').substring(0,3).toUpperCase();
+    const { cls, label } = statusInfo(tx.status);
+
+    const div = document.createElement('div');
+    div.className   = 'history-item';
+    div.dataset.status = tx.status || 'pending';
+    div.style.animationDelay = (i * 0.06) + 's';
+
+    div.innerHTML = `
+      <div class="op-badge" style="background:${opBg};">${opLbl}</div>
+
+      <div class="history-info">
+        <div class="info-row">
+          <div class="info-group">
+            <span class="info-label"><i class="fa-solid fa-coins"></i> Montant</span>
+            <span class="info-value amount">${(tx.amount || 0).toLocaleString('fr-FR')} F</span>
+          </div>
+          <div class="info-group">
+            <span class="info-label"><i class="fa-solid fa-mobile-screen-button"></i> Numéro</span>
+            <span class="info-value">${tx.phone || tx.userPaymentNumber || '—'}</span>
+          </div>
+        </div>
+        <div class="info-date"><i class="fa-regular fa-clock"></i> ${formatDate(tx.date)}</div>
+      </div>
+
+      <div class="status ${cls}">${label}</div>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+/* ── Mise à jour des stats ── */
+function updateStats(txs) {
+  document.getElementById('statTotal').textContent    = txs.length;
+  document.getElementById('statApprouves').textContent = txs.filter(t => t.status === 'success').length;
+  document.getElementById('statAttente').textContent  = txs.filter(t => t.status === 'pending').length;
+}
+
+/* ── Auth + chargement ── */
+onAuthStateChanged(auth, user => {
+  const list = document.getElementById('historyList');
+  if (!list) return;
+
+  if (!user) {
+    list.innerHTML = `
+      <div class="no-records">
+        <div class="no-records-icon">🔒</div>
+        <div class="no-records-text">Veuillez vous connecter pour voir votre historique</div>
+      </div>`;
+    return;
+  }
+
+  const q = query(ref(db, 'transactions'), orderByChild('userId'), equalTo(user.uid));
+
+  onValue(q, snap => {
+    const data = snap.val();
+
+    if (!data) {
+      allTransactions = [];
+      updateStats([]);
+      renderList([], currentFilter);
+      return;
+    }
+
+    /* Convertir en tableau et trier du plus récent au plus ancien */
+    allTransactions = Object.values(data)
+      .filter(tx => tx.userId === user.uid)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    updateStats(allTransactions);
+    renderList(allTransactions, currentFilter);
+  }, error => {
+    console.error('Firebase error:', error);
+    showNotification('❌ Erreur de chargement', 'error');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificat Officiel — AGRITech</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400;1,700&family=Cinzel:wght@600;900&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#C9A84C;--gold2:#B8860B;--gold3:#8B6914;
+  --green:#1B5E20;--green2:#2E7D32;
+  --ink:#1a1a1a;--ink2:#333;--ink3:#555;
+  --bg:#ffffff;--bg2:#f8f9f8;--bg3:#f0f4f0;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  background:#fff;
+  min-height:100vh;
+  font-family:'Outfit',sans-serif;
+  color:var(--ink);
+}
+
+/* ── BARRE RETOUR ── */
+.back-bar{
+  width:100%;
+  background:#fff;
+  border-bottom:2px solid var(--green);
+  padding:12px 16px;
+  display:flex;
+  align-items:center;
+}
+.back-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--green);
+  color:#fff;
+  font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;
+  padding:8px 18px;border-radius:6px;
+  cursor:pointer;text-decoration:none;
+  transition:background .2s;
+}
+.back-btn:hover{background:var(--green2);}
+
+/* ── BANDEAU INFO ── */
+.info-band{
+  width:100%;
+  background:linear-gradient(90deg,var(--green),var(--green2));
+  padding:12px 16px;
+  display:flex;align-items:center;gap:12px;
+}
+.info-band-icon{font-size:22px;flex-shrink:0;}
+.info-band-title{
+  font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;
+  text-transform:uppercase;color:#F5D87A;margin-bottom:2px;
+}
+.info-band-desc{font-size:13px;color:rgba(255,255,255,.9);line-height:1.5;}
+.info-band-desc strong{color:#F5D87A;}
+
+/* ── EN-TÊTE DU CERTIFICAT ── */
+.hd{
+  width:100%;
+  background:linear-gradient(160deg,var(--green) 0%,#0d3310 50%,var(--green2) 100%);
+  padding:28px 16px 22px;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.hd::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--gold3),var(--gold),#F5D87A,var(--gold),var(--gold3));
+}
+.hd::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(-45deg,transparent 0,transparent 14px,rgba(255,255,255,.025) 14px,rgba(255,255,255,.025) 15px);
+}
+.logo-row{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:14px;}
+.emb{
+  width:52px;height:52px;border-radius:50%;font-size:24px;
+  background:conic-gradient(from 0deg,var(--gold3),var(--gold),#F5D87A,var(--gold),var(--gold3));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 3px rgba(255,255,255,.2),0 0 20px rgba(201,168,76,.8);
+  animation:pg 4s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes pg{0%,100%{box-shadow:0 0 0 3px rgba(255,255,255,.2),0 0 20px rgba(201,168,76,.8)}50%{box-shadow:0 0 0 3px rgba(255,255,255,.3),0 0 40px rgba(245,216,122,1)}}
+.brand{font-family:'Cinzel',serif;font-size:36px;font-weight:900;color:#F5D87A;letter-spacing:6px;line-height:1;text-shadow:0 2px 0 var(--gold3),0 0 30px rgba(245,216,122,.4);}
+.brand-sub{font-size:9px;font-weight:500;color:rgba(245,216,122,.6);letter-spacing:4px;text-transform:uppercase;margin-top:4px;}
+
+/* ── TITRE CERTIFICAT ── */
+.tb{
+  width:100%;
+  background:linear-gradient(90deg,var(--green),rgba(201,168,76,.15) 50%,var(--green));
+  border-top:2px solid rgba(201,168,76,.5);
+  border-bottom:2px solid rgba(201,168,76,.5);
+  padding:10px 16px;text-align:center;
+}
+.tc{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;font-style:italic;color:#F5D87A;letter-spacing:3px;text-transform:uppercase;}
+.tc span{color:#fff;}
+
+/* ── CORPS PRINCIPAL ── */
+.bd{width:100%;background:#fff;padding:20px 16px 16px;}
+
+/* section label */
+.sl{
+  font-family:'Cinzel',serif;font-size:8px;font-weight:600;
+  letter-spacing:4px;text-transform:uppercase;color:var(--gold3);
+  text-align:center;margin-bottom:10px;
+}
+
+/* divider */
+.dv{display:flex;align-items:center;gap:10px;margin:16px 0;}
+.dl{flex:1;height:1px;background:linear-gradient(90deg,var(--green),rgba(201,168,76,.5),var(--green));}
+.do{font-size:14px;color:var(--gold);}
+
+/* intro */
+.intro{
+  font-family:'Cormorant Garamond',serif;font-size:16px;line-height:1.85;
+  color:var(--ink2);text-align:justify;margin-bottom:18px;
+}
+.intro strong{color:var(--green);}
+.intro em{color:var(--gold3);font-style:italic;}
+
+/* how-it-works */
+.how-box{
+  background:var(--bg3);
+  border-left:4px solid var(--green);
+  border-radius:0 8px 8px 0;
+  padding:18px 16px;margin-bottom:16px;
+}
+.how-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+.how-step:last-child{margin-bottom:0;}
+.how-num{
+  width:30px;height:30px;flex-shrink:0;border-radius:50%;
+  background:var(--green);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;font-size:12px;font-weight:900;color:#fff;
+}
+.how-txt{font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.7;color:var(--ink2);}
+.how-txt strong{color:var(--green);}
+.how-txt em{color:var(--gold3);font-style:italic;}
+
+/* avantages grid */
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+.av{
+  background:var(--bg3);
+  border:1px solid rgba(27,94,32,.2);
+  border-top:3px solid var(--green);
+  border-radius:6px;padding:12px 10px;text-align:center;
+}
+.av-icon{font-size:20px;display:block;margin-bottom:4px;}
+.av-lbl{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:2px;text-transform:uppercase;color:var(--gold3);margin-bottom:3px;}
+.av-txt{font-size:11.5px;color:var(--ink3);line-height:1.4;}
+.av-txt strong{color:var(--green);}
+
+/* garantie financière */
+.fin{
+  width:100%;
+  background:linear-gradient(145deg,var(--green),#0d3310 60%,var(--green2));
+  border-top:3px solid var(--gold);border-bottom:3px solid var(--gold);
+  padding:22px 16px 18px;text-align:center;margin-bottom:16px;
+  position:relative;overflow:hidden;
+}
+.fin::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(60deg,transparent 0,transparent 20px,rgba(255,255,255,.01) 20px,rgba(255,255,255,.01) 21px);}
+.fc{position:relative;z-index:1;}
+.fin-cap{font-family:'Cinzel',serif;font-size:9px;letter-spacing:4px;color:rgba(245,216,122,.6);text-transform:uppercase;margin-bottom:6px;}
+.fin-amt{font-family:'Cinzel',serif;font-size:36px;font-weight:900;color:#F5D87A;letter-spacing:2px;animation:sh 3s ease-in-out infinite;}
+@keyframes sh{0%,100%{text-shadow:0 0 30px rgba(245,216,122,.6)}50%{text-shadow:0 0 60px rgba(245,216,122,1)}}
+.fin-sub{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:3px;color:rgba(245,216,122,.45);text-transform:uppercase;margin-bottom:10px;}
+.fin-p{font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;line-height:1.7;color:rgba(255,255,255,.85);}
+
+/* limite 105 jours */
+.limit-box{
+  width:100%;
+  background:linear-gradient(145deg,#3B0000,#6B1010 60%,#3B0000);
+  border-top:3px solid #C0392B;border-bottom:3px solid #C0392B;
+  padding:22px 16px 18px;text-align:center;margin-bottom:16px;
+  position:relative;overflow:hidden;
+}
+.limit-box::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(60deg,transparent 0,transparent 20px,rgba(255,255,255,.008) 20px,rgba(255,255,255,.008) 21px);}
+.lim-fc{position:relative;z-index:1;}
+.lim-cap{font-family:'Cinzel',serif;font-size:9px;letter-spacing:4px;color:rgba(255,120,100,.7);text-transform:uppercase;margin-bottom:6px;}
+.lim-days{font-family:'Cinzel',serif;font-size:42px;font-weight:900;color:#F5A8A8;letter-spacing:2px;line-height:1;animation:sh2 3s ease-in-out infinite;}
+@keyframes sh2{0%,100%{text-shadow:0 0 30px rgba(220,80,80,.6)}50%{text-shadow:0 0 60px rgba(220,80,80,1)}}
+.lim-sub{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:3px;color:rgba(255,150,130,.5);text-transform:uppercase;margin-bottom:10px;}
+.lim-p{font-family:'Cormorant Garamond',serif;font-size:14.5px;font-style:italic;line-height:1.75;color:rgba(255,220,210,.9);}
+.lim-badge{display:inline-flex;align-items:center;gap:8px;margin-top:12px;background:rgba(192,57,43,.3);border:1px solid rgba(192,57,43,.6);border-radius:4px;padding:7px 14px;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:2px;color:#F5A8A8;text-transform:uppercase;}
+
+/* stats */
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+.st{background:var(--bg3);border:1px solid rgba(27,94,32,.2);border-bottom:3px solid var(--green);border-radius:6px;padding:14px 10px;text-align:center;}
+.st-n{font-family:'Cinzel',serif;font-size:26px;font-weight:900;color:var(--green);line-height:1;}
+.st-u{font-size:8.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold3);margin-top:3px;}
+.st-d{font-size:11px;color:var(--ink3);margin-top:5px;line-height:1.35;}
+
+/* ── CALENDRIER ── */
+.cal-section{margin-bottom:16px;}
+.cal-tabs{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-start;margin-bottom:12px;}
+.cal-tab{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--bg3);border:1.5px solid rgba(27,94,32,.25);
+  color:var(--ink3);
+  font-family:'Cinzel',serif;font-size:9px;font-weight:600;letter-spacing:1px;
+  padding:6px 11px;border-radius:4px;cursor:pointer;transition:all .2s;
+  text-transform:uppercase;
+}
+.cal-tab.active,.cal-tab:hover{background:var(--green);border-color:var(--green);color:#fff;}
+.cal-flag{font-size:14px;}
+.cal-card{display:none;}
+.cal-card.active{display:block;}
+
+.cal-header{
+  background:linear-gradient(90deg,var(--green),var(--green2));
+  padding:14px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-radius:6px 6px 0 0;
+}
+.cal-country{display:flex;align-items:center;gap:10px;}
+.cal-cflag{font-size:24px;}
+.cal-cname{font-family:'Cinzel',serif;font-size:14px;font-weight:900;color:#fff;letter-spacing:2px;}
+.cal-cdates{font-size:10.5px;color:rgba(255,255,255,.65);margin-top:2px;}
+.cal-progress-wrap{text-align:right;}
+.cal-pct{font-family:'Cinzel',serif;font-size:22px;font-weight:900;color:#F5D87A;line-height:1;}
+.cal-pct-lbl{font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);}
+
+.cal-body{
+  border:1.5px solid rgba(27,94,32,.2);border-top:none;
+  border-radius:0 0 6px 6px;
+  background:#fff;padding:14px 16px;
+}
+.cal-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.cal-bar-bg{flex:1;height:10px;background:var(--bg3);border-radius:100px;overflow:hidden;border:1px solid rgba(27,94,32,.15);}
+.cal-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .8s cubic-bezier(.16,1,.3,1);}
+.cal-bar-days{font-family:'Cinzel',serif;font-size:11px;font-weight:600;color:var(--green);white-space:nowrap;}
+
+.cal-stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+.cal-stat{background:var(--bg3);border:1px solid rgba(27,94,32,.15);border-bottom:2px solid var(--green);border-radius:5px;padding:10px;text-align:center;}
+.cal-stat-n{font-family:'Cinzel',serif;font-size:18px;font-weight:900;color:var(--green);line-height:1;}
+.cal-stat-u{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold3);margin-top:2px;}
+
+.cal-status{text-align:center;padding:9px 14px;border-radius:5px;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;}
+.cal-status.active{background:rgba(27,94,32,.08);border:1.5px solid rgba(27,94,32,.3);color:var(--green);}
+.cal-status.upcoming{background:rgba(183,136,44,.08);border:1.5px solid rgba(201,168,76,.3);color:var(--gold3);}
+.cal-status.expired{background:rgba(192,57,43,.08);border:1.5px solid rgba(192,57,43,.3);color:#C0392B;}
+
+.cal-mini-months{display:grid;grid-template-columns:repeat(auto-fill,minmax(50px,1fr));gap:4px;margin-top:10px;}
+.cal-month{background:var(--bg3);border:1px solid rgba(27,94,32,.1);border-radius:4px;padding:5px 4px;text-align:center;font-size:9px;color:var(--ink3);}
+.cal-month.done{background:rgba(27,94,32,.1);border-color:rgba(27,94,32,.3);color:var(--green);}
+.cal-month.current{background:rgba(201,168,76,.12);border-color:var(--gold);color:var(--gold3);font-weight:700;}
+.cal-month.future{opacity:.45;}
+.cal-month-lbl{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:1px;display:block;margin-bottom:2px;text-transform:uppercase;}
+
+/* confidentialité */
+.conf-box{
+  background:var(--bg3);
+  border-left:4px solid var(--gold3);
+  border-radius:0 8px 8px 0;
+  padding:18px 16px;margin-bottom:16px;
+}
+.conf-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
+.conf-row:last-child{margin-bottom:0;padding-top:14px;border-top:1px solid rgba(27,94,32,.15);}
+.conf-icon{font-size:22px;flex-shrink:0;}
+.conf-title{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:var(--gold3);margin-bottom:5px;}
+.conf-txt{font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.7;color:var(--ink2);}
+.conf-txt strong{color:var(--green);}
+.conf-txt em{color:var(--gold3);font-style:italic;}
+.conf-danger{color:#C0392B!important;font-weight:700;}
+
+/* pays */
+.pays{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-start;margin-bottom:16px;}
+.pb{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--green);
+  color:#fff;font-size:12px;font-weight:600;
+  padding:7px 14px;border-radius:4px;
+}
+.pb .fl{font-size:16px;}
+
+/* ── SIGNATURE ── */
+.sz{
+  width:100%;
+  background:var(--bg3);
+  border-top:3px solid var(--green);
+  padding:20px 16px 22px;
+  display:grid;grid-template-columns:70px 1fr 100px;
+  align-items:end;gap:16px;
+}
+.seal-w{text-align:center;}
+.seal-o{
+  width:68px;height:68px;border-radius:50%;
+  background:conic-gradient(from 0deg,var(--gold3),var(--gold),#F5D87A,var(--gold),var(--gold3));
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 6px;
+  box-shadow:0 0 0 2px var(--green),0 0 0 4px var(--gold3);
+  animation:rc 10s linear infinite;
+}
+@keyframes rc{0%{filter:hue-rotate(0)}100%{filter:hue-rotate(30deg)}}
+.seal-i{width:54px;height:54px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:24px;}
+.seal-l{font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--gold3);}
+
+.sig-b{text-align:center;}
+.sig-svg{width:100%;height:56px;margin-bottom:2px;overflow:visible;}
+.sp{fill:none;stroke:var(--green);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1100;stroke-dashoffset:1100;animation:ds 2.8s cubic-bezier(.4,0,.2,1) .7s forwards;}
+.sp2{fill:none;stroke:var(--gold3);stroke-width:1.2;stroke-linecap:round;stroke-dasharray:500;stroke-dashoffset:500;animation:ds 1.8s cubic-bezier(.4,0,.2,1) 3s forwards;}
+@keyframes ds{to{stroke-dashoffset:0}}
+.sig-ln{width:100%;height:1.5px;background:linear-gradient(90deg,var(--green),var(--gold),var(--green));margin:5px 0;}
+.sig-nm{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;font-style:italic;color:var(--green);}
+.sig-tt{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold3);margin:2px 0;}
+.sig-lc{font-size:11px;color:var(--ink3);font-style:italic;}
+
+.sig-r{text-align:center;}
+.cn-l{font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-bottom:3px;}
+.cn-v{font-family:'Cinzel',serif;font-size:11px;font-weight:700;color:var(--gold3);letter-spacing:1.5px;}
+.cd{margin-top:8px;border:1px solid rgba(27,94,32,.2);border-radius:4px;padding:7px 9px;background:#fff;}
+.cd-l{font-size:8px;letter-spacing:1.5px;color:var(--gold3);text-transform:uppercase;}
+.cd-v{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;color:var(--ink);margin-top:2px;}
+
+/* ── PIED ── */
+.ft{
+  width:100%;
+  background:linear-gradient(90deg,var(--green),#0d3310,var(--green2));
+  padding:14px 16px;text-align:center;
+  border-top:3px solid var(--gold);
+}
+.ft-o{color:rgba(245,216,122,.5);font-size:13px;letter-spacing:8px;}
+.ft-t{font-family:'Cinzel',serif;font-size:9px;letter-spacing:4px;color:rgba(245,216,122,.75);text-transform:uppercase;margin:4px 0 2px;}
+.ft-s{font-size:10px;color:rgba(245,216,122,.45);letter-spacing:1.5px;font-style:italic;}
+
+/* ── BOUTON BAS ── */
+.read-bar{width:100%;padding:0;}
+.read-btn{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:var(--green);
+  color:#fff;font-family:'Cinzel',serif;font-size:13px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;
+  padding:18px 16px;
+  cursor:pointer;text-decoration:none;
+  border:none;
+  transition:background .2s;
+}
+.read-btn:hover{background:var(--green2);}
+
+@media(max-width:480px){
+  .brand{font-size:28px;letter-spacing:4px;}
+  .g3{grid-template-columns:1fr 1fr;}
+  .stats{grid-template-columns:1fr 1fr 1fr;}
+  .sz{grid-template-columns:1fr;justify-items:center;gap:12px;}
+  .cal-tabs{gap:4px;}
+  .cal-tab{font-size:8px;padding:5px 9px;}
+  .cal-header{flex-direction:column;gap:8px;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<!-- BARRE RETOUR -->
+<div class="back-bar">
+  <a class="back-btn" href="accueil.html">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+      <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Retour à l'accueil
+  </a>
+</div>
+
+<!-- BANDEAU INFO -->
+<div class="info-band">
+  <div class="info-band-icon">📋</div>
+  <div>
+    <div class="info-band-title">Informations Importantes — À Lire Attentivement</div>
+    <div class="info-band-desc">Lisez toutes les sections avant de continuer. Cliquez sur <strong>« J'ai lu et je comprends »</strong> en bas de page.</div>
+  </div>
+</div>
+
+<!-- EN-TÊTE -->
+<div class="hd">
+  <div class="logo-row">
+    <div class="emb">🌿</div>
+    <div>
+      <div class="brand">AGRITech</div>
+      <div class="brand-sub">Plateforme d'Investissement Agricole &amp; Fintech — Afrique de l'Ouest</div>
+    </div>
+    <div class="emb">💎</div>
+  </div>
+</div>
+
+<!-- TITRE CERTIFICAT -->
+<div class="tb">
+  <div class="tc">✦ &ensp;<span>Certificat Officiel</span> de Confiance &amp; d'Engagement&ensp; ✦</div>
+</div>
+
+<!-- CORPS -->
+<div class="bd">
+
+  <!-- INTRO -->
+  <p class="intro">
+    <strong>AGRITech</strong> est une plateforme d'investissement agricole nouvelle génération opérant en Afrique de l'Ouest. Notre modèle est simple et transparent : <em>nous utilisons les fonds confiés par nos investisseurs pour financer des projets agricoles à haute valeur ajoutée</em> — cultures industrielles, agro-industrie, coopératives de transformation — et nous reversons les <strong>bénéfices générés directement sur votre compte</strong>. Chaque franc investi travaille pour vous, chaque jour.
+  </p>
+
+  <div class="dv"><div class="dl"></div><div class="do">✦</div><div class="dl"></div></div>
+
+  <!-- COMMENT CA MARCHE -->
+  <div class="sl">Comment Fonctionne AGRITech</div>
+  <div class="how-box">
+    <div class="how-step">
+      <div class="how-num">1</div>
+      <div class="how-txt"><strong>Vous investissez</strong> — Vous rechargez votre compte AGRITech via mobile money. Votre argent est <em>immédiatement alloué</em> aux projets agricoles actifs selon votre machine d'investissement choisie.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">2</div>
+      <div class="how-txt"><strong>L'argent travaille</strong> — AGRITech déploie vos fonds dans des exploitations agricoles vérifiées : <em>palmiers à huile, cacao, anacarde, élevage bovin</em> et bien d'autres filières rentables d'Afrique de l'Ouest. Les bénéfices sont collectés quotidiennement.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">3</div>
+      <div class="how-txt"><strong>Vous gagnez chaque jour</strong> — Vos <em>revenus quotidiens</em> sont crédités automatiquement sur votre solde. Retraits possibles à tout moment dès <strong>1 000 FCFA</strong>, avec seulement <strong>1% de frais</strong>.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">4</div>
+      <div class="how-txt"><strong>Transparence totale</strong> — Chaque mouvement est tracé en temps réel sur <em>Firebase</em>. Votre tableau de bord affiche vos gains, votre historique et vos retraits, <strong>24h/24 · 7j/7</strong>.</div>
+    </div>
+  </div>
+
+  <div class="dv"><div class="dl"></div><div class="do">✦</div><div class="dl"></div></div>
+
+  <!-- AVANTAGES -->
+  <div class="sl">Avantages Certifiés</div>
+  <div class="g3">
+    <div class="av"><span class="av-icon">⚡</span><div class="av-lbl">Recharge Instantanée</div><div class="av-txt">Crédit <strong>automatique</strong>, 24h/24</div></div>
+    <div class="av"><span class="av-icon">💸</span><div class="av-lbl">Retrait Dès 1 000F</div><div class="av-txt">À tout moment, <strong>1% de frais</strong></div></div>
+    <div class="av"><span class="av-icon">🎁</span><div class="av-lbl">Bonus Exceptionnels</div><div class="av-txt">Offerts <strong>régulièrement</strong></div></div>
+    <div class="av"><span class="av-icon">🌱</span><div class="av-lbl">Revenus Quotidiens</div><div class="av-txt">Votre argent <strong>travaille</strong> chaque jour</div></div>
+    <div class="av"><span class="av-icon">🔄</span><div class="av-lbl">Traitement Auto</div><div class="av-txt">Retrait sur <strong>mobile money</strong></div></div>
+    <div class="av"><span class="av-icon">🔐</span><div class="av-lbl">Sécurité Totale</div><div class="av-txt">Tracé en <strong>temps réel</strong>, Firebase</div></div>
+  </div>
+
+</div><!-- /bd -->
+
+<!-- GARANTIE FINANCIÈRE (pleine largeur) -->
+<div class="fin">
+  <div class="fc">
+    <div class="fin-cap">Fonds engagés par AGRITech</div>
+    <div class="fin-amt">10 000 000 FCFA</div>
+    <div class="fin-sub">Dix Millions de Francs CFA · Garantie de Paiement</div>
+    <p class="fin-p">AGRITech a injecté de sa propre trésorerie <em>dix millions de francs CFA</em> pour garantir le paiement intégral de tous ses investisseurs. Vos fonds sont protégés avant même que le premier centime de bénéfice agricole ne soit généré. <em>Votre gain est notre priorité absolue.</em></p>
+  </div>
+</div>
+
+<div class="bd">
+
+  <div class="dv"><div class="dl"></div><div class="do">✦</div><div class="dl"></div></div>
+
+  <!-- CHIFFRES CLES -->
+  <div class="sl">Chiffres Clés</div>
+  <div class="stats">
+    <div class="st"><div class="st-n">105</div><div class="st-u">Jours max.</div><div class="st-d">Durée d'accès par compte</div></div>
+    <div class="st"><div class="st-n">1%</div><div class="st-u">Frais retrait</div><div class="st-d">Le plus compétitif</div></div>
+    <div class="st"><div class="st-n">1K</div><div class="st-u">FCFA min.</div><div class="st-d">Seuil de retrait libre</div></div>
+  </div>
+
+  <div class="dv"><div class="dl"></div><div class="do">✦</div><div class="dl"></div></div>
+
+</div><!-- /bd -->
+
+<!-- LIMITE 105 JOURS (pleine largeur) -->
+<div class="limit-box">
+  <div class="lim-fc">
+    <div class="lim-cap">Limite d'utilisation par compte</div>
+    <div class="lim-days">105 JOURS</div>
+    <div class="lim-sub">3 Mois &amp; 15 Jours · Accès Unique &amp; Définitif</div>
+    <p class="lim-p">
+      Chaque investisseur bénéficie d'une <strong style="color:#F5A8A8;">période d'utilisation de 105 jours</strong> (3 mois et 15 jours) à compter de son inscription. Passé ce délai, <em>l'application sera automatiquement verrouillée sur votre appareil</em>. Le système enregistre et bloque en permanence <strong style="color:#F5A8A8;">votre adresse IP</strong> ainsi que <strong style="color:#F5A8A8;">votre reconnaissance faciale</strong> au moment de la liaison de votre compte de retrait — il ne sera donc <em>plus possible de recréer un compte depuis le même téléphone</em> ou avec le même visage. Nous vous conseillons de <strong style="color:#F5A8A8;">maximiser vos investissements et retraits</strong> durant cette fenêtre de 105 jours.
+    </p>
+    <div class="lim-badge">⚠ Information Définitive — Aucune Exception</div>
+  </div>
+</div>
+
+<div class="bd">
+
+  <div class="dv"><div class="dl"></div><div class="do">✦</div><div class="dl"></div></div>
+
+  <!-- CALENDRIER PAR PAYS -->
+  <div class="sl">Calendrier du Projet par Pays</div>
+  <div class="cal-section">
+
+    <div class="cal-tabs">
+      <div class="cal-tab active" onclick="showCal(event,'ci')"><span class="cal-flag">🇨🇮</span> Côte d'Ivoire</div>
+      <div class="cal-tab" onclick="showCal(event,'tg')"><span class="cal-flag">🇹🇬</span> Togo</div>
+      <div class="cal-tab" onclick="showCal(event,'bf')"><span class="cal-flag">🇧🇫</span> Burkina</div>
+      <div class="cal-tab" onclick="showCal(event,'bj')"><span class="cal-flag">🇧🇯</span> Bénin</div>
+      <div class="cal-tab" onclick="showCal(event,'ml')"><span class="cal-flag">🇲🇱</span> Mali</div>
+      <div class="cal-tab" onclick="showCal(event,'sn')"><span class="cal-flag">🇸🇳</span> Sénégal</div>
+      <div class="cal-tab" onclick="showCal(event,'cm')"><span class="cal-flag">🇨🇲</span> Cameroun</div>
+    </div>
+
+    <!-- Côte d'Ivoire -->
+    <div class="cal-card active" id="cal-ci">
+      <div class="cal-header">
+        <div class="cal-country"><span class="cal-cflag">🇨🇮</span><div><div class="cal-cname">Côte d'Ivoire</div><div class="cal-cdates">18 Mars 2026 → 18 Août 2027 · 1 an 5 mois</div></div></div>
+        <div class="cal-progress-wrap"><div class="cal-pct" id="ci-pct">—</div><div class="cal-pct-lbl">Progression</div></div>
+      </div>
+      <div class="cal-body">
+        <div class="cal-bar-row"><div class="cal-bar-bg"><div class="cal-bar-fill" id="ci-bar" style="width:0%"></div></div><div class="cal-bar-days" id="ci-days">—</div></div>
+        <div class="cal-stats-row">
+          <div class="cal-stat"><div class="cal-stat-n" id="ci-elapsed">—</div><div class="cal-stat-u">Jours écoulés</div></div>
+          <div class="cal-stat"><div class="cal-stat-n" id="ci-remain">—</div><div class="cal-stat-u">Jours restants</div></div>
+          <div class="cal-stat"><div class="cal-stat-n">518</div><div class="cal-stat-u">Durée totale</div></div>
+        </div>
+        <div class="cal-mini-months" id="ci-months"></div>
+        <div class="cal-status" id="ci-status"></div>
+      </div>
+    </div>
+
+    <!-- Togo -->
+    <div class="cal-card" id="cal-tg">
+      <div class="cal-header">
+        <div class="cal-country"><span class="cal-cflag">🇹🇬</span><div><div class="cal-cname">Togo</div><div class="cal-cdates">18 Mars 2026 → 18 Juillet 2026 · 4 mois</div></div></div>
+        <div class="cal-progress-wrap"><div class="cal-pct" id="tg-pct">—</div><div class="cal-pct-lbl">Progression</div></div>
+      </div>
+      <div class="cal-body">
+        <div class="cal-bar-row"><div class="cal-bar-bg"><div class="cal-bar-fill" id="tg-bar" style="width:0%"></div></div><div class="cal-bar-days" id="tg-days">—</div></div>
+        <div class="cal-stats-row">
+          <div class="cal-stat"><div class="cal-stat-n" id="tg-elapsed">—</div><div class="cal-stat-u">Jours écoulés</div></div>
+          <div class="cal-stat"><div class="cal-stat-n" id="tg-remain">—</div><div class="cal-stat-u">Jours restants</div></div>
+          <div class="cal-stat"><div class="cal-stat-n">122</div><div class="cal-stat-u">Durée totale</div></div>
+        </div>
+        <div class="cal-mini-months" id="tg-months"></div>
+        <div class="cal-status" id="tg-status"></div>
+      </div>
+    </div>
+
+    <!-- Burkina Faso -->
+    <div class="cal-card" id="cal-bf">
+      <div class="cal-header">
+        <div class="cal-country"><span class="cal-cflag">🇧🇫</span><div><div class="cal-cname">Burkina Faso</div><div class="cal-cdates">18 Mars 2026 → 18 Mars 2028 · 2 ans</div></div></div>
+        <div class="cal-progress-wrap"><div class="cal-pct" id="bf-pct">—</div><div class="cal-pct-lbl">Progression</div></div>
+      </div>
+      <div class="cal-body">
+        <div class="cal-bar-row"><div class="cal-bar-bg"><div class="cal-bar-fill" id="bf-bar" style="width:0%"></div></div><div class="cal-bar-days" id="bf-days">—</div></div>
+        <div class="cal-stats-row">
+          <div class="cal-stat"><div class="cal-stat-n" id="bf-elapsed">—</div><div class="cal-stat-u">Jours écoulés</div></div>
+          <div class="cal-stat"><div class="cal-stat-n" id="bf-remain">—</div><div class="cal-stat-u">Jours restants</div></div>
+          <div class="cal-stat"><div class="cal-stat-n">731</div><div class="cal-stat-u">Durée totale</div></div>
+        </div>
+        <div class="cal-mini-months" id="bf-months"></div>
+        <div class="cal-status" id="bf-status"></div>
+      </div>
+    </div>
+
+    <!-- Bénin -->
+    <div class="cal-card" id="cal-bj">
+      <div class="cal-header">
+        <div class="cal-country"><span class="cal-cflag">🇧🇯</span><div><div class="cal-cname">Bénin</div><div class="cal-cdates">18 Mars 2026 → 18 Novembre 2026 · 8 mois</div></div></div>
+        <div class="cal-progress-wrap"><div class="cal-pct" id="bj-pct">—</div><div class="cal-pct-lbl">Progression</div></div>
+      </div>
+      <div class="cal-body">
+        <div class="cal-bar-row"><div class="cal-bar-bg"><div class="cal-bar-fill" id="bj-bar" style="width:0%"></div></div><div class="cal-bar-days" id="bj-days">—</div></div>
+        <div class="cal-stats-row">
+          <div class="cal-stat"><div class="cal-stat-n" id="bj-elapsed">—</div><div class="cal-stat-u">Jours écoulés</div></div>
+          <div class="cal-stat"><div class="cal-stat-n" id="bj-remain">—</div><div class="cal-stat-u">Jours restants</div></div>
+          <div class="cal-stat"><div class="cal-stat-n">245</div><div class="cal-stat-u">Durée totale</div></div>
+        </div>
+        <div class="cal-mini-months" id="bj-months"></div>
+        <div class="cal-status" id="bj-status"></div>
+      </div>
+    </div>
+
+    <!-- Mali -->
+    <div class="cal-card" id="cal-ml">
+      <div class="cal-header">
+        <div class="cal-country"><span class="cal-cflag">🇲🇱</span><div><div class="cal-cname">Mali</div><div class="cal-cdates">18 Mars 2026 → 18 Mars 2029 · 3 ans</div></div></div>
+        <div class="cal-progress-wrap"><div class="cal-pct" id="ml-pct">—</div><div class="cal-pct-lbl">Progression</div></div>
+      </div>
+      <div class="cal-body">
+        <div class="cal-bar-row"><div class="cal-bar-bg"><div class="cal-bar-fill" id="ml-bar" style="width:0%"></div></div><div class="cal-bar-days" id="ml-days">—</div></div>
+        <div class="cal-stats-row">
+          <div class="cal-stat"><div class="cal-stat-n" id="ml-elapsed">—</div><div class="cal-stat-u">Jours écoulés</div></div>
+          <div class="cal-stat"><div class="cal-stat-n" id="ml-remain">—</div><div class="cal-stat-u">Jours restants</div></div>
+          <div class="cal-stat"><div class="cal-stat-n">1096</div><div class="cal-stat-u">Durée totale</div></div>
+        </div>
+        <div class="cal-mini-months" id="ml-months"></div>
+        <div class="cal-status" id="ml-status"></div>
+      </div>
+    </div>
+
+    <!-- Sénégal -->
+    <div class="cal-card" id="cal-sn">
+      <div class="cal-header">
+        <div class="cal-country"><span class="cal-cflag">🇸🇳</span><div><div class="cal-cname">Sénégal</div><div class="cal-cdates">18 Mars 2026 → 25 Mars 2027 · 1 an &amp; 1 semaine</div></div></div>
+        <div class="cal-progress-wrap"><div class="cal-pct" id="sn-pct">—</div><div class="cal-pct-lbl">Progression</div></div>
+      </div>
+      <div class="cal-body">
+        <div class="cal-bar-row"><div class="cal-bar-bg"><div class="cal-bar-fill" id="sn-bar" style="width:0%"></div></div><div class="cal-bar-days" id="sn-days">—</div></div>
+        <div class="cal-stats-row">
+          <div class="cal-stat"><div class="cal-stat-n" id="sn-elapsed">—</div><div class="cal-stat-u">Jours écoulés</div></div>
+          <div class="cal-stat"><div class="cal-stat-n" id="sn-remain">—</div><div class="cal-stat-u">Jours restants</div></div>
+          <div class="cal-stat"><div class="cal-stat-n">372</div><div class="cal-stat-u">Durée totale</div></div>
+        </div>
+        <div class="cal-mini-months" id="sn-months"></div>
+        <div class="cal-status" id="sn-status"></div>
+      </div>
+    </div>
+
+    <!-- Cameroun -->
+    <div class="cal-card" id="cal-cm">
+      <div class="cal-header">
+        <div class="cal-country"><span class="cal-cflag">🇨🇲</span><div><div class="cal-cname">Cameroun</div><div class="cal-cdates">18 Mars 2026 → 18 Mars 2030 · 4 ans</div></div></div>
+        <div class="cal-progress-wrap"><div class="cal-pct" id="cm-pct">—</div><div class="cal-pct-lbl">Progression</div></div>
+      </div>
+      <div class="cal-body">
+        <div class="cal-bar-row"><div class="cal-bar-bg"><div class="cal-bar-fill" id="cm-bar" style="width:0%"></div></div><div class="cal-bar-days" id="cm-days">—</div></div>
+        <div class="cal-stats-row">
+          <div class="cal-stat"><div class="cal-stat-n" id="cm-elapsed">—</div><div class="cal-stat-u">Jours écoulés</div></div>
+          <div class="cal-stat"><div class="cal-stat-n" id="cm-remain">—</div><div class="cal-stat-u">Jours restants</div></div>
+          <div class="cal-stat"><div class="cal-stat-n">1461</div><div class="cal-stat-u">Durée totale</div></div>
+        </div>
+        <div class="cal-mini-months" id="cm-months"></div>
+        <div class="cal-status" id="cm-status"></div>
+      </div>
+    </div>
+
+  </div><!-- /cal-section -->
+
+  <div class="dv"><div class="dl"></div><div class="do">✦</div><div class="dl"></div></div>
+
+  <!-- CONFIDENTIALITÉ -->
+  <div class="sl">Confidentialité &amp; Support</div>
+  <div class="conf-box">
+    <div class="conf-row">
+      <span class="conf-icon">🔒</span>
+      <div>
+        <div class="conf-title">Pas de groupe officiel</div>
+        <div class="conf-txt">AGRITech <strong>ne possède aucun groupe</strong> WhatsApp, Telegram ou autre réseau social. Pour des raisons de <em>confidentialité et de sécurité</em>, nous ne communiquons pas via des groupes publics. Tout groupe prétendant représenter AGRITech est <span class="conf-danger">non officiel et dangereux</span>.</div>
+      </div>
+    </div>
+    <div class="conf-row">
+      <span class="conf-icon">📩</span>
+      <div>
+        <div class="conf-title">En cas de problème</div>
+        <div class="conf-txt">Si vous rencontrez un problème ou avez une question, <strong>contactez uniquement notre service client officiel</strong> disponible directement sur la plateforme. <em>C'est votre seul canal de contact autorisé.</em></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYS MEMBRES -->
+  <div class="sl">Pays Membres Autorisés</div>
+  <div class="pays">
+    <div class="pb"><span class="fl">🇨🇮</span> Côte d'Ivoire</div>
+    <div class="pb"><span class="fl">🇧🇯</span> Bénin</div>
+    <div class="pb"><span class="fl">🇸🇳</span> Sénégal</div>
+    <div class="pb"><span class="fl">🇲🇱</span> Mali</div>
+    <div class="pb"><span class="fl">🇧🇫</span> Burkina Faso</div>
+    <div class="pb"><span class="fl">🇹🇬</span> Togo</div>
+    <div class="pb"><span class="fl">🇨🇲</span> Cameroun</div>
+  </div>
+
+</div><!-- /bd -->
+
+<!-- SIGNATURE -->
+<div class="sz">
+  <div class="seal-w">
+    <div class="seal-o"><div class="seal-i">🌿</div></div>
+    <div class="seal-l">Sceau Officiel</div>
+  </div>
+  <div class="sig-b">
+    <svg class="sig-svg" viewBox="0 0 320 56">
+      <path class="sp" d="M16 46 C20 32,26 18,36 16 C46 14,50 28,44 40 C38 52,32 54,36 46 C42 34,52 22,62 20 C70 18,72 30,68 40 C64 50,58 54,62 48 C70 40,80 26,90 24 C98 22,102 34,98 44 C94 52,90 54,96 48 C104 38,118 26,130 24 C140 22,144 32,142 42 C140 50,134 54,140 46 C150 34,166 22,180 18 C192 14,198 26,196 38 C194 48,188 52,194 44 C204 32,222 20,238 16 C252 12,260 24,258 36 C256 46,250 50,256 42 C266 30,282 18,298 14 C310 10,318 22,314 34"/>
+      <path class="sp2" d="M8 54 C50 58,110 60,170 57 C230 54,280 56,314 52"/>
+    </svg>
+    <div class="sig-ln"></div>
+    <div class="sig-nm">Le Directeur Général — AGRITech</div>
+    <div class="sig-tt">Fondateur &amp; Directeur Général · Créateur de la Plateforme</div>
+    <div class="sig-lc">📍 Basé en Europe · Fondateur d'AGRITech pour l'Afrique de l'Ouest</div>
+  </div>
+  <div class="sig-r">
+    <div class="cn-l">N° Certificat</div>
+    <div class="cn-v">AGT-2026-001</div>
+    <div class="cd">
+      <div class="cd-l">Lancement</div>
+      <div class="cd-v">18 Mars 2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- PIED -->
+<div class="ft">
+  <div class="ft-o">✦ ◆ ✦</div>
+  <div class="ft-t">AGRITech — Investir Intelligemment · Gagner Durablement</div>
+  <div class="ft-s">🌿 Agriculture · Finance · Innovation · Afrique de l'Ouest 🌿</div>
+</div>
+
+<!-- BOUTON BAS -->
+<div class="read-bar">
+  <a class="read-btn" href="accueil.html">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    J'ai lu et je comprends — Retour à l'accueil
+  </a>
+</div>
+
+<script>
+const PAYS_CFG = {
+  ci: { start: new Date('2026-03-18'), end: new Date('2027-08-18') },
+  tg: { start: new Date('2026-03-18'), end: new Date('2026-07-18') },
+  bf: { start: new Date('2026-03-18'), end: new Date('2028-03-18') },
+  bj: { start: new Date('2026-03-18'), end: new Date('2026-11-18') },
+  ml: { start: new Date('2026-03-18'), end: new Date('2029-03-18') },
+  sn: { start: new Date('2026-03-18'), end: new Date('2027-03-25') },
+  cm: { start: new Date('2026-03-18'), end: new Date('2030-03-18') }
+};
+const MOIS = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+
+function diff(a,b){return Math.round((b-a)/86400000);}
+
+function renderCountry(code){
+  const cfg = PAYS_CFG[code];
+  const today = new Date(); today.setHours(0,0,0,0);
+  const start = new Date(cfg.start); start.setHours(0,0,0,0);
+  const end   = new Date(cfg.end);   end.setHours(0,0,0,0);
+  const total   = diff(start, end);
+  const elapsed = Math.max(0, Math.min(diff(start, today), total));
+  const remain  = Math.max(0, total - elapsed);
+  const pct     = total > 0 ? Math.round(elapsed/total*100) : 0;
+
+  let sCls, sTxt;
+  if(today < start){sCls='upcoming'; sTxt='⏳ Pas encore commencé';}
+  else if(today >= end){sCls='expired'; sTxt='🔴 Projet Terminé';}
+  else{sCls='active'; sTxt='🟢 Projet en cours — Plateforme Active';}
+
+  const months=[];
+  let cur=new Date(start.getFullYear(), start.getMonth(), 1);
+  const endM=new Date(end.getFullYear(), end.getMonth(), 1);
+  while(cur<=endM){
+    const ms=new Date(cur), me=new Date(cur.getFullYear(),cur.getMonth()+1,0);
+    let cls='future';
+    if(today>me) cls='done';
+    else if(today>=ms&&today<=me) cls='current';
+    months.push({l:MOIS[cur.getMonth()],y:cur.getFullYear(),cls});
+    cur.setMonth(cur.getMonth()+1);
+  }
+
+  document.getElementById(code+'-pct').textContent    = pct+'%';
+  document.getElementById(code+'-bar').style.width    = pct+'%';
+  document.getElementById(code+'-days').textContent   = elapsed+' j écoulés';
+  document.getElementById(code+'-elapsed').textContent= elapsed;
+  document.getElementById(code+'-remain').textContent = remain;
+  const s=document.getElementById(code+'-status');
+  s.className='cal-status '+sCls; s.textContent=sTxt;
+  document.getElementById(code+'-months').innerHTML=
+    months.map(m=>`<div class="cal-month ${m.cls}"><span class="cal-month-lbl">${m.l}</span>${m.y}</div>`).join('');
+}
+
+Object.keys(PAYS_CFG).forEach(renderCountry);
+
+function showCal(e, code){
+  document.querySelectorAll('.cal-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.cal-card').forEach(c=>c.classList.remove('active'));
+  e.currentTarget.classList.add('active');
+  document.getElementById('cal-'+code).classList.add('active');
+}
+</script>
+</body>
+</html>
+          

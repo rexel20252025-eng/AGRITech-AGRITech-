@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGRITech — Historique des recharges</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --green:#1a7a3c; --green2:#2db85e; --green-light:rgba(26,122,60,.08);
+  --gold:#c8961e; --gold2:#f0c040;
+  --red:#e53935; --red-light:rgba(229,57,53,.08);
+  --bg:#f0f5f1; --white:#ffffff;
+  --text:#1a2e20; --text2:rgba(26,46,32,.5); --text3:rgba(26,46,32,.28);
+  --border:rgba(26,122,60,.1);
+}
+body {
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  color:var(--text);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(26,122,60,.2); border-radius:4px; }
+
+/* ── Loading overlay ── */
+#pageLoader {
+  position:fixed; inset:0; background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:16px; z-index:999;
+  transition:opacity .4s, visibility .4s;
+}
+#pageLoader.hide { opacity:0; visibility:hidden; }
+.loader-logo { font-size:18px; font-weight:700; letter-spacing:2px; color:var(--green); }
+.loader-logo span { color:var(--green2); }
+.loader-bar {
+  width:160px; height:3px; background:rgba(26,122,60,.1); border-radius:2px; overflow:hidden;
+}
+.loader-bar-fill {
+  height:100%; width:0; border-radius:2px;
+  background:linear-gradient(90deg,var(--green),var(--green2));
+  animation:loadFill 1.2s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes loadFill { to { width:100%; } }
+
+/* ── Notification ── */
+#notif {
+  display:none; position:fixed; top:16px; left:50%; transform:translateX(-50%);
+  z-index:9999; padding:11px 20px; border-radius:10px;
+  font-size:13px; font-weight:500; color:#fff;
+  box-shadow:0 6px 20px rgba(0,0,0,.15); max-width:90vw; text-align:center;
+  animation:notifIn .3s cubic-bezier(.16,1,.3,1);
+}
+@keyframes notifIn { from{opacity:0;transform:translateX(-50%) translateY(-8px);} to{opacity:1;transform:translateX(-50%) translateY(0);} }
+
+/* ── Header ── */
+.header {
+  background:var(--white); border-bottom:1px solid var(--border);
+  padding:0 20px; height:58px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 1px 12px rgba(26,122,60,.06);
+  animation:headerIn .5s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes headerIn { from{opacity:0;transform:translateY(-10px);} to{opacity:1;transform:translateY(0);} }
+.h-left { display:flex; align-items:center; gap:12px; }
+.back-btn {
+  width:34px; height:34px; border-radius:50%;
+  background:var(--green-light); border:none;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all .2s; color:var(--green); font-size:16px;
+}
+.back-btn:hover { background:rgba(26,122,60,.15); transform:scale(1.08); }
+.h-title { font-size:15px; font-weight:600; color:var(--text); }
+.h-sub { font-size:11px; color:var(--text3); margin-top:1px; }
+.h-badge {
+  display:flex; align-items:center; gap:5px;
+  background:var(--green-light); border:1px solid rgba(26,122,60,.15);
+  border-radius:20px; padding:5px 11px; font-size:11px; font-weight:600; color:var(--green);
+}
+.h-dot { width:5px; height:5px; border-radius:50%; background:var(--green2); animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(.8);} }
+
+/* ── Main wrapper ── */
+.main { max-width:540px; margin:0 auto; padding:20px 16px 40px; }
+
+/* ── Summary cards ── */
+.summary {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+  margin-bottom:20px;
+  animation:fadeUp .5s cubic-bezier(.16,1,.3,1) .1s both;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
+.sum-card {
+  background:var(--white); border-radius:14px;
+  border:1px solid var(--border); padding:13px 12px;
+  text-align:center; transition:transform .2s, box-shadow .2s;
+  position:relative; overflow:hidden;
+}
+.sum-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2.5px; border-radius:2px 2px 0 0;
+}
+.sum-card.pending::before { background:linear-gradient(90deg,#c8961e,#f0c040); }
+.sum-card.approved::before { background:linear-gradient(90deg,var(--green),var(--green2)); }
+.sum-card.rejected::before { background:linear-gradient(90deg,#c62828,var(--red)); }
+.sum-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(26,122,60,.1); }
+.sum-ico { font-size:18px; margin-bottom:5px; }
+.sum-val { font-size:20px; font-weight:700; color:var(--text); }
+.sum-lbl { font-size:10px; color:var(--text3); margin-top:2px; font-weight:500; }
+
+/* ── Filter tabs ── */
+.filters {
+  display:flex; gap:6px; margin-bottom:16px; overflow-x:auto; padding-bottom:2px;
+  animation:fadeUp .5s cubic-bezier(.16,1,.3,1) .18s both;
+  scrollbar-width:none;
+}
+.filters::-webkit-scrollbar { display:none; }
+.f-btn {
+  flex-shrink:0; border:1.5px solid var(--border); border-radius:20px;
+  padding:7px 14px; font-size:12px; font-weight:500; color:var(--text2);
+  background:var(--white); cursor:pointer; transition:all .22s cubic-bezier(.16,1,.3,1);
+  font-family:'Inter',sans-serif;
+}
+.f-btn:hover { border-color:rgba(26,122,60,.3); color:var(--text); }
+.f-btn.active { background:var(--green); border-color:var(--green); color:#fff; font-weight:600; }
+.f-btn.gold.active { background:linear-gradient(135deg,var(--gold),var(--gold2)); border-color:var(--gold); color:#2a1a00; }
+.f-btn.red.active { background:var(--red); border-color:var(--red); color:#fff; }
+
+/* ── Refresh button ── */
+.refresh-wrap {
+  display:flex; justify-content:flex-end; margin-bottom:14px;
+  animation:fadeUp .5s cubic-bezier(.16,1,.3,1) .22s both;
+}
+.refresh-btn {
+  display:flex; align-items:center; gap:6px;
+  background:var(--white); border:1.5px solid var(--border);
+  color:var(--green); border-radius:20px; padding:7px 14px;
+  font-size:12px; font-weight:600; cursor:pointer;
+  transition:all .2s; font-family:'Inter',sans-serif;
+}
+.refresh-btn:hover { border-color:var(--green); background:var(--green-light); }
+.refresh-ico { display:inline-block; transition:transform .5s; }
+.refresh-btn:hover .refresh-ico { transform:rotate(180deg); }
+
+/* ── List container ── */
+.list-wrap {
+  animation:fadeUp .5s cubic-bezier(.16,1,.3,1) .26s both;
+}
+
+/* ── Empty state ── */
+.empty {
+  text-align:center; padding:50px 20px;
+  background:var(--white); border-radius:18px;
+  border:1px dashed rgba(26,122,60,.2);
+}
+.empty-ico { font-size:44px; margin-bottom:12px; opacity:.6; }
+.empty-title { font-size:15px; font-weight:600; color:var(--text); margin-bottom:6px; }
+.empty-sub { font-size:13px; color:var(--text2); line-height:1.6; }
+.empty-btn {
+  display:inline-block; margin-top:18px;
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  color:#fff; border:none; border-radius:10px; padding:10px 22px;
+  font-size:13px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;
+  transition:all .2s; box-shadow:0 5px 16px rgba(26,122,60,.25);
+}
+.empty-btn:hover { transform:translateY(-1px); box-shadow:0 8px 22px rgba(26,122,60,.35); }
+
+/* ── Recharge card ── */
+.r-card {
+  background:var(--white); border-radius:16px;
+  border:1px solid var(--border); margin-bottom:10px;
+  overflow:hidden; transition:all .25s cubic-bezier(.16,1,.3,1);
+  cursor:pointer;
+  animation:cardSlide .4s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes cardSlide { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
+.r-card:hover { border-color:rgba(26,122,60,.25); box-shadow:0 6px 22px rgba(26,122,60,.1); transform:translateY(-1px); }
+.r-card.expanded { border-color:rgba(26,122,60,.25); box-shadow:0 6px 22px rgba(26,122,60,.1); }
+
+/* Card header */
+.r-head {
+  padding:14px 16px; display:flex; align-items:center; gap:12px;
+}
+.op-badge {
+  width:42px; height:42px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; color:#fff; flex-shrink:0;
+  box-shadow:0 3px 10px rgba(0,0,0,.15);
+}
+.r-info { flex:1; min-width:0; }
+.r-op-name { font-size:13px; font-weight:600; color:var(--text); }
+.r-date { font-size:11px; color:var(--text3); margin-top:2px; }
+.r-right { display:flex; flex-direction:column; align-items:flex-end; gap:5px; }
+.r-amt { font-size:16px; font-weight:700; color:var(--green); }
+.r-amt-sub { font-size:10px; color:var(--text3); }
+
+/* Status pill */
+.pill {
+  display:inline-flex; align-items:center; gap:4px;
+  border-radius:20px; padding:3px 9px; font-size:10px; font-weight:600;
+  white-space:nowrap;
+}
+.pill-pending {
+  background:rgba(200,150,30,.12); border:1px solid rgba(200,150,30,.3);
+  color:var(--gold);
+}
+.pill-pending .pdot { animation:blink 1.4s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.2;} }
+.pill-approved {
+  background:rgba(26,122,60,.1); border:1px solid rgba(26,122,60,.25);
+  color:var(--green);
+}
+.pill-rejected {
+  background:rgba(229,57,53,.1); border:1px solid rgba(229,57,53,.25);
+  color:var(--red);
+}
+.pdot { width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0; }
+
+/* Expand arrow */
+.r-arrow {
+  font-size:12px; color:var(--text3); transition:transform .3s cubic-bezier(.16,1,.3,1);
+  margin-left:6px;
+}
+.r-card.expanded .r-arrow { transform:rotate(180deg); }
+
+/* Card details (expandable) */
+.r-details {
+  max-height:0; overflow:hidden;
+  transition:max-height .4s cubic-bezier(.16,1,.3,1), opacity .3s;
+  opacity:0; border-top:0px solid var(--border);
+}
+.r-card.expanded .r-details {
+  max-height:400px; opacity:1;
+  border-top:1px solid var(--border);
+}
+.r-detail-body { padding:14px 16px; }
+.d-row {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  padding:9px 0; border-bottom:1px solid rgba(26,46,32,.04);
+}
+.d-row:last-child { border-bottom:none; }
+.d-lbl { font-size:11px; color:var(--text3); font-weight:500; }
+.d-val { font-size:12px; font-weight:600; color:var(--text); text-align:right; max-width:200px; word-break:break-all; }
+.d-val.mono { font-size:11px; color:var(--text2); font-family:monospace; }
+.d-val.green { color:var(--green); font-size:14px; font-weight:700; }
+
+/* Status banner inside card */
+.status-banner {
+  margin:0 14px 12px; border-radius:10px; padding:10px 13px;
+  display:flex; align-items:center; gap:9px; font-size:12px; font-weight:500;
+}
+.status-banner.pending {
+  background:rgba(200,150,30,.08); border:1px solid rgba(200,150,30,.2); color:#8a6000;
+}
+.status-banner.approved {
+  background:rgba(26,122,60,.08); border:1px solid rgba(26,122,60,.2); color:var(--green);
+}
+.status-banner.rejected {
+  background:rgba(229,57,53,.08); border:1px solid rgba(229,57,53,.2); color:var(--red);
+}
+.sb-icon { font-size:16px; }
+
+/* ── Skeleton loading ── */
+.skeleton { background:linear-gradient(90deg,#e8f0ea 25%,#f0f5f1 50%,#e8f0ea 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:8px; }
+@keyframes shimmer { to { background-position:-200% 0; } }
+.sk-card { background:var(--white); border-radius:16px; border:1px solid var(--border); padding:14px 16px; margin-bottom:10px; display:flex; align-items:center; gap:12px; }
+.sk-circle { width:42px; height:42px; border-radius:12px; flex-shrink:0; }
+.sk-lines { flex:1; }
+.sk-line { height:12px; margin-bottom:8px; }
+.sk-line:last-child { margin-bottom:0; width:60%; }
+
+/* ── Bottom padding for mobile ── */
+.bottom-space { height:20px; }
+
+/* ── Responsive ── */
+@media(max-width:380px) {
+  .summary { grid-template-columns:repeat(3,1fr); gap:7px; }
+  .sum-val { font-size:17px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Page loader -->
+<div id="pageLoader">
+  <div class="loader-logo">AGRI<span>Tech</span></div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<!-- Notification -->
+<div id="notif"></div>
+
+<!-- Header -->
+<div class="header">
+  <div class="h-left">
+    <button class="back-btn" onclick="window.location.href='accueil.html'">←</button>
+    <div>
+      <div class="h-title">Mes recharges</div>
+      <div class="h-sub" id="hSub">Chargement...</div>
+    </div>
+  </div>
+  <div class="h-badge"><div class="h-dot"></div> <span id="hBadgeCount">0</span> en attente</div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Summary -->
+  <div class="summary">
+    <div class="sum-card pending">
+      <div class="sum-ico">⏳</div>
+      <div class="sum-val" id="sumPending">0</div>
+      <div class="sum-lbl">En attente</div>
+    </div>
+    <div class="sum-card approved">
+      <div class="sum-ico">✅</div>
+      <div class="sum-val" id="sumApproved">0</div>
+      <div class="sum-lbl">Approuvées</div>
+    </div>
+    <div class="sum-card rejected">
+      <div class="sum-ico">❌</div>
+      <div class="sum-val" id="sumRejected">0</div>
+      <div class="sum-lbl">Rejetées</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <button class="f-btn active" id="fAll" onclick="setFilter('all')">Toutes</button>
+    <button class="f-btn gold" id="fPending" onclick="setFilter('pending')">⏳ En attente</button>
+    <button class="f-btn" id="fApproved" onclick="setFilter('approved')">✅ Approuvées</button>
+    <button class="f-btn red" id="fRejected" onclick="setFilter('rejected')">❌ Rejetées</button>
+  </div>
+
+  <!-- Refresh -->
+  <div class="refresh-wrap">
+    <button class="refresh-btn" onclick="loadRecharges()">
+      <span class="refresh-ico">↻</span> Actualiser
+    </button>
+  </div>
+
+  <!-- List -->
+  <div class="list-wrap" id="listWrap">
+    <!-- Skeletons pendant le chargement -->
+    <div id="skeletons">
+      <div class="sk-card"><div class="sk-circle skeleton"></div><div class="sk-lines"><div class="sk-line skeleton"></div><div class="sk-line skeleton"></div></div></div>
+      <div class="sk-card"><div class="sk-circle skeleton"></div><div class="sk-lines"><div class="sk-line skeleton"></div><div class="sk-line skeleton"></div></div></div>
+      <div class="sk-card"><div class="sk-circle skeleton"></div><div class="sk-lines"><div class="sk-line skeleton"></div><div class="sk-line skeleton"></div></div></div>
+    </div>
+    <div id="cardList"></div>
+    <div id="emptyState" style="display:none;">
+      <div class="empty">
+        <div class="empty-ico">📭</div>
+        <div class="empty-title">Aucune recharge trouvée</div>
+        <div class="empty-sub">Vous n'avez aucune recharge<br>correspondant à ce filtre.</div>
+        <button class="empty-btn" onclick="window.location.href='recharge.html'">+ Nouvelle recharge</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-space"></div>
+</div>
+
+<script type="module">
+  import { initializeApp }         from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+  import { getDatabase, ref, onValue, query, orderByChild } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+  const app = initializeApp({
+    apiKey:"AIzaSyDaFEepJKO8TbePfgnYlX0N3-CcaV75fy4",
+    authDomain:"agri-5af15.firebaseapp.com",
+    databaseURL:"https://agri-5af15-default-rtdb.firebaseio.com",
+    projectId:"agri-5af15",
+    storageBucket:"agri-5af15.firebasestorage.app",
+    messagingSenderId:"1010902928190",
+    appId:"1:1010902928190:web:57d2555d69e2c023057a6f"
+  });
+  const auth = getAuth(app);
+  const db   = getDatabase(app);
+
+  const opColors = {
+    mtn:    'linear-gradient(135deg,#f5a623,#e07800)',
+    moov:   'linear-gradient(135deg,#0096c7,#023e8a)',
+    orange: 'linear-gradient(135deg,#ff6b00,#c1440e)',
+    wave:   'linear-gradient(135deg,#00b4d8,#005f73)',
+    tmoney: 'linear-gradient(135deg,#9b2dca,#4a0060)'
+  };
+
+  const $ = id => document.getElementById(id);
+
+  let allRecharges   = [];
+  let currentFilter  = 'all';
+  let currentUser    = null;
+  let unsubscribe    = null;
+
+  /* ── Helpers ── */
+  function showNotif(m, t='success') {
+    const n=$('notif'); n.textContent=m;
+    n.style.background = t==='success' ? '#43a047' : '#d32f2f';
+    n.style.display='block'; clearTimeout(n._t);
+    n._t=setTimeout(()=>n.style.display='none', 4500);
+  }
+
+  function formatDate(iso) {
+    if(!iso) return '—';
+    const d = new Date(iso);
+    const now = new Date();
+    const diff = now - d;
+    const mins  = Math.floor(diff/60000);
+    const hours = Math.floor(diff/3600000);
+    const days  = Math.floor(diff/86400000);
+    if(mins < 1)   return 'À l\'instant';
+    if(mins < 60)  return `Il y a ${mins} min`;
+    if(hours < 24) return `Il y a ${hours}h`;
+    if(days === 1) return 'Hier';
+    if(days < 7)   return `Il y a ${days} jours`;
+    return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+  }
+
+  function formatDateFull(iso) {
+    if(!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})
+      +' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  }
+
+  function formatAmt(n) { return Number(n).toLocaleString('fr-FR'); }
+
+  /* ── Charger les recharges en temps réel ── */
+  window.loadRecharges = () => {
+    if(!currentUser) return;
+
+    $('skeletons').style.display='block';
+    $('cardList').innerHTML='';
+    $('emptyState').style.display='none';
+
+    /* Détacher l'ancien listener s'il existe */
+    if(unsubscribe) { unsubscribe(); unsubscribe=null; }
+
+    const r = query(ref(db,`recharges/${currentUser.uid}`), orderByChild('date'));
+
+    unsubscribe = onValue(r, snap => {
+      allRecharges = [];
+      if(snap.exists()) {
+        snap.forEach(child => {
+          /* Aussi récupérer le statut admin si mis à jour dans transactions */
+          allRecharges.push({ id:child.key, ...child.val() });
+        });
+        allRecharges.reverse(); /* Plus récent en premier */
+      }
+      $('skeletons').style.display='none';
+      updateSummary();
+      renderCards();
+      hidePageLoader();
+    }, err => {
+      showNotif('❌ Erreur de chargement : '+err.message, 'error');
+      $('skeletons').style.display='none';
+      hidePageLoader();
+    });
+  };
+
+  /* ── Mise à jour du résumé ── */
+  function updateSummary() {
+    const pending  = allRecharges.filter(r=>!r.adminStatus||r.adminStatus==='pending').length;
+    const approved = allRecharges.filter(r=>r.adminStatus==='approved').length;
+    const rejected = allRecharges.filter(r=>r.adminStatus==='rejected').length;
+    const total    = allRecharges.length;
+
+    $('sumPending').textContent  = pending;
+    $('sumApproved').textContent = approved;
+    $('sumRejected').textContent = rejected;
+    $('hBadgeCount').textContent = pending;
+    $('hSub').textContent        = `${total} recharge${total>1?'s':''}`;
+  }
+
+  /* ── Filtre ── */
+  window.setFilter = f => {
+    currentFilter = f;
+    ['fAll','fPending','fApproved','fRejected'].forEach(id=>$(id).classList.remove('active'));
+    const map={all:'fAll',pending:'fPending',approved:'fApproved',rejected:'fRejected'};
+    $(map[f]).classList.add('active');
+    renderCards();
+  };
+
+  /* ── Rendu des cartes ── */
+  function renderCards() {
+    let rows = allRecharges;
+    if(currentFilter==='pending')  rows=rows.filter(r=>!r.adminStatus||r.adminStatus==='pending');
+    if(currentFilter==='approved') rows=rows.filter(r=>r.adminStatus==='approved');
+    if(currentFilter==='rejected') rows=rows.filter(r=>r.adminStatus==='rejected');
+
+    const list = $('cardList');
+    list.innerHTML = '';
+
+    if(!rows.length) {
+      $('emptyState').style.display='block';
+      return;
+    }
+    $('emptyState').style.display='none';
+
+    rows.forEach((r, idx) => {
+      const status    = r.adminStatus || 'pending';
+      const color     = opColors[r.operator] || '#888';
+      const opShort   = (r.opLabel||r.operator||'?').substring(0,3).toUpperCase();
+
+      const pillClass  = { pending:'pill-pending', approved:'pill-approved', rejected:'pill-rejected' }[status];
+      const pillLabel  = { pending:'En attente', approved:'Approuvée', rejected:'Rejetée' }[status];
+
+      const bannerMsg = {
+        pending:  '⏳ Votre demande est en cours de vérification par l\'administrateur.',
+        approved: '✅ Votre recharge a été approuvée et créditée sur votre compte.',
+        rejected: '❌ Votre recharge a été rejetée. Contactez le support si nécessaire.'
+      }[status];
+
+      const card = document.createElement('div');
+      card.className = 'r-card';
+      card.style.animationDelay = `${idx * 0.06}s`;
+      card.innerHTML = `
+        <div class="r-head" onclick="toggleCard(this)">
+          <div class="op-badge" style="background:${color}">${opShort}</div>
+          <div class="r-info">
+            <div class="r-op-name">${r.opLabel||r.operator||'—'}</div>
+            <div class="r-date">${formatDate(r.date)}</div>
+          </div>
+          <div class="r-right">
+            <div class="r-amt">${formatAmt(r.amount)} F</div>
+            <span class="pill ${pillClass}">
+              <span class="pdot"></span>${pillLabel}
+            </span>
+          </div>
+          <span class="r-arrow">▾</span>
+        </div>
+        <div class="r-details">
+          <div class="status-banner ${status}">
+            <span class="sb-icon">${status==='pending'?'⏳':status==='approved'?'✅':'❌'}</span>
+            <span>${bannerMsg}</span>
+          </div>
+          <div class="r-detail-body">
+            <div class="d-row">
+              <span class="d-lbl">Opérateur</span>
+              <span class="d-val">${r.opLabel||r.operator||'—'}</span>
+            </div>
+            <div class="d-row">
+              <span class="d-lbl">Montant</span>
+              <span class="d-val green">${formatAmt(r.amount)} F CFA</span>
+            </div>
+            <div class="d-row">
+              <span class="d-lbl">Gmail</span>
+              <span class="d-val mono">${r.gmail||'—'}</span>
+            </div>
+            <div class="d-row">
+              <span class="d-lbl">Numéro</span>
+              <span class="d-val">${r.phone||'—'}</span>
+            </div>
+            <div class="d-row">
+              <span class="d-lbl">ID Transaction</span>
+              <span class="d-val mono">${r.transactionId||'—'}</span>
+            </div>
+            <div class="d-row">
+              <span class="d-lbl">Date</span>
+              <span class="d-val">${formatDateFull(r.date)}</span>
+            </div>
+            ${r.adminStatus==='approved' && r.creditedAt ? `
+            <div class="d-row">
+              <span class="d-lbl">Crédité le</span>
+              <span class="d-val">${formatDateFull(r.creditedAt)}</span>
+            </div>` : ''}
+            ${r.adminStatus==='rejected' && r.rejectedAt ? `
+            <div class="d-row">
+              <span class="d-lbl">Rejeté le</span>
+              <span class="d-val" style="color:var(--red)">${formatDateFull(r.rejectedAt)}</span>
+            </div>` : ''}
+          </div>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  /* ── Toggle carte détail ── */
+  window.toggleCard = (head) => {
+    const card = head.closest('.r-card');
+    const isOpen = card.classList.contains('expanded');
+    /* Fermer toutes les autres */
+    document.querySelectorAll('.r-card.expanded').forEach(c => c.classList.remove('expanded'));
+    if(!isOpen) card.classList.add('expanded');
+  };
+
+  /* ── Hide page loader ── */
+  function hidePageLoader() {
+    const loader=$('pageLoader');
+    loader.classList.add('hide');
+    setTimeout(()=>loader.style.display='none', 400);
+  }
+
+  /* ── Auth ── */
+  onAuthStateChanged(auth, user => {
+    if(user) {
+      currentUser = user;
+      loadRecharges();
+    } else {
+      currentUser = null;
+      showNotif('🔒 Veuillez vous connecter','error');
+      setTimeout(()=>window.location.href='login.html', 2000);
+    }
+  });
+</script>
+</body>
+</html>

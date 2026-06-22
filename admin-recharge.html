@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGRITech — Administration</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f5f7f5;
+  --white:#ffffff;
+  --surface:#fafbfa;
+  --green:#1a7a3c;
+  --green2:#2db85e;
+  --green-light:rgba(26,122,60,.07);
+  --green-mid:rgba(26,122,60,.14);
+  --gold:#d4820a;
+  --gold-bg:rgba(212,130,10,.08);
+  --gold-border:rgba(212,130,10,.2);
+  --red:#d93025;
+  --red-bg:rgba(217,48,37,.07);
+  --red-border:rgba(217,48,37,.18);
+  --blue:#1a73e8;
+  --blue-bg:rgba(26,115,232,.07);
+  --purple:#7c3aed;
+  --purple-bg:rgba(124,58,237,.07);
+  --purple-border:rgba(124,58,237,.2);
+  --text:#1a2e20;
+  --text2:#6b7f70;
+  --text3:#a8b8ac;
+  --border:#e8ede9;
+  --shadow:0 1px 3px rgba(26,46,32,.08),0 4px 12px rgba(26,46,32,.04);
+  --shadow-md:0 4px 16px rgba(26,46,32,.10),0 1px 4px rgba(26,46,32,.06);
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--green-mid);border-radius:4px;}
+
+/* ── Notif ── */
+#notif{
+  display:none;position:fixed;top:16px;left:50%;transform:translateX(-50%);
+  z-index:8888;padding:11px 22px;border-radius:12px;font-size:13px;font-weight:600;
+  color:#fff;box-shadow:var(--shadow-md);max-width:92vw;text-align:center;
+  animation:notifIn .3s cubic-bezier(.16,1,.3,1);
+}
+@keyframes notifIn{from{opacity:0;transform:translateX(-50%) translateY(-10px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+
+/* ── App ── */
+.app{display:none;flex-direction:column;min-height:100vh;}
+.app.visible{display:flex;}
+
+/* ── Header ── */
+.header{
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 1px 0 var(--border),0 2px 8px rgba(26,46,32,.04);
+}
+.h-brand{display:flex;align-items:center;gap:10px;}
+.h-logo{
+  width:34px;height:34px;border-radius:10px;
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:#fff;letter-spacing:.5px;
+  box-shadow:0 3px 10px rgba(26,122,60,.25);
+}
+.h-name{font-size:16px;font-weight:800;color:var(--text);letter-spacing:.3px;}
+.h-name span{color:var(--green);}
+.h-badge{
+  display:flex;align-items:center;gap:5px;
+  background:var(--green-light);border:1px solid var(--green-mid);
+  border-radius:20px;padding:4px 10px;font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;color:var(--green);
+}
+.h-dot{width:5px;height:5px;border-radius:50%;background:var(--green2);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+.h-right{display:flex;align-items:center;gap:10px;}
+.h-user{
+  display:flex;align-items:center;gap:7px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:5px 12px 5px 5px;
+}
+.h-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green2));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;}
+.h-email{font-size:11px;font-weight:500;color:var(--text2);}
+.h-logout{
+  background:transparent;border:1px solid var(--border);color:var(--text2);
+  border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;
+  transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;
+}
+.h-logout:hover{border-color:var(--red-border);color:var(--red);background:var(--red-bg);}
+
+/* ── Stats bar ── */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:14px;
+  padding:20px 32px;background:var(--white);border-bottom:1px solid var(--border);
+}
+.stat-card{
+  background:var(--white);border:1px solid var(--border);border-radius:14px;
+  padding:16px 18px;position:relative;overflow:hidden;
+  transition:all .2s cubic-bezier(.16,1,.3,1);
+  box-shadow:var(--shadow);
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0 0 14px 14px;}
+.stat-card.gold::after{background:linear-gradient(90deg,#f5a623,var(--gold));}
+.stat-card.green::after{background:linear-gradient(90deg,var(--green),var(--green2));}
+.stat-card.red::after{background:linear-gradient(90deg,#c62828,var(--red));}
+.stat-card.blue::after{background:linear-gradient(90deg,#1557b0,var(--blue));}
+.stat-card.purple::after{background:linear-gradient(90deg,#5b21b6,var(--purple));}
+.s-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.s-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.s-ico.gold{background:var(--gold-bg);}
+.s-ico.green{background:var(--green-light);}
+.s-ico.red{background:var(--red-bg);}
+.s-ico.blue{background:var(--blue-bg);}
+.s-ico.purple{background:var(--purple-bg);}
+.s-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);}
+.s-val{font-size:28px;font-weight:800;color:var(--text);line-height:1;}
+.s-sub{font-size:11px;color:var(--text3);margin-top:4px;font-weight:500;}
+
+/* ── Tabs ── */
+.tabs-bar{
+  display:flex;align-items:center;gap:0;
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:0 32px;
+}
+.tab-btn{
+  padding:14px 20px;font-size:13px;font-weight:700;cursor:pointer;
+  border:none;background:transparent;color:var(--text3);
+  border-bottom:3px solid transparent;transition:all .2s;
+  font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:7px;
+}
+.tab-btn:hover{color:var(--text2);}
+.tab-btn.active{color:var(--green);border-bottom-color:var(--green);}
+.tab-btn.purple-tab.active{color:var(--purple);border-bottom-color:var(--purple);}
+.tab-count{
+  font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;
+}
+.tab-btn.active .tab-count{background:var(--green-light);color:var(--green);}
+.tab-btn.purple-tab.active .tab-count{background:var(--purple-bg);color:var(--purple);}
+.tab-btn:not(.active) .tab-count{background:var(--surface);color:var(--text3);}
+
+/* ── Filters bar ── */
+.filters-bar{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:14px 32px;background:var(--white);border-bottom:1px solid var(--border);
+}
+.f-pill{
+  border:1.5px solid var(--border);border-radius:20px;
+  padding:6px 14px;font-size:12px;font-weight:600;
+  color:var(--text2);cursor:pointer;transition:all .2s;
+  font-family:'Plus Jakarta Sans',sans-serif;background:var(--white);
+}
+.f-pill:hover{border-color:var(--green-mid);color:var(--text);}
+.f-pill.active{background:var(--green);border-color:var(--green);color:#fff;}
+.f-pill.gold-f.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+.f-pill.red-f.active{background:var(--red);border-color:var(--red);color:#fff;}
+.f-pill.purple-f.active{background:var(--purple);border-color:var(--purple);color:#fff;}
+.f-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.count-tag{
+  background:var(--green-light);border:1.5px solid var(--green-mid);
+  color:var(--green);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;
+}
+.refresh-btn{
+  display:flex;align-items:center;gap:6px;
+  background:var(--white);border:1.5px solid var(--border);color:var(--green);
+  border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;
+  transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;
+}
+.refresh-btn:hover{border-color:var(--green-mid);background:var(--green-light);}
+.r-ico{display:inline-block;transition:transform .5s;}
+.refresh-btn:hover .r-ico{transform:rotate(180deg);}
+
+/* ── Table area ── */
+.table-area{flex:1;overflow-x:auto;padding:24px 32px;}
+
+/* ── Date group separator ── */
+.date-group{margin-bottom:4px;}
+.date-sep{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 0 8px;
+}
+.date-sep-label{
+  font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text3);white-space:nowrap;
+}
+.date-sep-line{flex:1;height:1px;background:var(--border);}
+.date-sep-count{
+  font-size:10px;font-weight:700;color:var(--text3);
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:2px 8px;
+}
+
+/* ── Table ── */
+.table-empty{
+  text-align:center;padding:70px 20px;color:var(--text3);font-size:14px;
+  display:none;
+}
+.empty-ico{font-size:44px;margin-bottom:12px;opacity:.5;}
+.empty-txt{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:4px;}
+.empty-sub{font-size:12px;color:var(--text3);}
+table{width:100%;border-collapse:separate;border-spacing:0;min-width:900px;}
+thead tr th{
+  text-align:left;font-size:9px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--text3);padding:8px 14px 10px;
+  white-space:nowrap;background:var(--white);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:62px;z-index:10;
+}
+thead tr th:first-child{border-radius:12px 0 0 0;}
+thead tr th:last-child{border-radius:0 12px 0 0;}
+
+tbody tr{
+  background:var(--white);
+  transition:all .15s;cursor:pointer;
+}
+tbody tr:hover{background:#f0f8f3;}
+tbody tr td{
+  padding:13px 14px;font-size:13px;color:var(--text2);
+  border-bottom:1px solid var(--border);
+  vertical-align:middle;
+}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr td:first-child{border-left:1px solid var(--border);}
+tbody tr td:last-child{border-right:1px solid var(--border);}
+tbody tr:first-child td:first-child{border-top-left-radius:12px;}
+tbody tr:first-child td:last-child{border-top-right-radius:12px;}
+tbody tr:last-child td:first-child{border-bottom-left-radius:12px;}
+tbody tr:last-child td:last-child{border-bottom-right-radius:12px;}
+tbody tr:first-child td{border-top:1px solid var(--border);}
+
+/* Retrait row highlight */
+tbody tr.retrait-row:hover{background:#f5f0ff;}
+
+.td-op{display:flex;align-items:center;gap:9px;}
+.op-badge{
+  width:32px;height:32px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:800;color:#fff;flex-shrink:0;
+  box-shadow:0 2px 6px rgba(0,0,0,.12);
+}
+.op-name{font-size:12px;font-weight:700;color:var(--text);}
+.td-amt{font-size:15px;font-weight:800;color:var(--green);}
+.td-amt.retrait{color:var(--red);}
+.td-phone{font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);}
+.td-gmail{font-size:11px;color:var(--green);font-weight:600;max-width:155px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.td-txn{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.td-date{font-size:11px;color:var(--text3);font-weight:500;}
+
+/* Type badges */
+.type-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  border-radius:6px;padding:3px 8px;font-size:9px;font-weight:800;
+  letter-spacing:.5px;text-transform:uppercase;
+}
+.type-recharge{background:var(--green-light);color:var(--green);border:1px solid var(--green-mid);}
+.type-retrait{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border);}
+
+/* Status pills */
+.pill{
+  display:inline-flex;align-items:center;gap:5px;
+  border-radius:20px;padding:4px 10px;font-size:10px;font-weight:700;
+  white-space:nowrap;
+}
+.pill-pending{background:var(--gold-bg);border:1.5px solid var(--gold-border);color:var(--gold);}
+.pill-approved{background:var(--green-light);border:1.5px solid var(--green-mid);color:var(--green);}
+.pill-rejected{background:var(--red-bg);border:1.5px solid var(--red-border);color:var(--red);}
+.pdot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.pill-pending .pdot{animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+
+/* Action buttons */
+.act-wrap{display:flex;gap:5px;}
+.act-btn{
+  border:none;border-radius:8px;padding:6px 11px;font-size:10px;font-weight:700;
+  cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;
+  white-space:nowrap;
+}
+.act-view{background:var(--surface);border:1.5px solid var(--border);color:var(--text2);}
+.act-view:hover{border-color:var(--green-mid);color:var(--green);background:var(--green-light);}
+.act-approve{background:var(--green-light);border:1.5px solid var(--green-mid);color:var(--green);}
+.act-approve:hover{background:var(--green);color:#fff;transform:scale(1.04);}
+.act-reject{background:var(--red-bg);border:1.5px solid var(--red-border);color:var(--red);}
+.act-reject:hover{background:var(--red);color:#fff;transform:scale(1.04);}
+.act-done{font-size:10px;color:var(--text3);font-style:italic;padding:0 4px;}
+
+/* ── Modal ── */
+.modal-bg{
+  display:none;position:fixed;inset:0;background:rgba(26,46,32,.35);
+  backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:20px;
+}
+.modal-bg.open{display:flex;}
+.modal{
+  width:100%;max-width:500px;background:var(--white);
+  border:1px solid var(--border);border-radius:22px;overflow:hidden;
+  box-shadow:0 32px 80px rgba(26,46,32,.18),0 8px 24px rgba(26,46,32,.1);
+  animation:modalIn .38s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.93) translateY(18px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-header{
+  padding:22px 24px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface);
+}
+.modal-title{font-size:16px;font-weight:800;color:var(--text);}
+.modal-close{
+  background:var(--white);border:1.5px solid var(--border);color:var(--text2);
+  width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.modal-close:hover{border-color:var(--red-border);color:var(--red);background:var(--red-bg);}
+.modal-body{padding:18px 24px;max-height:62vh;overflow-y:auto;}
+.m-row{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:11px 0;border-bottom:1px solid var(--border);
+}
+.m-row:last-child{border-bottom:none;}
+.m-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);padding-top:2px;flex-shrink:0;}
+.m-val{font-size:13px;font-weight:600;color:var(--text);text-align:right;max-width:280px;word-break:break-all;}
+.m-val.mono{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);}
+.m-val.green{color:var(--green);font-size:18px;font-weight:800;}
+.m-val.red{color:var(--red);font-size:18px;font-weight:800;}
+.gmail-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--green-light);border:1.5px solid var(--green-mid);
+  border-radius:20px;padding:3px 10px;font-size:11px;
+  font-family:'DM Mono',monospace;color:var(--green);font-weight:600;
+}
+.modal-footer{
+  padding:16px 24px;border-top:1px solid var(--border);
+  display:flex;gap:10px;background:var(--surface);
+}
+.mf-btn{
+  flex:1;border:none;border-radius:11px;padding:13px;
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:12.5px;font-weight:700;
+  cursor:pointer;transition:all .2s;
+}
+.mf-approve{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;box-shadow:0 5px 18px rgba(26,122,60,.25);}
+.mf-approve:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(26,122,60,.35);}
+.mf-reject{background:var(--red-bg);border:1.5px solid var(--red-border);color:var(--red);}
+.mf-reject:hover{background:var(--red);color:#fff;}
+.mf-close{background:var(--white);border:1.5px solid var(--border);color:var(--text2);}
+.mf-close:hover{border-color:var(--green-mid);color:var(--green);}
+
+/* ── Confirm ── */
+.confirm-bg{
+  display:none;position:fixed;inset:0;background:rgba(26,46,32,.4);
+  backdrop-filter:blur(10px);z-index:600;align-items:center;justify-content:center;padding:20px;
+}
+.confirm-bg.open{display:flex;}
+.confirm-box{
+  width:100%;max-width:360px;background:var(--white);border:1px solid var(--border);
+  border-radius:20px;padding:30px 26px;text-align:center;
+  box-shadow:0 32px 60px rgba(26,46,32,.2);animation:modalIn .3s cubic-bezier(.16,1,.3,1) both;
+}
+.confirm-icon{font-size:40px;margin-bottom:12px;}
+.confirm-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:8px;}
+.confirm-sub{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:24px;}
+.confirm-sub strong{color:var(--text);}
+.confirm-btns{display:flex;gap:10px;}
+.cb{flex:1;border:none;border-radius:11px;padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.cb-green{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;box-shadow:0 4px 14px rgba(26,122,60,.2);}
+.cb-green:hover{transform:translateY(-1px);}
+.cb-red{background:linear-gradient(135deg,#c62828,var(--red));color:#fff;box-shadow:0 4px 14px rgba(217,48,37,.2);}
+.cb-red:hover{transform:translateY(-1px);}
+.cb-no{background:var(--surface);border:1.5px solid var(--border);color:var(--text2);}
+.cb-no:hover{border-color:var(--green-mid);color:var(--text);}
+
+/* ── Page loading ── */
+.page-loading{
+  display:none;position:fixed;inset:0;background:rgba(255,255,255,.8);
+  backdrop-filter:blur(6px);z-index:700;align-items:center;justify-content:center;
+}
+.pl-box{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:28px 38px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:var(--shadow-md);}
+.pl-spinner{width:36px;height:36px;border:3px solid var(--green-mid);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;}
+.pl-txt{font-size:12px;color:var(--green);font-weight:600;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── Not logged in ── */
+#notLoggedIn{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+
+@media(max-width:900px){
+  .stats-bar{grid-template-columns:repeat(2,1fr);}
+  .header,.filters-bar,.table-area,.tabs-bar{padding-left:16px;padding-right:16px;}
+  .stats-bar{padding:16px;}
+  .h-email{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- Not logged in -->
+<div id="notLoggedIn">
+  <div style="text-align:center;max-width:340px;">
+    <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--green),var(--green2));display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px;box-shadow:0 8px 24px rgba(26,122,60,.25);">🔒</div>
+    <div style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:8px;">Accès refusé</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:22px;">Vous devez être connecté pour accéder à cette page.</div>
+    <button onclick="window.location.href='login.html'" style="background:linear-gradient(135deg,var(--green),var(--green2));border:none;color:#fff;border-radius:11px;padding:12px 26px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 5px 18px rgba(26,122,60,.25);">Se connecter</button>
+  </div>
+</div>
+
+<!-- Loading -->
+<div class="page-loading" id="pageLoading">
+  <div class="pl-box">
+    <div class="pl-spinner"></div>
+    <div class="pl-txt" id="loadingTxt">Chargement...</div>
+  </div>
+</div>
+
+<!-- Notif -->
+<div id="notif"></div>
+
+<!-- App -->
+<div class="app" id="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="h-brand">
+      <div class="h-logo">AT</div>
+      <div class="h-name">AGRI<span>Tech</span></div>
+      <div class="h-badge"><div class="h-dot"></div> Admin</div>
+    </div>
+    <div class="h-right">
+      <div class="h-user">
+        <div class="h-avatar" id="hAvatar">A</div>
+        <div class="h-email" id="hUser"></div>
+      </div>
+      <button class="h-logout" onclick="logout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-card gold">
+      <div class="s-top">
+        <div class="s-lbl">Recharges en attente</div>
+        <div class="s-ico gold">⏳</div>
+      </div>
+      <div class="s-val" id="statPending">0</div>
+      <div class="s-sub">à vérifier</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="s-top">
+        <div class="s-lbl">Retraits en attente</div>
+        <div class="s-ico purple">💸</div>
+      </div>
+      <div class="s-val" id="statWithdrawPending">0</div>
+      <div class="s-sub">à traiter</div>
+    </div>
+    <div class="stat-card green">
+      <div class="s-top">
+        <div class="s-lbl">Approuvées</div>
+        <div class="s-ico green">✅</div>
+      </div>
+      <div class="s-val" id="statApproved">0</div>
+      <div class="s-sub">créditées</div>
+    </div>
+    <div class="stat-card red">
+      <div class="s-top">
+        <div class="s-lbl">Rejetées</div>
+        <div class="s-ico red">❌</div>
+      </div>
+      <div class="s-val" id="statRejected">0</div>
+      <div class="s-sub">refusées</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="s-top">
+        <div class="s-lbl">Volume approuvé</div>
+        <div class="s-ico blue">💰</div>
+      </div>
+      <div class="s-val" id="statVolume">0</div>
+      <div class="s-sub">F CFA crédités</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" id="tabRecharges" onclick="setTab('recharges')">
+      🔋 Recharges <span class="tab-count" id="tabCountRecharges">0</span>
+    </button>
+    <button class="tab-btn purple-tab" id="tabWithdrawals" onclick="setTab('withdrawals')">
+      💸 Retraits <span class="tab-count" id="tabCountWithdrawals">0</span>
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <button class="f-pill gold-f active" id="fPending" onclick="setFilter('pending')">⏳ En attente</button>
+    <button class="f-pill" id="fAll" onclick="setFilter('all')">Toutes</button>
+    <button class="f-pill" id="fApproved" onclick="setFilter('approved')">✅ Approuvées</button>
+    <button class="f-pill red-f" id="fRejected" onclick="setFilter('rejected')">❌ Rejetées</button>
+    <span class="count-tag" id="countBadge">0</span>
+    <div class="f-right">
+      <button class="refresh-btn" onclick="loadAll()">
+        <span class="r-ico">↻</span> Actualiser
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-area">
+    <div class="table-empty" id="tableEmpty">
+      <div class="empty-ico">📭</div>
+      <div class="empty-txt">Aucune transaction</div>
+      <div class="empty-sub">Rien à afficher pour ce filtre.</div>
+    </div>
+    <div id="groupedContent"></div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">📋 Détail de la transaction</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- Confirm -->
+<div class="confirm-bg" id="confirmBg">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirmIcon">❓</div>
+    <div class="confirm-title" id="confirmTitle">Confirmer</div>
+    <div class="confirm-sub" id="confirmSub"></div>
+    <div class="confirm-btns">
+      <button class="cb cb-no" onclick="closeConfirm()">Annuler</button>
+      <button class="cb" id="confirmYes">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp }                                    from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut }             from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+  import { getDatabase, ref, get, set, update, push }        from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+  const firebaseApp = initializeApp({
+    apiKey:"AIzaSyDaFEepJKO8TbePfgnYlX0N3-CcaV75fy4",
+    authDomain:"agri-5af15.firebaseapp.com",
+    databaseURL:"https://agri-5af15-default-rtdb.firebaseio.com",
+    projectId:"agri-5af15",
+    storageBucket:"agri-5af15.firebasestorage.app",
+    messagingSenderId:"1010902928190",
+    appId:"1:1010902928190:web:57d2555d69e2c023057a6f"
+  });
+  const auth = getAuth(firebaseApp);
+  const db   = getDatabase(firebaseApp);
+
+  const opColors = {
+    mtn:'linear-gradient(135deg,#f5a623,#e07800)',
+    moov:'linear-gradient(135deg,#0096c7,#023e8a)',
+    orange:'linear-gradient(135deg,#ff6b00,#c1440e)',
+    wave:'linear-gradient(135deg,#00b4d8,#005f73)',
+    tmoney:'linear-gradient(135deg,#9b2dca,#4a0060)'
+  };
+
+  const $ = id => document.getElementById(id);
+  let allTransactions = [];   // recharges
+  let allWithdrawals  = [];   // retraits
+  let currentFilter   = 'pending';
+  let currentTab      = 'recharges';
+
+  /* ── Helpers ── */
+  function showLoading(m='Chargement...') { $('loadingTxt').textContent=m; $('pageLoading').style.display='flex'; }
+  function hideLoading() { $('pageLoading').style.display='none'; }
+  function showNotif(m, t='success') {
+    const n=$('notif'); n.textContent=m;
+    n.style.background = t==='success' ? '#2e7d32' : t==='error' ? '#c62828' : '#b45309';
+    n.style.display='block'; clearTimeout(n._t);
+    n._t = setTimeout(()=>n.style.display='none', 5000);
+  }
+
+  function getDateKey(iso) {
+    if(!iso) return 'unknown';
+    return new Date(iso).toISOString().slice(0,10);
+  }
+  function getDateLabel(dateKey) {
+    if(!dateKey || dateKey==='unknown') return 'Date inconnue';
+    const today=new Date(); today.setHours(0,0,0,0);
+    const yesterday=new Date(today); yesterday.setDate(today.getDate()-1);
+    const d=new Date(dateKey+'T00:00:00');
+    if(d.getTime()===today.getTime()) return "Aujourd'hui";
+    if(d.getTime()===yesterday.getTime()) return 'Hier';
+    const diff=Math.floor((today-d)/86400000);
+    if(diff===2) return 'Avant-hier';
+    if(diff<7) return ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][d.getDay()];
+    return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  }
+  function formatTime(iso) {
+    if(!iso) return '—';
+    return new Date(iso).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  }
+  function formatAmt(n) { return Number(n).toLocaleString('fr-FR'); }
+
+  /* ── Auth ── */
+  window.logout = async () => { await signOut(auth); window.location.href='accueil.html'; };
+
+  onAuthStateChanged(auth, user => {
+    if(!user) {
+      hideLoading();
+      $('notLoggedIn').style.display='flex';
+      $('app').classList.remove('visible');
+      setTimeout(()=>window.location.href='login.html', 2500);
+      return;
+    }
+    hideLoading();
+    $('notLoggedIn').style.display='none';
+    $('app').classList.add('visible');
+    $('hUser').textContent  = user.email;
+    $('hAvatar').textContent = (user.email||'A')[0].toUpperCase();
+    loadAll();
+  });
+
+  /* ── Charger TOUT ── */
+  window.loadAll = async () => {
+    showLoading('Chargement des données...');
+    try {
+      const [snapRech, snapWith] = await Promise.all([
+        get(ref(db, 'recharges')),
+        get(ref(db, 'withdrawals'))
+      ]);
+
+      // recharges : structure recharges/{userId}/{rechargeId}/...
+      allTransactions = [];
+      if(snapRech.exists()) {
+        snapRech.forEach(userSnap => {
+          const userId = userSnap.key;
+          userSnap.forEach(rechSnap => {
+            const d = rechSnap.val();
+            allTransactions.push({
+              id: rechSnap.key,
+              userId,
+              _type: 'recharge',
+              adminStatus: d.status || d.adminStatus || 'pending',
+              ...d
+            });
+          });
+        });
+      }
+      allTransactions.sort((a,b) => new Date(b.date)-new Date(a.date));
+
+      // withdrawals : même structure possible withdrawals/{userId}/{wId} OU withdrawals/{wId}
+      allWithdrawals = [];
+      if(snapWith.exists()) {
+        snapWith.forEach(snap1 => {
+          // Vérifie si c'est un objet (niveau userId) ou une valeur directe
+          const val = snap1.val();
+          if(val && typeof val === 'object' && !val.amount) {
+            // Structure 2 niveaux : withdrawals/{userId}/{wId}
+            snap1.forEach(snap2 => {
+              const d = snap2.val();
+              allWithdrawals.push({
+                id: snap2.key,
+                userId: snap1.key,
+                _type: 'retrait',
+                adminStatus: d.status || d.adminStatus || 'pending',
+                ...d
+              });
+            });
+          } else {
+            // Structure 1 niveau : withdrawals/{wId}
+            allWithdrawals.push({
+              id: snap1.key,
+              _type: 'retrait',
+              adminStatus: val.status || val.adminStatus || 'pending',
+              ...val
+            });
+          }
+        });
+      }
+      allWithdrawals.sort((a,b) => new Date(b.date||b.createdAt||0)-new Date(a.date||a.createdAt||0));
+
+      updateStats();
+      updateTabCounts();
+      renderGrouped();
+    } catch(e) { showNotif('❌ Erreur : '+e.message,'error'); }
+    hideLoading();
+  };
+
+  // Alias pour le bouton refresh
+  window.loadTransactions = window.loadAll;
+
+  /* ── Stats ── */
+  function updateStats() {
+    const pending  = allTransactions.filter(t=>!t.adminStatus||t.adminStatus==='pending');
+    const isApproved = s => s==='approved'||s==='success';
+    const isRejected = s => s==='rejected'||s==='failed';
+    const approved = allTransactions.filter(t=>isApproved(t.adminStatus));
+    const rejected = allTransactions.filter(t=>isRejected(t.adminStatus));
+    const wPending = allWithdrawals.filter(w=>!w.adminStatus||w.adminStatus==='pending');
+    $('statPending').textContent       = pending.length;
+    $('statWithdrawPending').textContent = wPending.length;
+    $('statApproved').textContent      = approved.length;
+    $('statRejected').textContent      = rejected.length;
+    $('statVolume').textContent        = formatAmt(approved.reduce((s,t)=>s+(t.amount||0),0));
+  }
+
+  /* ── Tab counts ── */
+  function updateTabCounts() {
+    $('tabCountRecharges').textContent = allTransactions.length;
+    $('tabCountWithdrawals').textContent = allWithdrawals.length;
+
+    // Badge rouge si retraits en attente
+    const wPending = allWithdrawals.filter(w=>!w.status||w.status==='pending').length;
+    $('tabCountWithdrawals').textContent = wPending > 0 ? `${allWithdrawals.length} (${wPending} 🔴)` : allWithdrawals.length;
+  }
+
+  /* ── Tab switch ── */
+  window.setTab = t => {
+    currentTab = t;
+    $('tabRecharges').classList.toggle('active', t==='recharges');
+    $('tabWithdrawals').classList.toggle('active', t==='withdrawals');
+    $('tabWithdrawals').classList.toggle('purple-tab', true);
+    renderGrouped();
+  };
+
+  /* ── Filtre ── */
+  window.setFilter = f => {
+    currentFilter = f;
+    ['fPending','fAll','fApproved','fRejected'].forEach(id=>$(id).classList.remove('active'));
+    const map={pending:'fPending',all:'fAll',approved:'fApproved',rejected:'fRejected'};
+    if(map[f]) $(map[f]).classList.add('active');
+    renderGrouped();
+  };
+
+  /* ── Rendu groupé ── */
+  function renderGrouped() {
+    const isRetrait = currentTab === 'withdrawals';
+    let rows = isRetrait ? [...allWithdrawals] : [...allTransactions];
+
+    /* Normaliser le champ status pour les retraits */
+    if(isRetrait) {
+      rows = rows.map(w => ({
+        ...w,
+        adminStatus: w.status || w.adminStatus || 'pending',
+        date: w.date || w.createdAt || w.requestedAt || ''
+      }));
+    }
+
+    const isPendingStatus  = s => !s || s==='pending';
+    const isApprovedStatus = s => s==='approved' || s==='success';
+    const isRejectedStatus = s => s==='rejected' || s==='failed';
+    if(currentFilter==='pending')  rows = rows.filter(t=>isPendingStatus(t.adminStatus));
+    if(currentFilter==='approved') rows = rows.filter(t=>isApprovedStatus(t.adminStatus));
+    if(currentFilter==='rejected') rows = rows.filter(t=>isRejectedStatus(t.adminStatus));
+
+    $('countBadge').textContent = rows.length;
+    const container = $('groupedContent');
+    container.innerHTML = '';
+
+    if(!rows.length) {
+      $('tableEmpty').style.display='block';
+      return;
+    }
+    $('tableEmpty').style.display='none';
+
+    /* Grouper par date */
+    const groups = {};
+    rows.forEach(txn => {
+      const key = getDateKey(txn.date);
+      if(!groups[key]) groups[key]=[];
+      groups[key].push(txn);
+    });
+    const sortedKeys = Object.keys(groups).sort((a,b)=>b.localeCompare(a));
+
+    sortedKeys.forEach(dateKey => {
+      const groupTxns = groups[dateKey];
+      const label = getDateLabel(dateKey);
+
+      const sep = document.createElement('div');
+      sep.className = 'date-sep';
+      sep.innerHTML = `
+        <div class="date-sep-line"></div>
+        <div class="date-sep-label">${label}</div>
+        <div class="date-sep-count">${groupTxns.length} transaction${groupTxns.length>1?'s':''}</div>
+        <div class="date-sep-line"></div>`;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'date-group';
+
+      const table = document.createElement('table');
+
+      if(isRetrait) {
+        /* ── Tableau RETRAITS ── */
+        table.innerHTML = `
+          <thead><tr>
+            <th>Utilisateur</th>
+            <th>Montant</th>
+            <th>Opérateur</th>
+            <th>Téléphone</th>
+            <th>Heure</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr></thead>
+          <tbody id="tbody-${dateKey}"></tbody>`;
+
+        wrapper.appendChild(sep);
+        wrapper.appendChild(table);
+        container.appendChild(wrapper);
+
+        const tbody = table.querySelector(`#tbody-${dateKey}`);
+
+        groupTxns.forEach(txn => {
+          const status    = txn.adminStatus || 'pending';
+          const pillClass = {pending:'pill-pending',approved:'pill-approved',rejected:'pill-rejected'}[status] || 'pill-pending';
+          const pillLabel = {pending:'En attente',approved:'Approuvé',rejected:'Rejeté'}[status] || 'En attente';
+          const isPending = status==='pending';
+
+          const tr = document.createElement('tr');
+          tr.className = 'retrait-row';
+          tr.innerHTML = `
+            <td>
+              <div class="td-op">
+                <div class="op-badge" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)">💸</div>
+                <div>
+                  <div class="op-name">${txn.userEmail||txn.gmail||txn.userId||'—'}</div>
+                  <div style="font-size:10px;color:var(--text3);">${txn.userId||''}</div>
+                </div>
+              </div>
+            </td>
+            <td><div class="td-amt retrait">- ${formatAmt(txn.amount||0)} F</div></td>
+            <td><div class="op-name">${txn.operator||txn.opLabel||'—'}</div></td>
+            <td><div class="td-phone">${txn.phone||txn.phoneNumber||'—'}</div></td>
+            <td><div class="td-date">${formatTime(txn.date)}</div></td>
+            <td><span class="pill ${pillClass}"><span class="pdot"></span>${pillLabel}</span></td>
+            <td>
+              <div class="act-wrap">
+                <button class="act-btn act-view" data-id="${txn.id}" data-action="view">🔍 Voir</button>
+                ${isPending
+                  ? `<button class="act-btn act-approve" data-id="${txn.id}" data-action="approve">✅</button>
+                     <button class="act-btn act-reject"  data-id="${txn.id}" data-action="reject">❌</button>`
+                  : `<span class="act-done">${status==='approved'?'✅ Traité':'❌ Rejeté'}</span>`
+                }
+              </div>
+            </td>`;
+
+          tr.addEventListener('click', e => {
+            const btn = e.target.closest('[data-action]');
+            if(btn) {
+              e.stopPropagation();
+              const {action, id} = btn.dataset;
+              if(action==='view')    openWithdrawalModal(id);
+              if(action==='approve') confirmWithdrawalAction('approve', id);
+              if(action==='reject')  confirmWithdrawalAction('reject', id);
+            } else { openWithdrawalModal(txn.id); }
+          });
+
+          tbody.appendChild(tr);
+        });
+
+      } else {
+        /* ── Tableau RECHARGES (original) ── */
+        table.innerHTML = `
+          <thead><tr>
+            <th>Opérateur</th>
+            <th>Montant</th>
+            <th>Gmail</th>
+            <th>Téléphone</th>
+            <th>ID Transaction</th>
+            <th>Heure</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr></thead>
+          <tbody id="tbody-${dateKey}"></tbody>`;
+
+        wrapper.appendChild(sep);
+        wrapper.appendChild(table);
+        container.appendChild(wrapper);
+
+        const tbody = table.querySelector(`#tbody-${dateKey}`);
+
+        groupTxns.forEach(txn => {
+          const status    = txn.adminStatus || 'pending';
+          const pillClass = {pending:'pill-pending',approved:'pill-approved',rejected:'pill-rejected'}[status];
+          const pillLabel = {pending:'En attente',approved:'Approuvée',rejected:'Rejetée'}[status];
+          const isPending = status==='pending';
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>
+              <div class="td-op">
+                <div class="op-badge" style="background:${opColors[txn.operator]||'#888'}">${(txn.opLabel||txn.operator||'?').substring(0,3).toUpperCase()}</div>
+                <div class="op-name">${txn.opLabel||txn.operator||'—'}</div>
+              </div>
+            </td>
+            <td><div class="td-amt">${formatAmt(txn.amount)} F</div></td>
+            <td><div class="td-gmail" title="${txn.gmail||''}">${txn.gmail||'—'}</div></td>
+            <td><div class="td-phone">${txn.phone||'—'}</div></td>
+            <td title="${txn.transactionId||''}"><div class="td-txn">${txn.transactionId||'—'}</div></td>
+            <td><div class="td-date">${formatTime(txn.date)}</div></td>
+            <td><span class="pill ${pillClass}"><span class="pdot"></span>${pillLabel}</span></td>
+            <td>
+              <div class="act-wrap">
+                <button class="act-btn act-view" data-id="${txn.id}" data-action="view">🔍 Voir</button>
+                ${isPending
+                  ? `<button class="act-btn act-approve" data-id="${txn.id}" data-action="approve">✅</button>
+                     <button class="act-btn act-reject"  data-id="${txn.id}" data-action="reject">❌</button>`
+                  : `<span class="act-done">${status==='approved'?'✅ Créditée':'❌ Rejetée'}</span>`
+                }
+              </div>
+            </td>`;
+
+          tr.addEventListener('click', e => {
+            const btn = e.target.closest('[data-action]');
+            if(btn) {
+              e.stopPropagation();
+              const {action, id} = btn.dataset;
+              if(action==='view')    openModal(id);
+              if(action==='approve') confirmAction('approve', id);
+              if(action==='reject')  confirmAction('reject', id);
+            } else { openModal(txn.id); }
+          });
+
+          tbody.appendChild(tr);
+        });
+      }
+    });
+  }
+
+  /* ══════════════════════════════════════
+     MODAL RECHARGE (original)
+  ══════════════════════════════════════ */
+  window.openModal = txnId => {
+    const t = allTransactions.find(t=>t.id===txnId);
+    if(!t) return;
+    const status=t.adminStatus||'pending', isPending=status==='pending';
+    const pillClass=status==='pending'?'pill-pending':status==='approved'?'pill-approved':'pill-rejected';
+    const pillLabel=status==='pending'?'En attente':status==='approved'?'Approuvée':'Rejetée';
+
+    $('modalTitle').textContent='📋 Détail recharge';
+    $('modalBody').innerHTML=`
+      <div class="m-row"><div class="m-lbl">Opérateur</div><div class="m-val">${t.opLabel||t.operator||'—'}</div></div>
+      <div class="m-row"><div class="m-lbl">Montant</div><div class="m-val green">${formatAmt(t.amount)} F CFA</div></div>
+      <div class="m-row"><div class="m-lbl">Gmail</div><div class="m-val"><span class="gmail-badge">✉️ ${t.gmail||'—'}</span></div></div>
+      <div class="m-row"><div class="m-lbl">Téléphone</div><div class="m-val mono">${t.phone||'—'}</div></div>
+      <div class="m-row"><div class="m-lbl">ID Transaction MF</div><div class="m-val mono">${t.transactionId||'—'}</div></div>
+      <div class="m-row"><div class="m-lbl">Email compte</div><div class="m-val mono">${t.userEmail||'—'}</div></div>
+      <div class="m-row"><div class="m-lbl">User ID</div><div class="m-val mono" style="font-size:10px">${t.userId||'—'}</div></div>
+      <div class="m-row"><div class="m-lbl">Date soumission</div><div class="m-val">${new Date(t.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})} à ${formatTime(t.date)}</div></div>
+      <div class="m-row"><div class="m-lbl">Solde avant</div><div class="m-val">${formatAmt(t.balanceAvant||0)} F</div></div>
+      <div class="m-row"><div class="m-lbl">Solde après (prévu)</div><div class="m-val">${formatAmt(t.balanceApres||0)} F</div></div>
+      <div class="m-row"><div class="m-lbl">Statut</div><div class="m-val"><span class="pill ${pillClass}"><span class="pdot"></span>${pillLabel}</span></div></div>
+      ${t.creditedAt?`<div class="m-row"><div class="m-lbl">Crédité le</div><div class="m-val">${new Date(t.creditedAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})} à ${formatTime(t.creditedAt)}</div></div>`:''}
+      ${t.rejectedAt?`<div class="m-row"><div class="m-lbl">Rejeté le</div><div class="m-val" style="color:var(--red)">${new Date(t.rejectedAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})} à ${formatTime(t.rejectedAt)}</div></div>`:''}`;
+
+    const footer=$('modalFooter'); footer.innerHTML='';
+    if(isPending) {
+      const r=document.createElement('button'); r.className='mf-btn mf-reject'; r.textContent='❌ Rejeter';
+      r.onclick=()=>{closeModal();confirmAction('reject',t.id);};
+      const a=document.createElement('button'); a.className='mf-btn mf-approve'; a.textContent='✅ Approuver & Créditer';
+      a.onclick=()=>{closeModal();confirmAction('approve',t.id);};
+      footer.appendChild(r); footer.appendChild(a);
+    } else {
+      const c=document.createElement('button'); c.className='mf-btn mf-close'; c.textContent='Fermer'; c.onclick=closeModal;
+      footer.appendChild(c);
+    }
+    $('modalBg').classList.add('open');
+  };
+
+  /* ══════════════════════════════════════
+     MODAL RETRAIT
+  ══════════════════════════════════════ */
+  window.openWithdrawalModal = wId => {
+    const w = allWithdrawals.find(w=>w.id===wId);
+    if(!w) return;
+    const rawStatus = w.status || w.adminStatus || 'pending';
+    const isPending = rawStatus==='pending';
+    const pillClass = rawStatus==='pending'?'pill-pending':rawStatus==='approved'?'pill-approved':'pill-rejected';
+    const pillLabel = rawStatus==='pending'?'En attente':rawStatus==='approved'?'Approuvé':'Rejeté';
+    const dateStr   = w.date||w.createdAt||w.requestedAt||'';
+
+    $('modalTitle').textContent='💸 Détail retrait';
+    $('modalBody').innerHTML=`
+      <div class="m-row"><div class="m-lbl">Utilisateur</div><div class="m-val">${w.userEmail||w.gmail||'—'}</div></div>
+      <div class="m-row"><div class="m-lbl">User ID</div><div class="m-val mono" style="font-size:10px">${w.userId||'—'}</div></div>
+      <div class="m-row"><div class="m-lbl">Montant demandé</div><div class="m-val red">- ${formatAmt(w.amount||0)} F CFA</div></div>
+      <div class="m-row"><div class="m-lbl">Opérateur</div><div class="m-val">${w.operator||w.opLabel||'—'}</div></div>
+      <div class="m-row"><div class="m-lbl">Téléphone</div><div class="m-val mono">${w.phone||w.phoneNumber||'—'}</div></div>
+      <div class="m-row"><div class="m-lbl">Solde avant</div><div class="m-val">${formatAmt(w.balanceAvant||w.balanceBefore||0)} F</div></div>
+      <div class="m-row"><div class="m-lbl">Date demande</div><div class="m-val">${dateStr?new Date(dateStr).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})+' à '+formatTime(dateStr):'—'}</div></div>
+      <div class="m-row"><div class="m-lbl">Statut</div><div class="m-val"><span class="pill ${pillClass}"><span class="pdot"></span>${pillLabel}</span></div></div>
+      ${w.processedAt?`<div class="m-row"><div class="m-lbl">Traité le</div><div class="m-val">${new Date(w.processedAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})} à ${formatTime(w.processedAt)}</div></div>`:''}
+      ${w.note?`<div class="m-row"><div class="m-lbl">Note</div><div class="m-val">${w.note}</div></div>`:''}`;
+
+    const footer=$('modalFooter'); footer.innerHTML='';
+    if(isPending) {
+      const r=document.createElement('button'); r.className='mf-btn mf-reject'; r.textContent='❌ Rejeter';
+      r.onclick=()=>{closeModal();confirmWithdrawalAction('reject',w.id);};
+      const a=document.createElement('button'); a.className='mf-btn mf-approve'; a.textContent='✅ Marquer traité';
+      a.onclick=()=>{closeModal();confirmWithdrawalAction('approve',w.id);};
+      footer.appendChild(r); footer.appendChild(a);
+    } else {
+      const c=document.createElement('button'); c.className='mf-btn mf-close'; c.textContent='Fermer'; c.onclick=closeModal;
+      footer.appendChild(c);
+    }
+    $('modalBg').classList.add('open');
+  };
+
+  window.closeModal = () => $('modalBg').classList.remove('open');
+
+  /* ══════════════════════════════════════
+     CONFIRM RECHARGE
+  ══════════════════════════════════════ */
+  window.confirmAction = (action, txnId) => {
+    const txn = allTransactions.find(t=>t.id===txnId);
+    if(!txn) return;
+    if(action==='approve') {
+      $('confirmIcon').textContent='✅';
+      $('confirmTitle').textContent='Approuver & Créditer ?';
+      $('confirmSub').innerHTML=`Créditer <strong>${formatAmt(txn.amount)} F CFA</strong> pour<br><strong>${txn.gmail||txn.userEmail||txn.userId}</strong><br><br><code style="font-size:10px;color:var(--green);background:var(--green-light);padding:3px 8px;border-radius:6px;">${txn.transactionId}</code>`;
+    } else {
+      $('confirmIcon').textContent='❌';
+      $('confirmTitle').textContent='Rejeter la transaction ?';
+      $('confirmSub').innerHTML=`Rejeter la recharge de <strong>${formatAmt(txn.amount)} F CFA</strong> de<br><strong>${txn.gmail||txn.userEmail||txn.userId}</strong>`;
+    }
+    const oldBtn=$('confirmYes'), newBtn=oldBtn.cloneNode(true);
+    oldBtn.parentNode.replaceChild(newBtn,oldBtn);
+    newBtn.className   = action==='approve'?'cb cb-green':'cb cb-red';
+    newBtn.textContent = action==='approve'?'✅ Confirmer':'❌ Rejeter';
+    newBtn.onclick = ()=>{ $('confirmBg').classList.remove('open'); executeRechargeAction(action,txnId); };
+    $('confirmBg').classList.add('open');
+  };
+
+  /* ══════════════════════════════════════
+     CONFIRM RETRAIT
+  ══════════════════════════════════════ */
+  window.confirmWithdrawalAction = (action, wId) => {
+    const w = allWithdrawals.find(w=>w.id===wId);
+    if(!w) return;
+    if(action==='approve') {
+      $('confirmIcon').textContent='💸';
+      $('confirmTitle').textContent='Marquer comme traité ?';
+      $('confirmSub').innerHTML=`Confirmer l'envoi de <strong>${formatAmt(w.amount)} F CFA</strong> à<br><strong>${w.userEmail||w.gmail||w.userId}</strong><br>sur le <strong>${w.operator||'—'}</strong> → <strong>${w.phone||w.phoneNumber||'—'}</strong>`;
+    } else {
+      $('confirmIcon').textContent='❌';
+      $('confirmTitle').textContent='Rejeter le retrait ?';
+      $('confirmSub').innerHTML=`Rejeter la demande de <strong>${formatAmt(w.amount)} F CFA</strong> de<br><strong>${w.userEmail||w.gmail||w.userId}</strong><br><br>Le solde sera restitué à l'utilisateur.`;
+    }
+    const oldBtn=$('confirmYes'), newBtn=oldBtn.cloneNode(true);
+    oldBtn.parentNode.replaceChild(newBtn,oldBtn);
+    newBtn.className   = action==='approve'?'cb cb-green':'cb cb-red';
+    newBtn.textContent = action==='approve'?'✅ Confirmer':'❌ Rejeter';
+    newBtn.onclick = ()=>{ $('confirmBg').classList.remove('open'); executeWithdrawalAction(action,wId); };
+    $('confirmBg').classList.add('open');
+  };
+
+  window.closeConfirm = () => $('confirmBg').classList.remove('open');
+
+  /* ══════════════════════════════════════
+     EXECUTER RECHARGE
+  ══════════════════════════════════════ */
+  async function executeRechargeAction(action, txnId) {
+    const txn = allTransactions.find(t=>t.id===txnId);
+    if(!txn) return;
+
+    if(action==='approve') {
+      showLoading('Crédit du solde en cours...');
+      try {
+        const dup=await get(ref(db,`credited_tokens/${txn.transactionId}`));
+        if(dup.exists()&&dup.val().adminApproved){ hideLoading(); showNotif('⚠️ Déjà créditée !','error'); return; }
+
+        const balSnap=await get(ref(db,`users/${txn.userId}/balance`));
+        const ancienSolde=balSnap.val()||0, nouveauSolde=ancienSolde+txn.amount;
+
+        await update(ref(db,`users/${txn.userId}`),{balance:nouveauSolde});
+        await update(ref(db,`transactions/${txnId}`),{adminStatus:'approved',credited:true,balanceAvant:ancienSolde,balanceApres:nouveauSolde,creditedAt:new Date().toISOString(),creditedBy:auth.currentUser?.email});
+
+        const rSnap=await get(ref(db,`recharges/${txn.userId}`));
+        if(rSnap.exists()) rSnap.forEach(c=>{if(c.val().transactionId===txn.transactionId) update(ref(db,`recharges/${txn.userId}/${c.key}`),{adminStatus:'approved',creditedAt:new Date().toISOString()});});
+
+        await set(ref(db,`credited_tokens/${txn.transactionId}`),{userId:txn.userId,amount:txn.amount,adminApproved:true,approvedBy:auth.currentUser?.email,date:new Date().toISOString()});
+        await set(push(ref(db,`notifications/${txn.userId}`)),{type:'recharge_approved',message:`Votre recharge de ${formatAmt(txn.amount)} F CFA a été approuvée !`,amount:txn.amount,txnId:txn.transactionId,date:new Date().toISOString(),read:false});
+
+        hideLoading();
+        showNotif(`✅ ${formatAmt(txn.amount)} F crédités — ${txn.gmail||txn.userEmail}`,'success');
+        await loadAll();
+      } catch(e){ hideLoading(); showNotif('❌ Erreur : '+e.message,'error'); }
+
+    } else {
+      showLoading('Rejet en cours...');
+      try {
+        await update(ref(db,`transactions/${txnId}`),{adminStatus:'rejected',rejectedAt:new Date().toISOString(),rejectedBy:auth.currentUser?.email});
+        const rSnap=await get(ref(db,`recharges/${txn.userId}`));
+        if(rSnap.exists()) rSnap.forEach(c=>{if(c.val().transactionId===txn.transactionId) update(ref(db,`recharges/${txn.userId}/${c.key}`),{adminStatus:'rejected',rejectedAt:new Date().toISOString()});});
+        await set(push(ref(db,`notifications/${txn.userId}`)),{type:'recharge_rejected',message:`Votre recharge de ${formatAmt(txn.amount)} F CFA a été rejetée. Contactez le support.`,amount:txn.amount,txnId:txn.transactionId,date:new Date().toISOString(),read:false});
+        hideLoading();
+        showNotif('❌ Transaction rejetée','warning');
+        await loadAll();
+      } catch(e){ hideLoading(); showNotif('❌ Erreur : '+e.message,'error'); }
+    }
+  }
+
+  /* ══════════════════════════════════════
+     EXECUTER RETRAIT
+  ══════════════════════════════════════ */
+  async function executeWithdrawalAction(action, wId) {
+    const w = allWithdrawals.find(w=>w.id===wId);
+    if(!w) return;
+    const now = new Date().toISOString();
+
+    if(action==='approve') {
+      showLoading('Validation du retrait...');
+      try {
+        // Marquer le retrait comme traité
+        await update(ref(db,`withdrawals/${wId}`),{
+          status:'approved',
+          adminStatus:'approved',
+          processedAt:now,
+          processedBy:auth.currentUser?.email
+        });
+
+        // Notifier l'utilisateur
+        await set(push(ref(db,`notifications/${w.userId}`)),{
+          type:'withdrawal_approved',
+          message:`Votre retrait de ${formatAmt(w.amount)} F CFA a été envoyé sur votre ${w.operator||'compte'} !`,
+          amount:w.amount,
+          date:now,
+          read:false
+        });
+
+        hideLoading();
+        showNotif(`✅ Retrait de ${formatAmt(w.amount)} F marqué traité`,'success');
+        await loadAll();
+      } catch(e){ hideLoading(); showNotif('❌ Erreur : '+e.message,'error'); }
+
+    } else {
+      showLoading('Rejet du retrait...');
+      try {
+        // Restituer le solde
+        const balSnap = await get(ref(db,`users/${w.userId}/balance`));
+        const ancienSolde = balSnap.val()||0;
+        const nouveauSolde = ancienSolde + (w.amount||0);
+
+        await update(ref(db,`users/${w.userId}`),{balance:nouveauSolde});
+        await update(ref(db,`withdrawals/${wId}`),{
+          status:'rejected',
+          adminStatus:'rejected',
+          rejectedAt:now,
+          rejectedBy:auth.currentUser?.email,
+          balanceRestored:nouveauSolde
+        });
+
+        // Notifier l'utilisateur
+        await set(push(ref(db,`notifications/${w.userId}`)),{
+          type:'withdrawal_rejected',
+          message:`Votre demande de retrait de ${formatAmt(w.amount)} F CFA a été rejetée. Votre solde a été restitué.`,
+          amount:w.amount,
+          date:now,
+          read:false
+        });
+
+        hideLoading();
+        showNotif(`❌ Retrait rejeté — ${formatAmt(w.amount)} F restitués`,'warning');
+        await loadAll();
+      } catch(e){ hideLoading(); showNotif('❌ Erreur : '+e.message,'error'); }
+    }
+  }
+</script>
+</body>
+</html>

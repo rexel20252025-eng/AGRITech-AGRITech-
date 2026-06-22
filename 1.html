@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AGRITech — Accueil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green: #2d6a4f;
+      --green-light: #52b788;
+      --green-pale: #d8f3dc;
+      --gold: #b7882c;
+      --text: #1a2e1e;
+      --muted: #6b8f71;
+      --bg: #f8fdf9;
+      --border: #d0e8d4;
+      --shadow: rgba(45,106,79,0.10);
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0 80px 0;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .page { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 420px; padding: 0 16px; position: relative; z-index: 1; }
+    .page.active { display: flex; }
+
+    /* TOPBAR */
+    .topbar { width: 100%; max-width: 420px; padding: 18px 20px 10px; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; }
+    .topbar-logo { display: flex; align-items: center; gap: 8px; }
+    .topbar-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--green), var(--green-light)); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(45,106,79,0.25); }
+    .topbar-name { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 700; color: var(--green); letter-spacing: 2px; }
+    .topbar-notif { width: 36px; height: 36px; background: white; border: 1.5px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+    .notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; background: #e74c3c; border-radius: 50%; border: 1.5px solid white; }
+
+    /* BALANCE CARD */
+    .balance-card {
+      width: 100%;
+      background: linear-gradient(140deg, #1a3d2b 0%, #2d6a4f 45%, #3d8b6a 80%, #52b788 100%);
+      border-radius: 24px;
+      padding: 24px 22px 20px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(45,106,79,0.38), 0 2px 8px rgba(45,106,79,0.2);
+      animation: fadeUp 0.4s ease both;
+    }
+    .balance-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.06); border-radius: 50%; }
+    .balance-card::after  { content: ''; position: absolute; bottom: -30px; left: -30px; width: 140px; height: 140px; background: rgba(255,255,255,0.04); border-radius: 50%; }
+    .balance-card-grain {
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      border-radius: 24px; pointer-events: none; z-index: 0;
+    }
+    .balance-card-inner { position: relative; z-index: 1; }
+    .balance-user-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .balance-user-left { display: flex; align-items: center; gap: 10px; }
+    .balance-avatar { width: 40px; height: 40px; background: rgba(255,255,255,0.18); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .balance-user-name { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; color: #ffffff; letter-spacing: 0.3px; line-height: 1.1; }
+    .balance-user-num { font-size: 0.65rem; font-weight: 500; color: rgba(255,255,255,0.65); margin-top: 2px; letter-spacing: 0.5px; }
+    .balance-badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 4px 10px; font-size: 0.6rem; font-weight: 700; color: rgba(255,255,255,0.9); letter-spacing: 1px; backdrop-filter: blur(6px); }
+    .balance-divider { height: 1px; background: rgba(255,255,255,0.12); margin-bottom: 16px; }
+    .balance-label { font-size: 0.65rem; font-weight: 600; color: rgba(255,255,255,0.6); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+    .balance-main-amount { font-family: 'Cormorant Garamond', serif; font-size: 2.6rem; font-weight: 700; color: #ffffff; line-height: 1; letter-spacing: -0.5px; }
+    .balance-main-currency { font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600; color: rgba(255,255,255,0.7); margin-left: 4px; vertical-align: middle; }
+    .balance-eye { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: rgba(255,255,255,0.12); border-radius: 50%; margin-left: 8px; cursor: pointer; vertical-align: middle; transition: background 0.2s; }
+    .balance-eye:hover { background: rgba(255,255,255,0.22); }
+    .balance-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 18px; }
+    .balance-stat { background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; padding: 10px 12px; backdrop-filter: blur(6px); transition: background 0.2s; }
+    .balance-stat:hover { background: rgba(255,255,255,0.16); }
+    .balance-stat-icon-row { display: flex; align-items: center; gap: 5px; margin-bottom: 6px; }
+    .balance-stat-icon { width: 22px; height: 22px; border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+    .balance-stat-type { font-size: 0.58rem; font-weight: 700; color: rgba(255,255,255,0.55); letter-spacing: 0.8px; text-transform: uppercase; }
+    .balance-stat-value { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 700; color: #ffffff; line-height: 1; }
+    .balance-stat-unit { font-family: 'DM Sans', sans-serif; font-size: 0.58rem; font-weight: 600; color: rgba(255,255,255,0.5); margin-left: 2px; }
+    .stat-in  .balance-stat-icon { background: rgba(82,183,136,0.3); }
+    .stat-out .balance-stat-icon { background: rgba(183,136,44,0.3); }
+    .stat-tx  .balance-stat-icon { background: rgba(99,102,241,0.3); }
+    .stat-net .balance-stat-icon { background: rgba(231,76,60,0.25); }
+    .balance-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .balance-footer-chip { display: flex; align-items: center; gap: 5px; }
+    .chip-dot { width: 6px; height: 6px; background: #52b788; border-radius: 50%; box-shadow: 0 0 0 3px rgba(82,183,136,0.25); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 3px rgba(82,183,136,0.25); } 50% { box-shadow: 0 0 0 6px rgba(82,183,136,0.08); } }
+    .chip-label { font-size: 0.6rem; font-weight: 700; color: rgba(255,255,255,0.6); letter-spacing: 0.8px; }
+    .balance-card-num { font-family: 'Cormorant Garamond', serif; font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.35); letter-spacing: 2px; }
+
+    /* BONUS BADGE */
+    .bonus-credit-toast {
+      display: none;
+      position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg, #1a3d2b, #2d6a4f);
+      color: white; border-radius: 14px; padding: 10px 18px;
+      font-size: 0.78rem; font-weight: 700; z-index: 999;
+      box-shadow: 0 8px 24px rgba(45,106,79,0.4);
+      animation: slideDown 0.35s ease;
+      white-space: nowrap;
+    }
+    .bonus-credit-toast.show { display: flex; align-items: center; gap: 8px; }
+    @keyframes slideDown { from { opacity:0; transform: translateX(-50%) translateY(-10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+
+    .quick-actions { width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; animation: fadeUp 0.4s 0.1s ease both; }
+    .qa-item { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 12px 4px; background: white; border: 1.5px solid var(--border); border-radius: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 10px var(--shadow); }
+    .qa-item:hover { transform: translateY(-2px); border-color: var(--green-light); }
+    .qa-item:active { transform: scale(0.96); }
+    .qa-label { font-size: 0.58rem; font-weight: 600; color: var(--muted); text-align: center; letter-spacing: 0.3px; }
+
+    .section-title { width: 100%; font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+
+    .action-grid { width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; animation: fadeUp 0.4s ease both; }
+    .action-card { background: white; border: 1.5px solid var(--border); border-radius: 18px; padding: 18px 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 2px 12px var(--shadow); transition: all 0.2s; text-align: center; }
+    .action-card:hover { transform: translateY(-3px); border-color: var(--green-light); }
+    .action-card-icon { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; }
+    .action-card-title { font-size: 0.82rem; font-weight: 700; color: var(--text); }
+    .action-card-desc { font-size: 0.68rem; color: var(--muted); line-height: 1.4; }
+
+    .share-card { width: 100%; background: white; border: 1.5px solid var(--border); border-radius: 20px; padding: 20px; box-shadow: 0 4px 20px var(--shadow); margin-bottom: 10px; animation: fadeUp 0.4s ease both; text-align: center; }
+    .share-qr { width: 130px; height: 130px; background: linear-gradient(135deg, #e8f5ed, var(--green-pale)); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 12px auto; border: 1.5px solid var(--border); }
+    .share-code { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 700; color: var(--green); letter-spacing: 4px; margin: 6px 0; }
+    .share-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+    .share-btn { width: 100%; padding: 11px; background: linear-gradient(135deg, var(--green), var(--green-light)); color: white; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 700; cursor: pointer; margin-top: 6px; transition: transform 0.15s; box-shadow: 0 4px 14px rgba(45,106,79,0.3); }
+    .share-btn:hover { transform: translateY(-2px); }
+
+    .profile-header { width: 100%; background: linear-gradient(135deg, var(--green), var(--green-light)); border-radius: 20px; padding: 20px; text-align: center; color: white; margin-bottom: 12px; box-shadow: 0 6px 24px rgba(45,106,79,0.3); animation: fadeUp 0.4s ease both; }
+    .profile-avatar { width: 62px; height: 62px; background: rgba(255,255,255,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; border: 2px solid rgba(255,255,255,0.4); }
+    .profile-name { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 700; }
+    .profile-num { font-size: 0.72rem; opacity: 0.8; letter-spacing: 1px; margin-top: 2px; }
+    .menu-list { width: 100%; display: flex; flex-direction: column; gap: 8px; animation: fadeUp 0.4s 0.1s ease both; }
+    .menu-item { background: white; border: 1.5px solid var(--border); border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; box-shadow: 0 2px 8px var(--shadow); transition: all 0.2s; }
+    .menu-item:hover { border-color: var(--green-light); transform: translateX(3px); }
+    .menu-item-icon { width: 32px; display: flex; align-items: center; justify-content: center; }
+    .menu-item-label { flex: 1; font-size: 0.82rem; font-weight: 600; color: var(--text); }
+    .menu-item-arrow { display: flex; align-items: center; }
+    .menu-item.danger .menu-item-label { color: #e74c3c; }
+
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: white; border-top: 1.5px solid var(--border);
+      display: flex; justify-content: space-around; align-items: center;
+      padding: 8px 0 14px; z-index: 100;
+      box-shadow: 0 -4px 20px rgba(45,106,79,0.08);
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 3px; cursor: pointer; padding: 4px 16px;
+      border-radius: 12px; transition: all 0.2s; text-decoration: none;
+      position: relative;
+    }
+    .nav-icon { transition: transform 0.2s; color: #aac4b0; }
+    .nav-label { font-size: 0.6rem; font-weight: 600; color: var(--muted); letter-spacing: 0.3px; }
+    .nav-item.active .nav-label { color: var(--green); font-weight: 700; }
+    .nav-item.active .nav-icon { transform: scale(1.15); color: var(--green); }
+    .nav-dot { width: 4px; height: 4px; background: var(--green); border-radius: 50%; display: none; }
+    .nav-item.active .nav-dot { display: block; }
+
+    #loading-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(255,255,255,0.88); z-index: 999;
+      align-items: center; justify-content: center; flex-direction: column;
+      gap: 14px; backdrop-filter: blur(5px);
+    }
+    .loader-ring { width: 50px; height: 50px; border: 3.5px solid var(--green-pale); border-top: 3.5px solid var(--green); border-radius: 50%; animation: spin 0.75s linear infinite; }
+    .loader-icon { position: absolute; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
+    .loader-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
+    .loader-text { font-size: 0.8rem; font-weight: 600; color: var(--green); letter-spacing: 0.5px; }
+    .loader-sub { font-size: 0.68rem; color: var(--muted); }
+
+    .home-menu { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 16px; animation: fadeUp 0.4s 0.15s ease both; }
+    .home-menu-group { width: 100%; background: white; border: 1.5px solid var(--border); border-radius: 18px; overflow: hidden; box-shadow: 0 2px 12px var(--shadow); }
+    .home-menu-sep { height: 1px; background: var(--border); margin: 0 14px; }
+    .home-menu-item { display: flex; align-items: center; gap: 12px; padding: 13px 16px; cursor: pointer; transition: background 0.18s; }
+    .home-menu-item:hover { background: #f5fbf7; }
+    .home-menu-item:active { background: var(--green-pale); }
+    .hmi-icon { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .hmi-info { flex: 1; }
+    .hmi-label { font-size: 0.82rem; font-weight: 600; color: var(--text); }
+    .hmi-label-danger { color: #e74c3c; }
+    .hmi-desc { font-size: 0.65rem; color: var(--muted); margin-top: 1px; }
+    .hmi-arrow { display: flex; align-items: center; flex-shrink: 0; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- TOAST BONUS PARRAINAGE -->
+<div class="bonus-credit-toast" id="bonus-toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#52b788"/>
+  </svg>
+  <span id="bonus-toast-text">Bonus parrainage crédité !</span>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="topbar-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C9 2 6 5 6 9c0 4 6 13 6 13s6-9 6-13c0-4-3-7-6-7z" fill="white" opacity="0.9"/>
+        <circle cx="12" cy="9" r="2.5" fill="rgba(255,255,255,0.4)"/>
+      </svg>
+    </div>
+    <div class="topbar-name">AGRITech</div>
+  </div>
+  <div class="topbar-notif" onclick="goLink('NOTIFICATIONS','Chargement…','default')">
+    <div class="notif-dot"></div>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round"/></svg>
+  </div>
+</div>
+
+<!-- PAGE ACCUEIL -->
+<div class="page active" id="page-accueil">
+  <div class="balance-card">
+    <div class="balance-card-grain"></div>
+    <div class="balance-card-inner">
+      <div class="balance-user-row">
+        <div class="balance-user-left">
+          <div class="balance-avatar">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="8" r="4" fill="rgba(255,255,255,0.85)"/>
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill="rgba(255,255,255,0.5)"/>
+            </svg>
+          </div>
+          <div class="balance-user-info">
+            <div class="balance-user-name" id="user-name">Chargement…</div>
+            <div class="balance-user-num" id="user-id">—</div>
+          </div>
+        </div>
+        <div class="balance-badge">ACTIF</div>
+      </div>
+      <div class="balance-divider"></div>
+      <div class="balance-label">Solde principal</div>
+      <div style="display:flex; align-items:center; gap:0;">
+        <span class="balance-main-amount" id="main-balance">0</span>
+        <span class="balance-main-currency">FCFA</span>
+        <span class="balance-eye" onclick="toggleBalance(this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
+            <circle cx="12" cy="12" r="3" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
+          </svg>
+        </span>
+      </div>
+      <div class="balance-stats">
+        <div class="balance-stat stat-in" onclick="goLink('HIST_RECHARGE','Chargement…','recharge')" style="cursor:pointer;">
+          <div class="balance-stat-icon-row">
+            <div class="balance-stat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="#52b788" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span class="balance-stat-type">Total Dépôt</span>
+          </div>
+          <div><span class="balance-stat-value" id="total-recharge">0</span><span class="balance-stat-unit">FCFA</span></div>
+        </div>
+        <div class="balance-stat stat-out" onclick="goLink('HIST_RETRAIT','Chargement…','retrait')" style="cursor:pointer;">
+          <div class="balance-stat-icon-row">
+            <div class="balance-stat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M19 12l-7 7-7-7" stroke="#b7882c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span class="balance-stat-type">Total Retrait</span>
+          </div>
+          <div><span class="balance-stat-value" id="total-withdrawals">0</span><span class="balance-stat-unit">FCFA</span></div>
+        </div>
+        <div class="balance-stat stat-tx" onclick="goLink('BONUS_EQUIPE','Chargement…','tableau')" style="cursor:pointer;">
+          <div class="balance-stat-icon-row">
+            <div class="balance-stat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="#6366f1" stroke-width="2"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/></svg></div>
+            <span class="balance-stat-type">Bonus Équipe</span>
+          </div>
+          <div><span class="balance-stat-value" id="team-bonus">0</span><span class="balance-stat-unit">FCFA</span></div>
+        </div>
+        <div class="balance-stat stat-net" onclick="goLink('TABLEAU','Tableau de bord…','tableau')" style="cursor:pointer;">
+          <div class="balance-stat-icon-row">
+            <div class="balance-stat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18" stroke="#e87070" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17,6 23,6 23,12" stroke="#e87070" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span class="balance-stat-type">Total Bénéfice</span>
+          </div>
+          <div><span class="balance-stat-value" id="total-revenue">0</span><span class="balance-stat-unit">FCFA</span></div>
+        </div>
+      </div>
+      <div class="balance-card-footer">
+        <div class="balance-footer-chip">
+          <div class="chip-dot"></div>
+          <span class="chip-label">COMPTE ACTIF</span>
+        </div>
+        <div class="balance-card-num">AGR · 4872</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions rapides -->
+  <div class="quick-actions">
+    <div class="qa-item" onclick="goLink('RECHARGE','Recharge en cours…','recharge')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20" stroke="#2d6a4f" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <span class="qa-label">Recharge</span>
+    </div>
+    <div class="qa-item" onclick="goLink('RETRAIT','Retrait en cours…','retrait')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" stroke="#b7882c" stroke-width="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" stroke="#b7882c" stroke-width="2"/><line x1="12" y1="12" x2="12" y2="16" stroke="#b7882c" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="14" x2="14" y2="14" stroke="#b7882c" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="qa-label">Retrait</span>
+    </div>
+    <div class="qa-item" onclick="goLink('PRODUITS','Chargement produits…','produits')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="qa-label">Mes produits</span>
+    </div>
+    <div class="qa-item" onclick="goLink('TABLEAU','Tableau de bord…','tableau')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><line x1="18" y1="20" x2="18" y2="10" stroke="#6366f1" stroke-width="2.2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="4" stroke="#6366f1" stroke-width="2.2" stroke-linecap="round"/><line x1="6" y1="20" x2="6" y2="14" stroke="#6366f1" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <span class="qa-label">Tableau</span>
+    </div>
+  </div>
+
+  <div class="home-menu">
+    <div class="home-menu-group">
+      <div class="home-menu-item" onclick="goLink('HIST_RECHARGE','Chargement…','recharge')">
+        <div class="hmi-icon" style="background:linear-gradient(135deg,#e8f5ed,#c9f0d8)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20" stroke="#2d6a4f" stroke-width="2.2" stroke-linecap="round"/></svg></div>
+        <div class="hmi-info"><div class="hmi-label">Historique de recharge</div><div class="hmi-desc">Voir vos dépôts</div></div>
+        <div class="hmi-arrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#aac4b0" stroke-width="2" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="home-menu-sep"></div>
+      <div class="home-menu-item" onclick="goLink('HIST_RETRAIT','Chargement…','retrait')">
+        <div class="hmi-icon" style="background:linear-gradient(135deg,#fef7ec,#fdebd0)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M19 12l-7 7-7-7" stroke="#b7882c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="hmi-info"><div class="hmi-label">Historique de retrait</div><div class="hmi-desc">Voir vos retraits</div></div>
+        <div class="hmi-arrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#aac4b0" stroke-width="2" stroke-linecap="round"/></svg></div>
+      </div>
+    </div>
+    <div class="home-menu-group">
+      <div class="home-menu-item" onclick="goLink('SERVICE_CLIENT','Chargement…','default')">
+        <div class="hmi-icon" style="background:linear-gradient(135deg,#eef9f2,#c9f0d8)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6 6l1.62-1.62a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" stroke="#2d6a4f" stroke-width="2"/></svg></div>
+        <div class="hmi-info"><div class="hmi-label">Service client</div><div class="hmi-desc">Nous contacter</div></div>
+        <div class="hmi-arrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#aac4b0" stroke-width="2" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="home-menu-sep"></div>
+      <div class="home-menu-item" onclick="goLink('COMPTE_BANCAIRE','Chargement…','default')">
+        <div class="hmi-icon" style="background:linear-gradient(135deg,#eef0ff,#dde0ff)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="8" width="20" height="13" rx="2" stroke="#6366f1" stroke-width="2"/><path d="M2 12h20M6 8V6a6 6 0 0 1 12 0v2" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <div class="hmi-info"><div class="hmi-label">Compte bancaire</div><div class="hmi-desc">Gérer vos comptes</div></div>
+        <div class="hmi-arrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#aac4b0" stroke-width="2" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="home-menu-sep"></div>
+      <div class="home-menu-item" onclick="goLink('ROUE_FORTUNE','Chargement…','default')">
+        <div class="hmi-icon" style="background:linear-gradient(135deg,#f3e8ff,#e0c3fc)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#9333ea" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="#9333ea" opacity="0.3"/><line x1="12" y1="3" x2="12" y2="7" stroke="#9333ea" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="#9333ea" stroke-width="2" stroke-linecap="round"/><line x1="3" y1="12" x2="7" y2="12" stroke="#9333ea" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="12" x2="21" y2="12" stroke="#9333ea" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <div class="hmi-info"><div class="hmi-label">Roue de la fortune</div><div class="hmi-desc">Tentez votre chance !</div></div>
+        <div class="hmi-arrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#aac4b0" stroke-width="2" stroke-linecap="round"/></svg></div>
+      </div>
+    </div>
+    <div class="home-menu-group">
+      <div class="home-menu-item" onclick="goLink('TELECHARGER_APP','Chargement…','default')">
+        <div class="hmi-icon" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="5" y="2" width="14" height="20" rx="3" stroke="#e91e8c" stroke-width="2"/><path d="M12 18h.01" stroke="#e91e8c" stroke-width="2.5" stroke-linecap="round"/><path d="M12 7v5M9 10l3 2 3-2" stroke="#e91e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="hmi-info"><div class="hmi-label">Télécharger l'app</div><div class="hmi-desc">iOS & Android</div></div>
+        <div class="hmi-arrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#aac4b0" stroke-width="2" stroke-linecap="round"/></svg></div>
+      </div>
+    </div>
+    <div class="home-menu-group">
+      <div class="home-menu-item" id="logout-btn">
+        <div class="hmi-icon" style="background:linear-gradient(135deg,#fdecea,#fcc9c5)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/><polyline points="16,17 21,12 16,7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <div class="hmi-info"><div class="hmi-label hmi-label-danger">Déconnexion</div><div class="hmi-desc">Quitter votre session</div></div>
+        <div class="hmi-arrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/></svg></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE COMPTE -->
+<div class="page" id="page-compte">
+  <div class="profile-header">
+    <div class="profile-avatar"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="rgba(255,255,255,0.8)"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill="rgba(255,255,255,0.5)"/></svg></div>
+    <div class="profile-name" id="profile-name">Chargement…</div>
+    <div class="profile-num" id="profile-num">—</div>
+  </div>
+  <div class="menu-list">
+    <div class="menu-item" id="logout-btn-compte"><div class="menu-item-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/><polyline points="16,17 21,12 16,7" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/></svg></div><div class="menu-item-label">Se déconnecter</div><div class="menu-item-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/></svg></div></div>
+  </div>
+</div>
+
+<!-- PAGE PARTAGE -->
+<div class="page" id="page-partage">
+  <div class="share-card">
+    <div class="section-title" style="justify-content:center;">Parrainage</div>
+    <div class="share-desc">Partagez votre code et gagnez des bonus pour chaque ami inscrit</div>
+    <div class="share-qr">
+      <svg width="60" height="60" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="#2d6a4f" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="#2d6a4f" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="#2d6a4f" stroke-width="2"/><rect x="5" y="5" width="3" height="3" fill="#2d6a4f"/><rect x="16" y="5" width="3" height="3" fill="#2d6a4f"/><rect x="5" y="16" width="3" height="3" fill="#2d6a4f"/></svg>
+    </div>
+    <div class="share-code" id="referral-code-display">AGR-????</div>
+    <div class="share-desc">Votre code unique de parrainage</div>
+    <button class="share-btn">Partager mon code</button>
+  </div>
+  <div class="share-card">
+    <div class="section-title" style="justify-content:center; margin-bottom:12px;">Mes filleuls</div>
+    <div style="display:flex; justify-content:space-around; align-items:center;">
+      <div style="text-align:center;">
+        <div style="font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:700; color:var(--green);" id="referral-count">0</div>
+        <div style="font-size:0.68rem; color:var(--muted); font-weight:500;">Filleuls actifs</div>
+      </div>
+      <div style="width:1px; height:40px; background:var(--border);"></div>
+      <div style="text-align:center;">
+        <div style="font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:700; color:var(--gold);" id="referral-earnings">0</div>
+        <div style="font-size:0.68rem; color:var(--muted); font-weight:500;">FCFA gagnés</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE ACTION -->
+<div class="page" id="page-action">
+  <div class="section-title" style="margin-bottom:12px;">Actions disponibles</div>
+  <div class="action-grid">
+    <div class="action-card" onclick="goLink('RETRAIT','Retrait en cours…','retrait')"><div class="action-card-icon" style="background:linear-gradient(135deg,#eef0ff,#dde0ff)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="#6366f1" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/></svg></div><div class="action-card-title">Retrait</div><div class="action-card-desc">Retirer en agence</div></div>
+  </div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay">
+  <div class="loader-wrapper">
+    <div class="loader-ring"></div>
+    <div class="loader-icon" id="loader-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C8 2 5 6 5 10c0 5 7 12 7 12s7-7 7-12c0-4-3-8-7-8z" fill="#2d6a4f" opacity="0.85"/>
+        <circle cx="12" cy="10" r="3" fill="#d8f3dc"/>
+      </svg>
+    </div>
+  </div>
+  <div class="loader-text" id="loader-text">Chargement…</div>
+  <div class="loader-sub" id="loader-sub">AGRITech vous redirige</div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a class="nav-item active" id="nav-accueil" href="accueil.html">
+    <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21V12h6v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="nav-label">Accueil</div>
+    <div class="nav-dot"></div>
+  </a>
+  <a class="nav-item" id="nav-action" href="action.html">
+    <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="nav-label">Action</div>
+    <div class="nav-dot"></div>
+  </a>
+  <a class="nav-item" id="nav-partage" href="partage.html">
+    <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="2"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" stroke="currentColor" stroke-width="2"/></svg></div>
+    <div class="nav-label">Partage</div>
+    <div class="nav-dot"></div>
+  </a>
+  <a class="nav-item" id="nav-compte" href="compte.html">
+    <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    <div class="nav-label">Compte</div>
+    <div class="nav-dot"></div>
+  </a>
+</div>
+
+<!-- CONFIGURATION DES LIENS -->
+<script>
+  const LIENS = {
+    RECHARGE        : 'recharge.html',
+    RETRAIT         : 'retrait.html',
+    PRODUITS        : 'agricol.html',
+    TABLEAU         : 'tableau.html',
+    HIST_RECHARGE   : 'historiqueRecharge.html',
+    HIST_RETRAIT    : 'historiqueRetrait.html',
+    SERVICE_CLIENT  : 'derviceClient.html',
+    COMPTE_BANCAIRE : 'compteBancaire.html',
+    ROUE_FORTUNE    : 'rouefortune.html',
+    TELECHARGER_APP : 'https://median.co/share/mbzlwzx#apk',
+    ACTION_ENVOYER  : 'rnvoyer.html',
+    ACTION_RECEVOIR : 'recevoir.html',
+    ACTION_PAYER    : 'payer.html',
+    HISTORIQUE      : 'historique.html',
+    QR_CODE         : 'qrcode.html',
+    PARTAGER_CODE   : 'partage.html',
+    MES_FILLEULS    : 'filleuls.html',
+    BONUS_EQUIPE    : 'bonusEquipe.html',
+    INFOS_PERSO     : 'infosPerso.html',
+    CHANGER_PIN     : 'changerpin.html',
+    NOTIFICATIONS   : 'notifications.html',
+    LANGUE_REGION   : 'langueRegion.html',
+    SUPPORT_CLIENT  : 'supportClient.html',
+  };
+
+  const loaderIcons = {
+    recharge : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#e8f5ed"/><path d="M12 6v6l4 2" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round"/><path d="M6 12a6 6 0 1 0 6-6" stroke="#52b788" stroke-width="2" stroke-linecap="round"/></svg>`,
+    retrait  : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#fef7ec"/><path d="M12 8v8M9 13l3 3 3-3" stroke="#b7882c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    produits : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#fce4ec"/><path d="M8 12h8M8 9h5M8 15h3" stroke="#e91e8c" stroke-width="2" stroke-linecap="round"/></svg>`,
+    tableau  : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#eef0ff"/><polyline points="9,17 9,13 12,13 12,9 15,9 15,17" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    default  : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C8 2 5 6 5 10c0 5 7 12 7 12s7-7 7-12c0-4-3-8-7-8z" fill="#2d6a4f" opacity="0.85"/><circle cx="12" cy="10" r="3" fill="#d8f3dc"/></svg>`,
+  };
+
+  function goLink(lienKey, message, iconKey) {
+    const href = LIENS[lienKey] || '';
+    const overlay    = document.getElementById('loading-overlay');
+    const loaderText = document.getElementById('loader-text');
+    const loaderIcon = document.getElementById('loader-icon');
+    loaderText.textContent = message || 'Chargement…';
+    loaderIcon.innerHTML   = loaderIcons[iconKey] || loaderIcons.default;
+    if (!href) {
+      overlay.style.display = 'flex';
+      setTimeout(() => { overlay.style.display = 'none'; }, 1800);
+      return;
+    }
+    overlay.style.display = 'flex';
+    setTimeout(() => { window.location.href = href; }, 1200);
+  }
+
+  let balanceVisible = true;
+  function toggleBalance(el) {
+    balanceVisible = !balanceVisible;
+    document.querySelectorAll('.balance-main-amount, .balance-stat-value').forEach(a => {
+      a.style.filter = balanceVisible ? 'none' : 'blur(8px)';
+    });
+    el.style.opacity = balanceVisible ? '1' : '0.5';
+  }
+
+  // ── Toast notification bonus ──────────────────────────────────────
+  function showBonusToast(amount) {
+    const toast = document.getElementById('bonus-toast');
+    document.getElementById('bonus-toast-text').textContent =
+      `+${Math.round(amount).toLocaleString('fr-FR')} FCFA bonus parrainage crédité !`;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 4000);
+  }
+</script>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp }
+  from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getAnalytics }
+  from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
+import { getAuth, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { getDatabase, ref, onValue, get, update }
+  from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDaFEepJKO8TbePfgnYlX0N3-CcaV75fy4",
+  authDomain: "agri-5af15.firebaseapp.com",
+  databaseURL: "https://agri-5af15-default-rtdb.firebaseio.com",
+  projectId: "agri-5af15",
+  storageBucket: "agri-5af15.firebasestorage.app",
+  messagingSenderId: "1010902928190",
+  appId: "1:1010902928190:web:57d2555d69e2c023057a6f",
+  measurementId: "G-XYB13DQZSP"
+};
+
+const app       = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth      = getAuth(app);
+const db        = getDatabase(app);
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+function setNumber(id, amount) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = Math.round(amount || 0).toLocaleString('fr-FR');
+}
+
+function updateUserDisplay(data) {
+  const name = data?.username    || '—';
+  const num  = data?.phoneNumber || '—';
+  setText('user-name',    name);
+  setText('user-id',      num);
+  setText('profile-name', name);
+  setText('profile-num',  num);
+}
+
+function listenBalance(uid) {
+  onValue(ref(db, `users/${uid}/balance`), snap => {
+    setNumber('main-balance', snap.val() || 0);
+  });
+}
+
+function listenReferralCode(uid) {
+  onValue(ref(db, `users/${uid}/referralCode`), snap => {
+    setText('referral-code-display', `AGR-${snap.val() || '??????'}`);
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   BONUS PARRAINAGE → SOLDE PRINCIPAL
+   Logique :
+   1. On lit totalReferralBonus (total cumulé des bonus gagnés)
+   2. On compare avec referralBonusCredited (déjà crédité au solde)
+   3. La différence (diff) est ajoutée au balance
+   4. referralBonusCredited est mis à jour pour éviter les doublons
+   5. Un toast informe l'utilisateur du crédit
+───────────────────────────────────────────────────────────────── */
+function listenTeamBonus(uid) {
+  onValue(ref(db, `users/${uid}/totalReferralBonus`), async snap => {
+    const bonus = snap.val() || 0;
+
+    // Mise à jour de l'affichage
+    setNumber('team-bonus',        bonus);
+    setNumber('referral-earnings', bonus);
+
+    // Récupérer ce qui a déjà été crédité
+    const creditedSnap = await get(ref(db, `users/${uid}/referralBonusCredited`));
+    const alreadyCredited = creditedSnap.val() || 0;
+
+    const diff = bonus - alreadyCredited;
+
+    if (diff > 0) {
+      // Lire le solde actuel
+      const balanceSnap = await get(ref(db, `users/${uid}/balance`));
+      const currentBalance = balanceSnap.val() || 0;
+
+      // Créditer la différence au solde principal et mémoriser
+      await update(ref(db, `users/${uid}`), {
+        balance:               currentBalance + diff,
+        referralBonusCredited: bonus
+      });
+
+      // Notifier l'utilisateur
+      if (typeof showBonusToast === 'function') {
+        showBonusToast(diff);
+      }
+    }
+  });
+}
+
+function listenTotalRevenue(uid) {
+  onValue(ref(db, `investments/${uid}`), snap => {
+    let totalRevenue = 0;
+    if (snap.exists()) {
+      Object.values(snap.val()).forEach(inv => {
+        if (inv.status === 'active' && inv.totalCollected)
+          totalRevenue += inv.totalCollected;
+      });
+    }
+    setNumber('total-revenue', totalRevenue);
+  });
+}
+
+function listenWithdrawals(uid) {
+  onValue(ref(db, `withdrawals/${uid}`), snap => {
+    let total = 0;
+    if (snap.exists()) {
+      snap.forEach(child => {
+        const w = child.val();
+        if (w && w.status === 'success') {
+          total += (w.amount || 0);
+        }
+      });
+    }
+    setNumber('total-withdrawals', total);
+  });
+}
+
+function listenTeamSize(uid) {
+  onValue(ref(db, `users/${uid}/teamSize`), snap => {
+    setText('referral-count', String(snap.val() || 0).padStart(2, '0'));
+  });
+}
+
+function listenTotalRecharges(uid) {
+  onValue(ref(db, `recharges/${uid}`), snap => {
+    let total = 0;
+    if (snap.exists()) {
+      snap.forEach(child => {
+        const r = child.val();
+        if (r && r.adminStatus === 'approved')
+          total += parseFloat(r.amount) || 0;
+      });
+    }
+    setNumber('total-recharge', total);
+  });
+}
+
+function resetDisplay() {
+  ['main-balance','total-recharge','total-withdrawals','team-bonus','total-revenue']
+    .forEach(id => setNumber(id, 0));
+  setText('referral-earnings', '0');
+  setText('referral-count', '0');
+  setText('user-name', '—');
+  setText('user-id', '—');
+  setText('profile-name', '—');
+  setText('profile-num', '—');
+  setText('referral-code-display', 'AGR-??????');
+}
+
+async function handleLogout() {
+  try {
+    await signOut(auth);
+    window.location.href = 'index.html';
+  } catch (e) {
+    console.error('Erreur déconnexion:', e);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
+  document.getElementById('logout-btn-compte')?.addEventListener('click', handleLogout);
+});
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    onValue(ref(db, `users/${user.uid}`), snap => {
+      updateUserDisplay(snap.val() || {});
+    });
+    listenBalance(user.uid);
+    listenReferralCode(user.uid);
+    listenTeamBonus(user.uid);       // ← contient la logique de crédit
+    listenTotalRevenue(user.uid);
+    listenWithdrawals(user.uid);
+    listenTeamSize(user.uid);
+    listenTotalRecharges(user.uid);
+  } else {
+    resetDisplay();
+    setTimeout(() => {
+      if (window.location.pathname.includes('accueil'))
+        window.location.href = 'login.html';
+    }, 1000);
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGRITech — Roue de la Fortune</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --deep:   #071a0c;
+    --green:  #1b5e33;
+    --mid:    #2d8a56;
+    --light:  #4db87a;
+    --gold:   #c9933a;
+    --gold-l: #f2c96e;
+    --gold-d: #7a5500;
+  }
+  html, body { overflow-x: hidden; max-width: 100%; }
+  body { background: var(--deep); min-height: 100vh; font-family: 'DM Sans', sans-serif; color: #fff; position: relative; overflow-y: scroll; }
+
+  .bg-layer { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse 70% 55% at 15% 10%, rgba(45,138,86,0.18) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 85% 80%, rgba(201,147,58,0.12) 0%, transparent 60%); }
+  .bg-grid { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: linear-gradient(rgba(77,184,122,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(77,184,122,0.04) 1px, transparent 1px); background-size: 48px 48px; }
+  .bg-text { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .bg-text span { position: absolute; font-family: 'Cormorant Garamond', serif; font-size: 0.9rem; font-weight: 700; color: rgba(77,184,122,0.05); white-space: nowrap; letter-spacing: 0.25em; transform: rotate(-20deg); }
+
+  .loading-screen { position: fixed; inset: 0; background: var(--deep); z-index: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.2rem; }
+  .loading-logo { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 700; color: var(--gold-l); letter-spacing: 0.12em; }
+  .loading-spinner { width: 44px; height: 44px; border: 3px solid rgba(201,147,58,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin-load 0.8s linear infinite; }
+  @keyframes spin-load { to { transform: rotate(360deg); } }
+  .loading-screen p { font-size: 0.82rem; color: rgba(255,255,255,0.4); letter-spacing: 0.15em; }
+
+  .auth-overlay { position: fixed; inset: 0; background: rgba(4,12,6,0.85); backdrop-filter: blur(10px); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+  .auth-box { background: linear-gradient(145deg, #0e2518, #132e1c); border-radius: 24px; padding: 2.5rem 2rem; width: min(420px, 100%); border: 1px solid rgba(201,147,58,0.3); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .auth-logo { text-align: center; margin-bottom: 0.4rem; font-size: 1.6rem; }
+  .auth-box h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 700; color: var(--gold-l); text-align: center; margin-bottom: 0.25rem; }
+  .auth-box p { text-align: center; color: rgba(255,255,255,0.4); font-size: 0.82rem; margin-bottom: 1.6rem; }
+  .auth-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.6rem; }
+  .auth-tab { flex: 1; padding: 0.65rem; border: 1.5px solid rgba(201,147,58,0.25); background: transparent; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.2s; }
+  .auth-tab.active { background: var(--gold); color: #fff; border-color: var(--gold); }
+  .auth-field { margin-bottom: 1rem; }
+  .auth-field label { display: block; font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.5); margin-bottom: 0.35rem; }
+  .auth-field input { width: 100%; padding: 0.8rem 1rem; border: 1.5px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); border-radius: 12px; color: #fff; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border 0.2s; }
+  .auth-field input::placeholder { color: rgba(255,255,255,0.25); }
+  .auth-field input:focus { border-color: var(--gold); background: rgba(201,147,58,0.06); }
+  .auth-submit { width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--green), var(--mid), var(--light)); color: #fff; border: none; border-radius: 50px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 6px 24px rgba(45,138,86,0.45); }
+  .auth-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(45,138,86,0.6); }
+  .auth-error { color: #ff6b6b; font-size: 0.8rem; text-align: center; margin-top: 0.8rem; min-height: 1.2rem; }
+
+  .topbar { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; background: rgba(7,26,12,0.95); border-bottom: 1px solid rgba(201,147,58,0.2); backdrop-filter: blur(12px); }
+  .topbar-brand { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 700; color: var(--gold-l); letter-spacing: 0.1em; }
+  .topbar-right { display: flex; align-items: center; gap: 0.8rem; }
+  .topbar-balance { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; color: var(--gold-l); background: rgba(201,147,58,0.12); padding: 0.4rem 1rem; border-radius: 50px; border: 1px solid rgba(201,147,58,0.3); }
+  .topbar-turns { font-size: 0.78rem; font-weight: 700; color: var(--light); background: rgba(77,184,122,0.1); padding: 0.4rem 0.9rem; border-radius: 50px; border: 1px solid rgba(77,184,122,0.25); }
+
+  .page { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; padding: 2.5rem 1rem 4rem; }
+
+  .header { text-align: center; margin-bottom: 2.4rem; }
+  .header-eyebrow { font-size: 0.65rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--light); display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 0.7rem; }
+  .header-eyebrow::before, .header-eyebrow::after { content: ''; width: 30px; height: 1.5px; background: var(--light); display: inline-block; }
+  .header h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 5.5vw, 3.2rem); font-weight: 700; color: var(--gold-l); letter-spacing: 0.06em; line-height: 1.1; text-shadow: 0 0 40px rgba(201,147,58,0.3); }
+  .header h1 em { font-style: italic; color: #fff; display: block; font-size: 0.72em; letter-spacing: 0.18em; margin-top: 4px; }
+
+  .scene { position: relative; display: flex; flex-direction: column; align-items: center; gap: 1.6rem; }
+
+  .pointer { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); z-index: 10; width: 0; height: 0; border-left: 13px solid transparent; border-right: 13px solid transparent; border-top: 32px solid var(--gold-l); filter: drop-shadow(0 4px 10px rgba(201,147,58,0.7)); }
+
+  .wheel-wrapper { position: relative; width: 340px; height: 340px; }
+  .wheel-wrapper::before { content: ''; position: absolute; inset: -14px; border-radius: 50%; background: conic-gradient(var(--gold) 0deg, var(--gold-l) 60deg, var(--light) 120deg, var(--mid) 180deg, var(--gold) 240deg, var(--gold-l) 300deg, var(--gold) 360deg); animation: ring-spin 10s linear infinite; z-index: 0; }
+  .wheel-wrapper::after { content: ''; position: absolute; inset: -5px; border-radius: 50%; background: var(--deep); z-index: 1; }
+  @keyframes ring-spin { to { transform: rotate(360deg); } }
+  canvas { position: relative; z-index: 2; border-radius: 50%; display: block; }
+  .hub { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 10; width: 54px; height: 54px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, var(--gold-l), var(--gold-d)); border: 3px solid rgba(242,201,110,0.6); box-shadow: 0 0 20px rgba(201,147,58,0.8), inset 0 2px 5px rgba(255,255,255,0.3); cursor: pointer; transition: transform 0.15s; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+  .hub:hover { transform: translate(-50%,-50%) scale(1.1); }
+
+  .btn { font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.1em; color: #fff; background: linear-gradient(135deg, var(--green), var(--mid), var(--light)); border: none; padding: 1rem 3rem; border-radius: 50px; cursor: pointer; text-transform: uppercase; box-shadow: 0 6px 28px rgba(45,138,86,0.5), 0 0 0 2px rgba(201,147,58,0.3); transition: transform 0.15s, box-shadow 0.15s; }
+  .btn:hover:not(:disabled) { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 36px rgba(45,138,86,0.65), 0 0 0 3px rgba(201,147,58,0.5); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .no-turns-msg { font-size: 0.85rem; color: rgba(255,255,255,0.4); text-align: center; padding: 0.7rem 1.5rem; background: rgba(255,255,255,0.04); border-radius: 50px; border: 1.5px dashed rgba(255,255,255,0.1); }
+
+  .result { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.1rem,2.8vw,1.5rem); font-weight: 700; color: var(--gold-l); min-height: 2rem; text-align: center; opacity: 0; transform: translateY(10px); transition: opacity 0.45s, transform 0.45s; text-shadow: 0 0 20px rgba(201,147,58,0.4); }
+  .result.show { opacity: 1; transform: translateY(0); }
+
+  .divider { width: min(88%,580px); margin: 3rem auto; display: flex; align-items: center; gap: 16px; }
+  .div-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(201,147,58,0.35), transparent); }
+  .div-icon { font-size: 1.1rem; opacity: 0.6; }
+
+  .rules-section { width: min(92%,620px); background: linear-gradient(145deg, rgba(14,37,24,0.9), rgba(19,46,28,0.9)); border: 1px solid rgba(201,147,58,0.25); border-radius: 24px; padding: 2rem; box-shadow: 0 8px 40px rgba(0,0,0,0.35); }
+  .rules-title { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 700; color: var(--gold-l); text-align: center; margin-bottom: 1.6rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(201,147,58,0.2); letter-spacing: 0.05em; }
+  .rule-item { display: flex; gap: 1rem; margin-bottom: 1.4rem; align-items: flex-start; }
+  .rule-item:last-of-type { margin-bottom: 0; }
+  .rule-num { flex-shrink: 0; width: 32px; height: 32px; background: linear-gradient(135deg, var(--green), var(--mid)); color: #fff; font-weight: 700; font-size: 0.82rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(45,138,86,0.4); margin-top: 2px; }
+  .rule-text { font-size: 0.88rem; color: rgba(255,255,255,0.75); line-height: 1.75; }
+  .rule-text strong { color: var(--gold-l); font-weight: 700; }
+  .rules-note { margin-top: 1.4rem; padding: 1rem 1.2rem; background: rgba(201,147,58,0.08); border-left: 3px solid var(--gold); border-radius: 0 12px 12px 0; font-size: 0.85rem; color: var(--gold-l); font-weight: 600; line-height: 1.6; }
+
+  .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 200; }
+  .confetti-piece { position: absolute; top: -10px; animation: confetti-fall linear forwards; }
+  @keyframes confetti-fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+
+  .win-toast { position: fixed; bottom: 2.5rem; left: 50%; transform: translateX(-50%) translateY(120px); background: linear-gradient(135deg, #0d3320, #1b5e33); border: 1px solid rgba(201,147,58,0.4); color: #fff; border-radius: 20px; padding: 1rem 2rem; font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 700; box-shadow: 0 12px 40px rgba(0,0,0,0.5); z-index: 300; transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1); text-align: center; white-space: nowrap; }
+  .win-toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="bg-grid"></div>
+<div class="bg-text" id="bgText"></div>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">🌾 AGRITech</div>
+  <div class="loading-spinner"></div>
+  <p>Chargement…</p>
+</div>
+
+<div class="auth-overlay" id="authOverlay" style="display:none">
+  <div class="auth-box">
+    <div class="auth-logo">🌾</div>
+    <h2>AGRITech</h2>
+    <p>Connectez-vous pour accéder à la Roue de la Fortune</p>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Connexion</button>
+      <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">Inscription</button>
+    </div>
+    <div id="loginForm">
+      <div class="auth-field"><label>Email</label><input type="email" id="loginEmail" placeholder="votre@email.com"></div>
+      <div class="auth-field"><label>Mot de passe</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+      <button class="auth-submit" onclick="doLogin()">Se connecter</button>
+    </div>
+    <div id="registerForm" style="display:none">
+      <div class="auth-field"><label>Prénom / Pseudo</label><input type="text" id="regName" placeholder="Votre prénom"></div>
+      <div class="auth-field"><label>Numéro de téléphone</label><input type="tel" id="regPhone" placeholder="+XXX XX XX XX XX"></div>
+      <div class="auth-field"><label>Email</label><input type="email" id="regEmail" placeholder="votre@email.com"></div>
+      <div class="auth-field"><label>Mot de passe</label><input type="password" id="regPass" placeholder="Minimum 6 caractères"></div>
+      <button class="auth-submit" onclick="doRegister()">S'inscrire</button>
+    </div>
+    <div class="auth-error" id="authError"></div>
+  </div>
+</div>
+
+<div class="topbar" id="topbar" style="display:none">
+  <div class="topbar-brand">🌾 AGRITech</div>
+  <div class="topbar-right">
+    <div class="topbar-balance" id="topbarBalance">0 FCFA</div>
+    <div class="topbar-turns" id="topbarTurns">0 tour(s)</div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="header">
+    <div class="header-eyebrow">AGRITech</div>
+    <h1>Roue de la Fortune<em>Tentez votre chance</em></h1>
+  </div>
+
+  <div class="scene">
+    <div class="pointer"></div>
+    <div class="wheel-wrapper">
+      <canvas id="wheel"></canvas>
+      <div class="hub" id="hubBtn">🌾</div>
+    </div>
+    <button class="btn" id="spinBtn" disabled>🎯 Tourner !</button>
+    <div id="noTurnsMsg" class="no-turns-msg" style="display:none">
+      🎫 Aucun tour disponible — Contactez le service client
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="divider">
+    <div class="div-line"></div>
+    <div class="div-icon">🌾</div>
+    <div class="div-line"></div>
+  </div>
+
+  <div class="rules-section">
+    <div class="rules-title">🎡 Comment fonctionne la Roue de la Fortune AGRITech ?</div>
+    <div class="rule-item">
+      <div class="rule-num">1</div>
+      <div class="rule-text">Après votre <strong>premier rechargement</strong>, écrivez au service client pour recevoir vos tours. Vous avez droit à <strong>2 tours</strong> de la Roue AGRITech, et c'est <strong>obligatoire</strong>. Si vous gagnez une grande somme, <strong>l'intérêt sera prélevé par vous-même.</strong></div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-num">2</div>
+      <div class="rule-text">Si vous <strong>parrainez des personnes</strong> qui effectuent un rechargement grâce à votre lien, contactez le service client pour recevoir vos tours. Vous avez également <strong>2 tours</strong> de la Roue AGRITech, et c'est <strong>obligatoire</strong>. Si vous gagnez une grande somme, <strong>l'intérêt sera prélevé par vous-même.</strong></div>
+    </div>
+    <div class="rules-note">✔ J'espère que c'est bien noté. Bonne chance à tous ! 🌱</div>
+  </div>
+</div>
+
+<div class="confetti-container" id="confettiContainer"></div>
+<div class="win-toast" id="winToast"></div>
+
+<script>
+(function() {
+  const c = document.getElementById('bgText');
+  const cols = Math.ceil(window.innerWidth / 160) + 2;
+  const rows = Math.ceil(window.innerHeight / 80) + 4;
+  for (let r = 0; r < rows; r++) {
+    for (let co = 0; co < cols; co++) {
+      const s = document.createElement('span');
+      s.textContent = 'AGRITech';
+      s.style.left = (co * 160 - 30) + 'px';
+      s.style.top  = (r * 80 - 10) + 'px';
+      c.appendChild(s);
+    }
+  }
+})();
+</script>
+
+<script type="module">
+import { initializeApp }     from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getAnalytics }      from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+       from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { getDatabase, ref, set, get, update, serverTimestamp }
+       from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyDaFEepJKO8TbePfgnYlX0N3-CcaV75fy4",
+  authDomain:        "agri-5af15.firebaseapp.com",
+  databaseURL:       "https://agri-5af15-default-rtdb.firebaseio.com",
+  projectId:         "agri-5af15",
+  storageBucket:     "agri-5af15.firebasestorage.app",
+  messagingSenderId: "1010902928190",
+  appId:             "1:1010902928190:web:57d2555d69e2c023057a6f",
+  measurementId:     "G-XYB13DQZSP"
+};
+
+const app  = initializeApp(firebaseConfig);
+getAnalytics(app);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+
+let currentUser = null;
+let userData    = {};
+
+window.switchTab = function(tab) {
+  document.getElementById('loginForm').style.display    = tab === 'login'    ? '' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('tabLogin').classList.toggle('active',    tab === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+  document.getElementById('authError').textContent = '';
+};
+
+window.doLogin = async function() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  try { await signInWithEmailAndPassword(auth, email, pass); }
+  catch(e) { document.getElementById('authError').textContent = 'Email ou mot de passe incorrect.'; }
+};
+
+window.doRegister = async function() {
+  const name  = document.getElementById('regName').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  if (!name || !email || !pass) { document.getElementById('authError').textContent = 'Veuillez remplir tous les champs.'; return; }
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await set(ref(db, 'users/' + cred.user.uid), {
+      name, phoneNumber: phone, email,
+      balance: 0, turns: 1,
+      registeredAt: serverTimestamp(), freeSpinUsed: false
+    });
+  } catch(e) { document.getElementById('authError').textContent = e.message || "Erreur lors de l'inscription."; }
+};
+
+window.doLogout = async function() { await signOut(auth); };
+
+onAuthStateChanged(auth, async (user) => {
+  document.getElementById('loadingScreen').style.display = 'none';
+  if (user) {
+    currentUser = user;
+    await loadUserData(user.uid);
+    document.getElementById('authOverlay').style.display = 'none';
+    document.getElementById('topbar').style.display = 'flex';
+    updateUI(); refreshSpinButton();
+  } else {
+    currentUser = null; userData = {};
+    document.getElementById('authOverlay').style.display = 'flex';
+    document.getElementById('topbar').style.display = 'none';
+  }
+});
+
+async function loadUserData(uid) {
+  const snap = await get(ref(db, 'users/' + uid));
+  if (snap.exists()) userData = snap.val();
+}
+
+function updateUI() {
+  document.getElementById('topbarBalance').textContent = (userData.balance || 0).toLocaleString('fr-FR') + ' FCFA';
+  document.getElementById('topbarTurns').textContent   = (userData.turns || 0) + ' tour(s)';
+}
+
+function refreshSpinButton() {
+  const turns = userData.turns || 0;
+  const btn   = document.getElementById('spinBtn');
+  const noMsg = document.getElementById('noTurnsMsg');
+  if (turns > 0) { btn.style.display = 'inline-block'; btn.disabled = false; noMsg.style.display = 'none'; }
+  else           { btn.style.display = 'none'; noMsg.style.display = 'block'; }
+}
+
+/* ─── PRIZES ─────────────────────────────────────── */
+const prizes = [
+  { label: '+300 FCFA',     value: 300,    color: '#1b4a28', text: '#f2c96e' },
+  { label: '+10 000 FCFA',  value: 10000,  color: '#0d3a5c', text: '#f2c96e' },
+  { label: '+50 FCFA',      value: 50,     color: '#3a1a08', text: '#f2c96e' },
+  { label: '+530 000 FCFA', value: 530000, color: '#4a0d50', text: '#f2c96e' },
+  { label: '+100 FCFA',     value: 100,    color: '#0d3320', text: '#f2c96e' },
+  { label: '+410 000 FCFA', value: 410000, color: '#5a3800', text: '#f2c96e' },
+  { label: '+1 000 FCFA',   value: 1000,   color: '#1a3a60', text: '#f2c96e' },
+];
+
+/* ─── CANVAS ──────────────────────────────────────── */
+const canvas   = document.getElementById('wheel');
+const ctx      = canvas.getContext('2d');
+const spinBtn  = document.getElementById('spinBtn');
+const hubBtn   = document.getElementById('hubBtn');
+const resultEl = document.getElementById('result');
+
+const CSS_SIZE = 340;
+const DPR = window.devicePixelRatio || 1;
+canvas.style.width  = CSS_SIZE + 'px';
+canvas.style.height = CSS_SIZE + 'px';
+canvas.width  = CSS_SIZE * DPR;
+canvas.height = CSS_SIZE * DPR;
+ctx.scale(DPR, DPR);
+
+const CX = CSS_SIZE / 2, CY = CSS_SIZE / 2, R = CX - 10;
+const N   = prizes.length;
+const ARC = (2 * Math.PI) / N;
+let currentAngle = 0, spinning = false;
+
+function drawStar(x, y, r) {
+  ctx.save(); ctx.translate(x, y); ctx.beginPath();
+  for (let i = 0; i < 5; i++) {
+    const a = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+    i === 0 ? ctx.moveTo(Math.cos(a)*r, Math.sin(a)*r) : ctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
+  }
+  ctx.closePath(); ctx.fillStyle = 'rgba(242,201,110,0.22)'; ctx.fill(); ctx.restore();
+}
+
+function drawWheel(angle) {
+  ctx.clearRect(0, 0, CSS_SIZE, CSS_SIZE);
+  for (let i = 0; i < N; i++) {
+    const start = angle + i * ARC, end = start + ARC, mid = start + ARC / 2;
+    // Slice
+    ctx.beginPath(); ctx.moveTo(CX, CY); ctx.arc(CX, CY, R, start, end); ctx.closePath();
+    ctx.fillStyle = prizes[i].color; ctx.fill();
+    // Gradient
+    const g = ctx.createRadialGradient(CX, CY, 0, CX, CY, R);
+    g.addColorStop(0, 'rgba(255,255,255,0.12)'); g.addColorStop(1, 'rgba(0,0,0,0.2)');
+    ctx.beginPath(); ctx.moveTo(CX, CY); ctx.arc(CX, CY, R, start, end); ctx.closePath();
+    ctx.fillStyle = g; ctx.fill();
+    // Border
+    ctx.beginPath(); ctx.moveTo(CX, CY); ctx.arc(CX, CY, R, start, end); ctx.closePath();
+    ctx.strokeStyle = 'rgba(242,201,110,0.55)'; ctx.lineWidth = 2; ctx.stroke();
+    // Star deco
+    drawStar(CX + Math.cos(mid) * R * 0.55, CY + Math.sin(mid) * R * 0.55, 9);
+    // Label
+    ctx.save(); ctx.translate(CX, CY); ctx.rotate(mid); ctx.textAlign = 'right';
+    const lbl = prizes[i].label;
+    const fs  = lbl.length >= 12 ? 9.5 : lbl.length >= 9 ? 11 : 13;
+    ctx.font = 'bold ' + fs + 'px "DM Sans", sans-serif';
+    ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillText(lbl, R - 11.5, 6.5);
+    ctx.fillStyle = prizes[i].text;    ctx.fillText(lbl, R - 13, 5);
+    ctx.restore();
+  }
+  // Outer ring
+  ctx.beginPath(); ctx.arc(CX, CY, R, 0, 2*Math.PI);
+  ctx.strokeStyle = 'rgba(201,147,58,0.9)'; ctx.lineWidth = 4; ctx.stroke();
+  // Center
+  ctx.beginPath(); ctx.arc(CX, CY, 30, 0, 2*Math.PI);
+  ctx.fillStyle = '#071a0c'; ctx.fill();
+  ctx.strokeStyle = 'rgba(201,147,58,0.7)'; ctx.lineWidth = 2.5; ctx.stroke();
+}
+
+drawWheel(currentAngle);
+
+function easeOut(t) { return 1 - Math.pow(1 - t, 4); }
+
+async function spin() {
+  if (spinning || !currentUser || (userData.turns || 0) <= 0) return;
+  spinning = true; spinBtn.disabled = true; resultEl.classList.remove('show');
+
+  const queue      = Array.isArray(userData.prizeQueue) ? userData.prizeQueue : [];
+  const nextPrize  = queue.length > 0 ? queue[0] : null;
+  let targetIdx    = nextPrize !== null ? prizes.findIndex(p => p.value === nextPrize) : -1;
+  if (targetIdx === -1) targetIdx = Math.floor(Math.random() * N);
+
+  const targetMid = targetIdx * ARC + ARC / 2;
+  const baseRot   = (2 * Math.PI) * (6 + Math.floor(Math.random() * 4));
+  const rawTarget = (-Math.PI / 2) - targetMid - currentAngle - baseRot;
+  const totalRot  = baseRot + (((rawTarget % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI));
+  const duration  = 4500 + Math.random() * 1000;
+  const startAng  = currentAngle, startTime = performance.now();
+
+  function frame(now) {
+    const t = Math.min((now - startTime) / duration, 1);
+    currentAngle = startAng + totalRot * easeOut(t);
+    drawWheel(currentAngle);
+    if (t < 1) { requestAnimationFrame(frame); return; }
+
+    currentAngle = currentAngle % (2 * Math.PI);
+    spinning = false;
+    const prize = prizes[targetIdx];
+    resultEl.textContent = '🎉 Félicitations ! Vous gagnez : ' + prize.label + ' !';
+    resultEl.classList.add('show');
+
+    const uid          = currentUser.uid;
+    const newBal       = (userData.balance || 0) + prize.value;
+    const newTurns     = (userData.turns   || 0) - 1;
+    const updatedQueue = Array.isArray(userData.prizeQueue) ? userData.prizeQueue.slice(1) : [];
+
+    update(ref(db), {
+      ['users/' + uid + '/balance']:    newBal,
+      ['users/' + uid + '/turns']:      newTurns,
+      ['users/' + uid + '/prizeQueue']: updatedQueue,
+    }).then(async () => {
+      await set(ref(db, 'spinHistory/' + uid + '/' + Date.now()), {
+        prize: prize.label, value: prize.value, date: serverTimestamp()
+      });
+      userData.balance = newBal; userData.turns = newTurns; userData.prizeQueue = updatedQueue;
+      updateUI(); refreshSpinButton();
+      if (newTurns > 0) spinBtn.disabled = false;
+    });
+
+    showWinToast(prize.label);
+    if (prize.value >= 50000) launchConfetti();
+  }
+  requestAnimationFrame(frame);
+}
+
+spinBtn.addEventListener('click', spin);
+hubBtn.addEventListener('click', spin);
+
+function showWinToast(label) {
+  const t = document.getElementById('winToast');
+  t.textContent = '💰 ' + label + ' crédité sur votre solde !';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+function launchConfetti() {
+  const c  = document.getElementById('confettiContainer');
+  const cl = ['#f2c96e','#4db87a','#2d8a56','#c9933a','#1b5e33','#fff'];
+  for (let i = 0; i < 90; i++) {
+    const el  = document.createElement('div');
+    el.className = 'confetti-piece';
+    const delay = Math.random() * 1.5, dur = 2.5 + Math.random() * 1.5;
+    el.style.cssText = 'left:' + (Math.random()*100) + 'vw;background:' + cl[Math.floor(Math.random()*cl.length)] + ';border-radius:' + (Math.random()>0.5?'50%':'2px') + ';width:' + (6+Math.random()*8) + 'px;height:' + (6+Math.random()*8) + 'px;animation-duration:' + dur + 's;animation-delay:' + delay + 's;';
+    c.appendChild(el);
+    setTimeout(() => el.remove(), (dur + delay) * 1000 + 200);
+  }
+}
+</script>
+</body>
+</html>

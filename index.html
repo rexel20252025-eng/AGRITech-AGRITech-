@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AGRITech — Connexion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #2d6a4f;
+      --green-light: #52b788;
+      --green-pale: #d8f3dc;
+      --gold: #b7882c;
+      --text: #1a2e1e;
+      --muted: #6b8f71;
+      --bg: #f8fdf9;
+      --white: #ffffff;
+      --border: #d0e8d4;
+      --shadow: rgba(45, 106, 79, 0.10);
+      --red: #e74c3c;
+      --whatsapp: #25D366;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -120px; right: -120px;
+      width: 380px; height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #d8f3dc 0%, transparent 70%);
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -100px; left: -100px;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #b7d7c0 0%, transparent 70%);
+      z-index: 0;
+    }
+
+    .leaf-deco {
+      position: fixed; font-size: 7rem; opacity: 0.04; z-index: 0; user-select: none;
+    }
+    .leaf-deco.tl { top: 10px; left: 10px; transform: rotate(-20deg); }
+    .leaf-deco.br { bottom: 10px; right: 10px; transform: rotate(160deg); }
+
+    .wrapper { position: relative; z-index: 1; width: 100%; max-width: 400px; }
+
+    /* ── Logo ── */
+    .logo { text-align: center; margin-bottom: 18px; animation: fadeDown 0.5s ease both; }
+    .logo-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--green), var(--green-light));
+      border-radius: 16px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: 0 6px 20px rgba(45,106,79,0.25);
+      margin-bottom: 8px;
+    }
+    .logo-name { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 700; color: var(--green); letter-spacing: 3px; line-height: 1; }
+    .logo-sub  { font-size: 0.65rem; font-weight: 500; color: var(--muted); letter-spacing: 4px; text-transform: uppercase; margin-top: 2px; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex; background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 14px; padding: 4px; margin-bottom: 14px;
+      box-shadow: 0 2px 12px var(--shadow); animation: fadeDown 0.5s 0.1s ease both;
+    }
+    .tab {
+      flex: 1; padding: 9px; text-align: center; font-size: 0.82rem; font-weight: 600;
+      color: var(--muted); border-radius: 10px; cursor: pointer;
+      transition: all 0.25s ease; letter-spacing: 0.5px;
+    }
+    .tab.active {
+      background: linear-gradient(135deg, var(--green), var(--green-light));
+      color: white; box-shadow: 0 3px 12px rgba(45,106,79,0.3);
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 20px; padding: 22px 20px;
+      box-shadow: 0 4px 30px var(--shadow); animation: fadeUp 0.5s 0.15s ease both;
+    }
+
+    .form { display: none; flex-direction: column; gap: 10px; }
+    .form.active { display: flex; }
+
+    .field-group { display: flex; flex-direction: column; gap: 4px; position: relative; }
+
+    label { font-size: 0.72rem; font-weight: 600; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
+
+    input, select {
+      width: 100%; padding: 9px 12px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+      color: var(--text); background: var(--bg); outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none; -webkit-appearance: none;
+    }
+    input:focus, select:focus {
+      border-color: var(--green-light);
+      box-shadow: 0 0 0 3px rgba(82,183,136,0.15);
+      background: white;
+    }
+    input::placeholder { color: #aac4b0; }
+
+    /* ── Phone row ── */
+    .phone-input-row {
+      display: flex; border: 1.5px solid var(--border);
+      border-radius: 10px; overflow: hidden; background: var(--bg);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .phone-input-row:focus-within {
+      border-color: var(--green-light);
+      box-shadow: 0 0 0 3px rgba(82,183,136,0.15); background: white;
+    }
+    .country-selector {
+      display: flex; align-items: center; gap: 5px; padding: 9px 10px;
+      background: #f0faf3; border-right: 1.5px solid var(--border);
+      cursor: pointer; user-select: none; min-width: 80px;
+      font-size: 1rem; transition: background 0.2s; flex-shrink: 0;
+    }
+    .country-selector:hover { background: #e3f5e9; }
+    .phone-input-row input {
+      border: none !important; border-radius: 0 !important;
+      background: transparent !important; box-shadow: none !important; flex: 1;
+    }
+    .phone-input-row input:focus { box-shadow: none !important; }
+
+    /* ── Country dropdown ── */
+    .country-dropdown {
+      display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: white; border: 1.5px solid var(--border); border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(45,106,79,0.15); z-index: 100; overflow: hidden;
+    }
+    .country-dropdown.open { display: block; }
+    .country-option { display: flex; align-items: center; gap: 10px; padding: 9px 14px; cursor: pointer; transition: background 0.15s; }
+    .country-option:hover { background: #f0faf3; }
+    .country-option .flag { font-size: 1.2rem; }
+    .country-option .cname { flex: 1; font-size: 0.82rem; font-weight: 500; color: var(--text); }
+    .country-option .code  { font-size: 0.75rem; font-weight: 700; color: var(--green); }
+
+    /* ── Parrainage ── */
+    .parrainage-box {
+      border: 1.5px dashed var(--border); border-radius: 10px;
+      padding: 10px 12px; background: #f0faf3;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .parrainage-label {
+      font-size: 0.72rem; font-weight: 600; color: var(--gold);
+      letter-spacing: 0.5px; text-transform: uppercase;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .parrainage-box input { background: white; border-color: #d4e8d9; }
+
+    /* ── Divider ── */
+    .divider { display: flex; align-items: center; gap: 8px; margin: 2px 0; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .divider span { font-size: 0.7rem; color: var(--muted); font-weight: 500; }
+
+    /* ── Messages feedback ── */
+    .msg {
+      font-size: 0.76rem; font-weight: 500;
+      padding: 8px 11px; border-radius: 9px; display: none;
+    }
+    .msg.error   { background: #fdf0ef; color: var(--red);   border: 1px solid #f5c5c2; }
+    .msg.success { background: #edf7f0; color: var(--green); border: 1px solid #b0ddbf; }
+    .msg.referral-status.valid   { background: #edf7f0; color: var(--green); border: 1px solid #b0ddbf; }
+    .msg.referral-status.invalid { background: #fdf0ef; color: var(--red);   border: 1px solid #f5c5c2; }
+
+    /* ── Button ── */
+    .btn {
+      width: 100%; padding: 12px;
+      background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
+      color: white; border: none; border-radius: 12px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 700;
+      letter-spacing: 0.5px; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(45,106,79,0.3);
+      transition: transform 0.15s, box-shadow 0.15s; margin-top: 4px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn:hover    { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(45,106,79,0.4); }
+    .btn:active   { transform: translateY(0); }
+    .btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none !important; }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.35); border-top-color: white;
+      border-radius: 50%; animation: spin 0.65s linear infinite; display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Footer ── */
+    .page-footer {
+      text-align: center; margin-top: 14px; font-size: 0.68rem;
+      color: #aac4b0; letter-spacing: 0.5px;
+      animation: fadeUp 0.5s 0.3s ease both;
+    }
+
+    /* ══════════════════════════════
+       MODAL BIENVENUE
+    ══════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(8, 24, 12, 0.68);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--white); border-radius: 26px;
+      padding: 0 0 26px; max-width: 360px; width: 100%;
+      text-align: center;
+      box-shadow: 0 28px 80px rgba(45,106,79,0.32);
+      transform: translateY(40px) scale(0.93);
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative; overflow: hidden;
+    }
+    .modal-overlay.show .modal { transform: translateY(0) scale(1); }
+
+    /* Arc décoratif en haut */
+    .modal-header {
+      background: linear-gradient(135deg, var(--green), var(--green-light));
+      padding: 28px 24px 22px;
+      position: relative;
+      margin-bottom: 0;
+    }
+    .modal-header::after {
+      content: '';
+      position: absolute; bottom: -18px; left: 0; right: 0;
+      height: 36px;
+      background: var(--white);
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    }
+    .modal-emoji {
+      font-size: 3.6rem; display: block;
+      animation: bounceIn 0.7s 0.25s ease both;
+      position: relative; z-index: 1;
+    }
+    .modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem; font-weight: 700; color: white;
+      margin-top: 8px; line-height: 1.2; position: relative; z-index: 1;
+    }
+    .modal-company {
+      font-size: 0.62rem; letter-spacing: 4px; text-transform: uppercase;
+      color: rgba(255,255,255,0.75); margin-top: 4px; position: relative; z-index: 1;
+    }
+
+    .modal-body { padding: 28px 24px 0; }
+
+    /* Badge bonus */
+    .bonus-badge {
+      background: linear-gradient(135deg, #fffcf0, #fef5d4);
+      border: 2px solid var(--gold); border-radius: 18px;
+      padding: 18px 20px 14px; margin-bottom: 18px;
+      position: relative;
+    }
+    .bonus-gift {
+      position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+      font-size: 2rem; line-height: 1;
+      background: white; border-radius: 50%; padding: 4px 6px;
+      box-shadow: 0 2px 10px rgba(183,136,44,0.25);
+    }
+    .bonus-amount {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem; font-weight: 700; color: var(--gold); line-height: 1; margin-bottom: 3px;
+    }
+    .bonus-label { font-size: 0.7rem; font-weight: 700; color: #a07020; letter-spacing: 0.8px; text-transform: uppercase; }
+    .bonus-sub   { font-size: 0.68rem; color: #c09040; margin-top: 4px; }
+
+    /* Texte de bienvenue */
+    .welcome-text {
+      font-size: 0.84rem; color: var(--muted); line-height: 1.65;
+      margin-bottom: 20px;
+    }
+    .welcome-text strong { color: var(--text); }
+
+    /* Bouton WhatsApp */
+    .btn-whatsapp {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 13px 18px;
+      background: linear-gradient(135deg, #1abe5a, #25D366);
+      color: white; text-decoration: none;
+      border: none; border-radius: 13px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 700;
+      cursor: pointer; box-shadow: 0 5px 20px rgba(37,211,102,0.38);
+      transition: transform 0.15s, box-shadow 0.15s;
+      margin-bottom: 10px;
+    }
+    .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,211,102,0.5); }
+    .btn-whatsapp svg   { width: 21px; height: 21px; fill: white; flex-shrink: 0; }
+
+    /* Bouton passer */
+    .btn-skip {
+      width: 100%; padding: 10px 18px;
+      background: transparent; color: var(--muted);
+      border: 1.5px solid var(--border); border-radius: 12px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-skip:hover { background: var(--green-pale); color: var(--green); border-color: var(--green-light); }
+
+    /* ── Animations ── */
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp   { from { opacity: 0; transform: translateY(14px);  } to { opacity: 1; transform: translateY(0); } }
+    @keyframes bounceIn {
+      0%   { transform: scale(0.3); opacity: 0; }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="leaf-deco tl">🌿</div>
+  <div class="leaf-deco br">🌿</div>
+
+  <!-- ══════════ MODAL BIENVENUE ══════════ -->
+  <div class="modal-overlay" id="welcomeModal">
+    <div class="modal">
+
+      <div class="modal-header">
+        <span class="modal-emoji">🌱</span>
+        <div class="modal-title">Bienvenue chez AGRITech !</div>
+        <div class="modal-company">Agriculture &amp; Technologie</div>
+      </div>
+
+      <div class="modal-body">
+        <div class="bonus-badge">
+          <span class="bonus-gift">🎁</span>
+          <div class="bonus-amount">1 000 FCFA</div>
+          <div class="bonus-label">Bonus d'inscription offert</div>
+          <div class="bonus-sub">✅ Crédité automatiquement sur votre compte</div>
+        </div>
+
+        <p class="welcome-text">
+          Félicitations <strong id="welcomeUsername">ami(e)</strong> ! 🎉<br>
+          Votre compte AGRITech a été créé avec succès.<br><br>
+          Rejoignez notre communauté de milliers d'agriculteurs connectés et bâtissons ensemble une agriculture moderne et prospère en Afrique de l'Ouest. 🌍🌾
+        </p>
+
+        <a href="https://t.me/+HXxeFEMN2x9jMDA0" target="_blank" class="btn-whatsapp">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Rejoindre le groupe WhatsApp AGRITech
+        </a>
+
+        <button class="btn-skip" onclick="closeWelcomeModal()">
+          Continuer sans rejoindre →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ PAGE PRINCIPALE ══════════ -->
+  <div class="wrapper">
+
+    <div class="logo">
+      <div class="logo-icon">🌱</div>
+      <div class="logo-name">AGRITech</div>
+      <div class="logo-sub">Agriculture &amp; Technologie</div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('login')">Connexion</div>
+      <div class="tab" onclick="switchTab('register')">Inscription</div>
+    </div>
+
+    <div class="card">
+
+      <!-- ══ CONNEXION ══ -->
+      <form class="form active" id="loginFormData">
+
+        <div class="field-group">
+          <label>Numéro de téléphone <span style="color:var(--red)">*</span></label>
+          <div class="phone-input-row">
+            <div class="country-selector" id="countrySelectorLogin" onclick="toggleDropdownLogin()">
+              <span id="selectedFlagLogin">🌍</span>
+              <span id="selectedCodeLogin" style="font-size:0.78rem;font-weight:700;color:var(--green);">+???</span>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="#6b8f71" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <input type="tel" id="loginTelephone" placeholder="07 12 54 43 48" inputmode="numeric"/>
+          </div>
+          <div class="country-dropdown" id="countryDropdownLogin">
+            <div class="country-option" onclick="pickCountryLogin('🇨🇮','Côte d\'Ivoire','+225')"><span class="flag">🇨🇮</span><span class="cname">Côte d'Ivoire</span><span class="code">+225</span></div>
+            <div class="country-option" onclick="pickCountryLogin('🇲🇱','Mali','+223')"><span class="flag">🇲🇱</span><span class="cname">Mali</span><span class="code">+223</span></div>
+            <div class="country-option" onclick="pickCountryLogin('🇹🇬','Togo','+228')"><span class="flag">🇹🇬</span><span class="cname">Togo</span><span class="code">+228</span></div>
+            <div class="country-option" onclick="pickCountryLogin('🇧🇫','Burkina Faso','+226')"><span class="flag">🇧🇫</span><span class="cname">Burkina Faso</span><span class="code">+226</span></div>
+            <div class="country-option" onclick="pickCountryLogin('🇧🇯','Bénin','+229')"><span class="flag">🇧🇯</span><span class="cname">Bénin</span><span class="code">+229</span></div>
+            <div class="country-option" onclick="pickCountryLogin('🇸🇳','Sénégal','+221')"><span class="flag">🇸🇳</span><span class="cname">Sénégal</span><span class="code">+221</span></div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Code PIN</label>
+          <input type="password" id="loginPassword" placeholder="••••••" maxlength="6"/>
+        </div>
+
+        <div id="loginError" class="msg error"></div>
+
+        <button class="btn" type="submit">
+          <span id="loginBtnText">Se connecter</span>
+          <div class="spinner" id="loginSpinner"></div>
+        </button>
+
+      </form>
+
+      <!-- ══ INSCRIPTION ══ -->
+      <form class="form" id="signupFormData">
+
+        <div class="field-group">
+          <label>Nom et prénom</label>
+          <input type="text" id="signupUsername" placeholder="Ex: Koné Mamadou"/>
+        </div>
+
+        <div class="field-group">
+          <label>Numéro de téléphone <span style="color:var(--red)">*</span></label>
+          <div class="phone-input-row">
+            <div class="country-selector" id="countrySelector" onclick="toggleDropdown()">
+              <span id="selectedFlag">🌍</span>
+              <span id="selectedCode" style="font-size:0.78rem;font-weight:700;color:var(--green);">+???</span>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="#6b8f71" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <input type="tel" id="signupTelephone" placeholder="07 12 54 43 48" inputmode="numeric"/>
+          </div>
+          <div class="country-dropdown" id="countryDropdown">
+            <div class="country-option" onclick="pickCountry('🇨🇮','Côte d\'Ivoire','+225')"><span class="flag">🇨🇮</span><span class="cname">Côte d'Ivoire</span><span class="code">+225</span></div>
+            <div class="country-option" onclick="pickCountry('🇲🇱','Mali','+223')"><span class="flag">🇲🇱</span><span class="cname">Mali</span><span class="code">+223</span></div>
+            <div class="country-option" onclick="pickCountry('🇹🇬','Togo','+228')"><span class="flag">🇹🇬</span><span class="cname">Togo</span><span class="code">+228</span></div>
+            <div class="country-option" onclick="pickCountry('🇧🇫','Burkina Faso','+226')"><span class="flag">🇧🇫</span><span class="cname">Burkina Faso</span><span class="code">+226</span></div>
+            <div class="country-option" onclick="pickCountry('🇧🇯','Bénin','+229')"><span class="flag">🇧🇯</span><span class="cname">Bénin</span><span class="code">+229</span></div>
+            <div class="country-option" onclick="pickCountry('🇸🇳','Sénégal','+221')"><span class="flag">🇸🇳</span><span class="cname">Sénégal</span><span class="code">+221</span></div>
+          </div>
+          <input type="hidden" id="selectedCountry" name="country"/>
+        </div>
+
+        <div class="divider"><span>Sécurité</span></div>
+
+        <div class="field-group">
+          <label>Choisir un code PIN</label>
+          <input type="password" id="signupPassword" placeholder="••••••" maxlength="6" inputmode="numeric"/>
+        </div>
+
+        <div class="field-group">
+          <label>Répéter le code PIN</label>
+          <input type="password" id="confirmPassword" placeholder="••••••" maxlength="6" inputmode="numeric"/>
+        </div>
+
+        <div class="divider"><span>Optionnel</span></div>
+
+        <div class="parrainage-box">
+          <div class="parrainage-label">🎁 Code de parrainage</div>
+          <input type="text" id="referralCode" placeholder="Entrez le code de parrainage"/>
+          <div id="referralStatus" class="msg referral-status"></div>
+        </div>
+
+        <div id="signupError"   class="msg error"></div>
+        <div id="signupSuccess" class="msg success"></div>
+
+        <button class="btn" type="submit">
+          <span id="signupBtnText">Créer mon compte</span>
+          <div class="spinner" id="signupSpinner"></div>
+        </button>
+
+      </form>
+    </div>
+
+    <div class="page-footer">© 2025 AGRITech — Tous droits réservés</div>
+  </div>
+
+  <!-- ══════════ SCRIPT UI ══════════ -->
+  <script>
+    /* ── Tabs ── */
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
+      });
+      document.getElementById('loginFormData').classList.toggle('active', tab === 'login');
+      document.getElementById('signupFormData').classList.toggle('active', tab === 'register');
+    }
+
+    /* ── Dropdowns ── */
+    function toggleDropdownLogin() {
+      document.getElementById('countryDropdownLogin').classList.toggle('open');
+    }
+    function pickCountryLogin(flag, name, code) {
+      document.getElementById('selectedFlagLogin').textContent = flag;
+      document.getElementById('selectedCodeLogin').textContent = code;
+      document.getElementById('countryDropdownLogin').classList.remove('open');
+    }
+    function toggleDropdown() {
+      document.getElementById('countryDropdown').classList.toggle('open');
+    }
+    function pickCountry(flag, name, code) {
+      document.getElementById('selectedFlag').textContent = flag;
+      document.getElementById('selectedCode').textContent = code;
+      document.getElementById('selectedCountry').value = name;
+      document.getElementById('countryDropdown').classList.remove('open');
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.field-group')) {
+        document.getElementById('countryDropdown').classList.remove('open');
+        document.getElementById('countryDropdownLogin').classList.remove('open');
+      }
+    });
+
+    /* ── Modal ── */
+    function showWelcomeModal(username) {
+      document.getElementById('welcomeUsername').textContent = username || 'ami(e)';
+      document.getElementById('welcomeModal').classList.add('show');
+    }
+    function closeWelcomeModal() {
+      document.getElementById('welcomeModal').classList.remove('show');
+      setTimeout(() => { window.location.href = 'accueil.html'; }, 300);
+    }
+
+    /* ── Loading state ── */
+    function setLoading(type, loading) {
+      const text    = document.getElementById(type + 'BtnText');
+      const spinner = document.getElementById(type + 'Spinner');
+      const formId  = type === 'login' ? 'loginFormData' : 'signupFormData';
+      const btn     = document.getElementById(formId)?.querySelector('button[type=submit]');
+      if (text)    text.style.opacity    = loading ? '0.6' : '1';
+      if (spinner) spinner.style.display = loading ? 'block' : 'none';
+      if (btn)     btn.disabled          = loading;
+    }
+  </script>
+
+  <!-- ══════════ FIREBASE ══════════ -->
+<script type="module">
+
+/* ================= IMPORT FIREBASE 12.9.0 ================= */
+
+import { initializeApp } 
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+
+import { getAnalytics } 
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
+
+import { getAuth, createUserWithEmailAndPassword,
+         signInWithEmailAndPassword, onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+
+import { getDatabase, ref, set, get }
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+
+/* ================= CONFIGURATION ================= */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDaFEepJKO8TbePfgnYlX0N3-CcaV75fy4",
+  authDomain: "agri-5af15.firebaseapp.com",
+  databaseURL: "https://agri-5af15-default-rtdb.firebaseio.com",
+  projectId: "agri-5af15",
+  storageBucket: "agri-5af15.firebasestorage.app",
+  messagingSenderId: "1010902928190",
+  appId: "1:1010902928190:web:57d2555d69e2c023057a6f",
+  measurementId: "G-XYB13DQZSP"
+};
+
+
+/* ================= INITIALISATION ================= */
+
+const app       = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth      = getAuth(app);
+const database  = getDatabase(app);
+
+
+/* ================= UTILS ================= */
+
+class Utils {
+
+  static generateReferralCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    return Array.from({ length: 6 }, () =>
+      chars.charAt(Math.floor(Math.random() * chars.length))
+    ).join('');
+  }
+
+  static async checkReferralCode(code) {
+    if (!code) return null;
+    const snapshot = await get(ref(database, 'users'));
+    if (snapshot.exists()) {
+      const users = snapshot.val();
+      for (const uid in users) {
+        if (users[uid].referralCode === code)
+          return { userId: uid, username: users[uid].username };
+      }
+    }
+    return null;
+  }
+
+  static showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    el.style.display = text ? 'block' : 'none';
+    if (type) el.className = 'msg ' + type;
+  }
+
+  static clearMessages() {
+    ['loginError','signupError','signupSuccess','referralStatus'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.textContent = '';
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  static updateReferralStatus(isValid, msg) {
+    const el = document.getElementById('referralStatus');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = `msg referral-status ${isValid ? 'valid' : 'invalid'}`;
+    el.style.display = msg ? 'block' : 'none';
+  }
+
+  static updateUserDisplay(userData) {
+    const nameEl  = document.getElementById('user-name');
+    const idEl    = document.getElementById('user-id');
+    const emailEl = document.getElementById('user-email');
+
+    if (nameEl  && userData?.username)
+      nameEl.textContent = `Hello 👋 ${userData.username}`;
+
+    if (idEl && userData?.phoneNumber)
+      idEl.textContent = userData.phoneNumber;
+
+    if (emailEl && userData?.phoneNumber)
+      emailEl.textContent = `${userData.phoneNumber}@temp.com`;
+  }
+}
+
+
+/* ================= FORM MANAGER ================= */
+
+class FormManager {
+
+  static async handleSignup(event) {
+    event.preventDefault();
+    Utils.clearMessages();
+    setLoading('signup', true);
+
+    try {
+      const username   = document.getElementById('signupUsername').value.trim();
+      const telephone  = document.getElementById('signupTelephone').value.trim();
+      const password   = document.getElementById('signupPassword').value;
+      const confirmPwd = document.getElementById('confirmPassword').value;
+      const referralCode = document.getElementById('referralCode')?.value.trim();
+
+      if (!username || !telephone || !password)
+        throw new Error('Veuillez remplir tous les champs');
+
+      if (password !== confirmPwd)
+        throw new Error('Les codes PIN ne correspondent pas');
+
+      if (password.length < 6)
+        throw new Error('Le code PIN doit contenir au moins 6 chiffres');
+
+      const email = `${telephone}@temp.com`;
+
+      const userCredential =
+        await createUserWithEmailAndPassword(auth, email, password);
+
+      const user = userCredential.user;
+      const newCode = Utils.generateReferralCode();
+
+      await set(ref(database, `users/${user.uid}`), {
+        username,
+        phoneNumber: telephone,
+        balance: 1000,
+        referralCode: newCode,
+        referredBy: null,
+        createdAt: Date.now()
+      });
+
+      setLoading('signup', false);
+      showWelcomeModal(username);
+
+    } catch (error) {
+      setLoading('signup', false);
+      Utils.showMsg('signupError', error.message, 'error');
+    }
+  }
+
+
+  static async handleLogin(event) {
+    event.preventDefault();
+    Utils.clearMessages();
+    setLoading('login', true);
+
+    try {
+      const telephone = document.getElementById('loginTelephone').value.trim();
+      const password  = document.getElementById('loginPassword').value;
+
+      if (!telephone || !password)
+        throw new Error('Veuillez remplir tous les champs');
+
+      const email = `${telephone}@temp.com`;
+
+      await signInWithEmailAndPassword(auth, email, password);
+
+      window.location.href = 'accueil.html';
+
+    } catch (error) {
+      setLoading('login', false);
+      Utils.showMsg('loginError', 'Numéro ou code PIN incorrect', 'error');
+    }
+  }
+}
+
+
+/* ================= INIT ================= */
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  document.getElementById('signupFormData')
+    ?.addEventListener('submit', FormManager.handleSignup);
+
+  document.getElementById('loginFormData')
+    ?.addEventListener('submit', FormManager.handleLogin);
+});
+
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const snap = await get(ref(database, `users/${user.uid}`));
+    if (snap.exists())
+      Utils.updateUserDisplay(snap.val());
+  } else {
+    Utils.updateUserDisplay(null);
+  }
+});
+
+</script> 
+</body>
+</html>

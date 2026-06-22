@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGRITech — Recharge</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --green:#1a7a3c; --green2:#2db85e; --gold:#c8961e; --gold2:#f0c040; }
+body {
+  font-family:'Inter',sans-serif; background:#f2f7f4;
+  min-height:100vh; display:flex; align-items:center;
+  justify-content:center; padding:30px 16px;
+}
+
+#notification {
+  display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%);
+  z-index:9999; padding:12px 22px; border-radius:12px;
+  font-size:14px; font-weight:500; color:#fff;
+  box-shadow:0 8px 24px rgba(0,0,0,.2); text-align:center; max-width:90vw;
+  animation:slideDown .3s ease;
+}
+@keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-10px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+
+.loading {
+  display:none; position:fixed; inset:0;
+  background:rgba(255,255,255,.75); backdrop-filter:blur(4px);
+  z-index:9998; align-items:center; justify-content:center; flex-direction:column; gap:14px;
+}
+.spinner { width:42px; height:42px; border:4px solid rgba(26,122,60,.15); border-top-color:var(--green); border-radius:50%; animation:spin .7s linear infinite; }
+.loading-text { font-size:14px; color:var(--green); font-weight:500; }
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── COUNTRY MODAL ── */
+.country-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(6px);
+  z-index:9997; display:flex; align-items:center; justify-content:center; padding:20px;
+}
+.country-overlay.hidden { display:none; }
+.country-modal {
+  background:#fff; border-radius:24px; padding:32px 24px 28px;
+  max-width:360px; width:100%; text-align:center;
+  box-shadow:0 24px 64px rgba(0,0,0,.22);
+  animation:modalPop .45s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes modalPop{from{opacity:0;transform:scale(.88) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.cm-flag { font-size:44px; margin-bottom:10px; }
+.cm-title { font-size:18px; font-weight:700; color:#1a2e20; margin-bottom:6px; }
+.cm-sub { font-size:13px; color:rgba(0,0,0,.4); margin-bottom:24px; line-height:1.5; }
+.cm-btns { display:flex; flex-direction:column; gap:10px; }
+.cm-btn {
+  width:100%; padding:15px 14px; border-radius:14px; border:none;
+  font-family:'Inter',sans-serif; font-size:14px; font-weight:600;
+  cursor:pointer; transition:all .22s cubic-bezier(.16,1,.3,1);
+  display:flex; align-items:center; justify-content:center; gap:10px;
+}
+.cm-btn:active { transform:scale(.97); }
+.cm-ci { background:linear-gradient(135deg,#f77f00,#e95420); color:#fff; box-shadow:0 8px 22px rgba(233,84,32,.28); }
+.cm-ci:hover { box-shadow:0 12px 28px rgba(233,84,32,.4); transform:translateY(-2px); }
+.cm-intl { background:linear-gradient(135deg,#1a7a3c,#2db85e); color:#fff; box-shadow:0 8px 22px rgba(26,122,60,.28); }
+.cm-intl:hover { box-shadow:0 12px 28px rgba(26,122,60,.4); transform:translateY(-2px); }
+
+/* ── PAYS BADGE ── */
+.pays-badge {
+  display:flex; align-items:center; gap:8px;
+  background:#f0faf4; border:1.5px solid rgba(26,122,60,.18);
+  border-radius:10px; padding:8px 12px; margin-bottom:16px;
+  font-size:12px; color:rgba(0,0,0,.5);
+}
+.pays-badge strong { color:var(--green); }
+.pays-change { margin-left:auto; font-size:11px; color:var(--green); cursor:pointer; font-weight:600; text-decoration:underline; }
+
+/* ── CI PAYMENT PANEL ── */
+.ci-panel {
+  background:linear-gradient(135deg,#fff8ec,#fffdf5);
+  border:2px solid #f0c060; border-radius:18px;
+  overflow:hidden; margin-bottom:14px;
+  display:none;
+}
+.ci-panel.show { display:block; animation:fadeInUp .4s cubic-bezier(.16,1,.3,1) both; }
+.ci-panel-header {
+  background:linear-gradient(135deg,#e95420,#f77f00);
+  padding:13px 18px; display:flex; align-items:center; gap:10px;
+}
+.ci-panel-title { font-size:13px; font-weight:700; color:#fff; }
+.ci-panel-sub { font-size:11px; color:rgba(255,255,255,.65); margin-top:1px; }
+.ci-panel-body { padding:16px 18px 18px; }
+.ci-info-row {
+  display:flex; align-items:center; justify-content:space-between;
+  background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:11px;
+  padding:12px 14px; margin-bottom:10px;
+}
+.ci-info-row:last-child { margin-bottom:0; }
+.ci-info-label { font-size:11px; color:rgba(0,0,0,.4); font-weight:500; }
+.ci-info-val { font-size:14px; font-weight:700; color:#1a2e20; }
+.ci-copy-btn {
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  color:#fff; border:none; border-radius:8px;
+  padding:6px 12px; font-size:11px; font-weight:600;
+  cursor:pointer; transition:all .2s; font-family:'Inter',sans-serif;
+}
+.ci-copy-btn:hover { transform:scale(1.05); box-shadow:0 4px 12px rgba(26,122,60,.3); }
+.ci-copy-btn:active { transform:scale(.97); }
+.ci-steps { margin-top:14px; }
+.ci-step { display:flex; align-items:flex-start; gap:10px; font-size:12px; color:rgba(0,0,0,.5); margin-bottom:8px; line-height:1.5; }
+.ci-step-num { width:20px; height:20px; border-radius:50%; background:var(--green); color:#fff; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.ci-step strong { color:#1a2e20; }
+
+/* ── WAVE PANEL ── */
+.wave-panel {
+  background:linear-gradient(135deg,#e8f4fd,#f0f8ff);
+  border:2px solid #00b4d8; border-radius:18px;
+  overflow:hidden; margin-bottom:14px;
+  display:none;
+}
+.wave-panel.show { display:block; animation:fadeInUp .4s cubic-bezier(.16,1,.3,1) both; }
+.wave-panel-header {
+  background:linear-gradient(135deg,#005f73,#00b4d8);
+  padding:13px 18px; display:flex; align-items:center; gap:10px;
+}
+.wave-panel-title { font-size:13px; font-weight:700; color:#fff; }
+.wave-panel-sub { font-size:11px; color:rgba(255,255,255,.65); margin-top:1px; }
+.wave-panel-body { padding:16px 18px 18px; }
+.wave-notice {
+  background:#fff; border:1px solid rgba(0,180,216,.2); border-radius:11px;
+  padding:13px 14px; margin-bottom:14px; font-size:13px;
+  color:#1a2e20; font-weight:500; line-height:1.6; text-align:center;
+}
+.wave-notice strong { color:#005f73; }
+.btn-wave {
+  width:100%; border:none; border-radius:13px; padding:14px;
+  font-family:'Inter',sans-serif; font-size:14px; font-weight:700;
+  cursor:pointer; transition:all .25s cubic-bezier(.16,1,.3,1);
+  background:linear-gradient(135deg,#005f73,#00b4d8); color:#fff;
+  box-shadow:0 8px 24px rgba(0,180,216,.35);
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn-wave:hover { box-shadow:0 12px 30px rgba(0,180,216,.5); transform:translateY(-2px); }
+.btn-wave:active { transform:scale(.97); }
+.btn-wave:disabled { opacity:.7; cursor:not-allowed; transform:none !important; }
+.wave-steps { margin-top:14px; }
+.wave-step { display:flex; align-items:flex-start; gap:10px; font-size:12px; color:rgba(0,0,0,.5); margin-bottom:8px; line-height:1.5; }
+.wave-step-num { width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,#005f73,#00b4d8); color:#fff; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.wave-step strong { color:#1a2e20; }
+
+.card {
+  width:100%; max-width:420px; background:#fff; border-radius:24px;
+  border:1px solid rgba(26,122,60,.14);
+  box-shadow:0 12px 48px rgba(26,122,60,.10),0 2px 8px rgba(0,0,0,.05);
+  overflow:hidden;
+  animation:cardIn .7s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(40px) scale(.96);}to{opacity:1;transform:translateY(0) scale(1);}}
+
+.brand-bar {
+  background:linear-gradient(135deg,#0d5c2a 0%,#1a7a3c 60%,#22a050 100%);
+  padding:18px 24px 16px; display:flex; align-items:center; justify-content:space-between;
+}
+.brand-name { font-size:22px; font-weight:700; color:#fff; letter-spacing:2px; line-height:1; }
+.brand-name span { color:#6fe89a; }
+.brand-sub { font-size:11px; color:rgba(255,255,255,.5); margin-top:3px; }
+.secure { display:flex; align-items:center; gap:5px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:20px; padding:5px 10px; font-size:11px; color:#fff; }
+.sdot { width:5px; height:5px; border-radius:50%; background:#6fe89a; box-shadow:0 0 6px #6fe89a; animation:blink 2s ease-in-out infinite; }
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+.tabs { display:flex; background:#f6faf7; border-bottom:1px solid rgba(26,122,60,.1); }
+.tab { flex:1; padding:10px 4px; text-align:center; font-size:12px; font-weight:500; color:rgba(0,0,0,.3); border-bottom:2px solid transparent; transition:all .35s ease; }
+.tab.active { color:var(--green); border-bottom-color:var(--green); font-weight:600; }
+.tab.done { color:rgba(26,122,60,.4); }
+
+.body { padding:22px 20px 26px; overflow:hidden; }
+.step { display:none; }
+.step.active { display:block; animation:stepFwd .42s cubic-bezier(.16,1,.3,1) both; }
+.step.enter-back { display:block; animation:stepBack .42s cubic-bezier(.16,1,.3,1) both; }
+
+@keyframes stepFwd { from{opacity:0;transform:translateX(48px) scale(.97);} to{opacity:1;transform:translateX(0) scale(1);} }
+@keyframes stepBack { from{opacity:0;transform:translateX(-48px) scale(.97);} to{opacity:1;transform:translateX(0) scale(1);} }
+@keyframes stepOutFwd { from{opacity:1;transform:translateX(0);} to{opacity:0;transform:translateX(-48px);} }
+@keyframes stepOutBack { from{opacity:1;transform:translateX(0);} to{opacity:0;transform:translateX(48px);} }
+
+.sl { display:flex; align-items:center; gap:8px; font-size:11px; font-weight:600; color:var(--green); margin-bottom:12px; }
+.sl::after { content:''; flex:1; height:1px; background:linear-gradient(to right,rgba(26,122,60,.2),transparent); }
+.err-msg { font-size:12px; color:#d32f2f; font-weight:400; margin-top:5px; opacity:0; transition:opacity .25s; min-height:16px; display:block; }
+
+.ops { display:grid; grid-template-columns:repeat(5,1fr); gap:7px; margin-bottom:4px; }
+.op {
+  position:relative; border:1.5px solid rgba(0,0,0,.08); border-radius:13px;
+  padding:10px 3px 8px; text-align:center; cursor:pointer; background:#f8f9fa;
+  transition:all .25s cubic-bezier(.16,1,.3,1);
+}
+.op:hover { border-color:rgba(26,122,60,.3); background:#f0faf4; transform:translateY(-3px) scale(1.03); }
+.op.sel { border-color:var(--green); background:#eaf5ef; transform:translateY(-3px) scale(1.05); box-shadow:0 6px 18px rgba(26,122,60,.18); animation:opPop .3s cubic-bezier(.16,1,.3,1); }
+@keyframes opPop{from{transform:translateY(-3px) scale(.93);}to{transform:translateY(-3px) scale(1.05);}}
+.op input[type="radio"] { position:absolute; opacity:0; width:0; height:0; }
+.op-ico { width:34px; height:34px; border-radius:50%; margin:0 auto 5px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:#fff; box-shadow:0 3px 10px rgba(0,0,0,.18); transition:transform .25s; }
+.op.sel .op-ico { transform:scale(1.12); }
+.op-name { font-size:10px; font-weight:400; color:rgba(0,0,0,.4); transition:color .2s; }
+.op.sel .op-name { color:var(--green); font-weight:600; }
+.op-ck { position:absolute; top:4px; right:4px; width:13px; height:13px; border-radius:50%; background:var(--green); color:#fff; font-size:8px; display:none; align-items:center; justify-content:center; }
+.op.sel .op-ck { display:flex; animation:ckPop .25s cubic-bezier(.16,1,.3,1); }
+@keyframes ckPop{from{transform:scale(0) rotate(-45deg);}to{transform:scale(1) rotate(0);}}
+
+.amts { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:4px; }
+.amt {
+  position:relative; overflow:hidden; border:1.5px solid rgba(0,0,0,.08); border-radius:12px;
+  padding:12px 5px; text-align:center; cursor:pointer; background:#f8f9fa;
+  color:rgba(0,0,0,.5); transition:all .25s cubic-bezier(.16,1,.3,1);
+}
+.amt-v { font-size:13px; font-weight:600; display:block; }
+.amt-c { font-size:10px; opacity:.5; }
+.amt::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--green),var(--green2)); transform:scaleX(0); transition:transform .25s; }
+.amt:hover { border-color:rgba(26,122,60,.3); color:#1a2e20; transform:translateY(-2px); }
+.amt:hover::after { transform:scaleX(1); }
+.amt.sel { border-color:var(--green); background:#eaf5ef; color:var(--green); transform:translateY(-2px); box-shadow:0 5px 14px rgba(26,122,60,.14); animation:amtPop .28s cubic-bezier(.16,1,.3,1); }
+.amt.sel::after { transform:scaleX(1); }
+@keyframes amtPop{from{transform:translateY(-2px) scale(.93);}to{transform:translateY(-2px) scale(1);}}
+
+.field { margin-bottom:16px; }
+.field label { font-size:12px; font-weight:500; color:rgba(0,0,0,.45); display:block; margin-bottom:7px; }
+.inp-wrap { position:relative; }
+.inp-ico { position:absolute; left:13px; top:50%; transform:translateY(-50%); font-size:16px; opacity:.35; pointer-events:none; transition:opacity .2s; }
+.field input {
+  width:100%; border:1.5px solid rgba(0,0,0,.1); border-radius:12px;
+  padding:13px 14px 13px 42px; font-size:15px; font-family:'Inter',sans-serif;
+  background:#f8f9fa; color:#1a2e20; outline:none;
+  transition:all .25s cubic-bezier(.16,1,.3,1);
+}
+.field input::placeholder { color:rgba(0,0,0,.25); font-size:14px; }
+.field input:focus { border-color:var(--green); background:#fff; box-shadow:0 0 0 4px rgba(26,122,60,.08); }
+.inp-wrap:focus-within .inp-ico { opacity:.6; }
+
+.email-field { transition:all .3s ease; }
+.email-field.hidden { display:none; }
+
+.btn { width:100%; border:none; border-radius:13px; padding:14px; font-family:'Inter',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:all .25s cubic-bezier(.16,1,.3,1); }
+.btn:active { transform:scale(.97) !important; }
+.btn-green { background:linear-gradient(135deg,#1a7a3c,#2db85e); color:#fff; box-shadow:0 8px 24px rgba(26,122,60,.28); }
+.btn-green:hover { box-shadow:0 12px 32px rgba(26,122,60,.4); transform:translateY(-2px); }
+.btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#1a0e00; font-weight:600; box-shadow:0 8px 24px rgba(200,150,30,.3); }
+.btn-gold:hover { box-shadow:0 12px 30px rgba(200,150,30,.45); transform:translateY(-2px); }
+.btn-orange { background:linear-gradient(135deg,#e95420,#f77f00); color:#fff; font-weight:600; box-shadow:0 8px 24px rgba(233,84,32,.3); margin-bottom:10px; }
+.btn-orange:hover { box-shadow:0 12px 30px rgba(233,84,32,.42); transform:translateY(-2px); }
+.btn-ghost { background:transparent; border:1.5px solid rgba(0,0,0,.1); color:rgba(0,0,0,.4); margin-top:8px; }
+.btn-ghost:hover { background:#f5f5f5; color:rgba(0,0,0,.6); transform:translateY(-1px); }
+
+.cf-card { background:#f8f9fa; border:1px solid rgba(0,0,0,.07); border-radius:14px; overflow:hidden; margin-bottom:16px; }
+.cf-row { display:flex; justify-content:space-between; align-items:center; padding:13px 16px; border-bottom:1px solid rgba(0,0,0,.05); transition:background .2s; }
+.cf-row:last-child { border-bottom:none; }
+.cf-row:hover { background:rgba(26,122,60,.03); }
+.cf-lbl { font-size:11px; font-weight:500; color:rgba(0,0,0,.35); }
+.cf-val { font-size:14px; font-weight:600; color:#1a2e20; }
+.cf-val.hl { color:var(--green); font-size:17px; font-weight:700; }
+
+.total-band {
+  background:linear-gradient(135deg,#eaf5ef,#f2faf5);
+  border:1px solid rgba(26,122,60,.15); border-radius:13px;
+  padding:15px 18px; display:flex; justify-content:space-between;
+  align-items:center; margin-bottom:18px;
+  animation:fadeInUp .5s cubic-bezier(.16,1,.3,1) .1s both;
+}
+.total-lbl { font-size:12px; font-weight:500; color:rgba(0,0,0,.4); }
+.total-sub { font-size:11px; color:rgba(0,0,0,.25); margin-top:2px; }
+.total-val { font-size:22px; font-weight:700; color:var(--green); }
+
+.return-alert {
+  background:linear-gradient(135deg,#fffbea,#fff8d6);
+  border:2px solid var(--gold); border-radius:16px;
+  padding:16px; margin-bottom:16px;
+  display:none; gap:12px; align-items:flex-start;
+  position:relative; overflow:hidden;
+  box-shadow:0 6px 24px rgba(240,192,64,.22);
+}
+.return-alert.show { display:flex; animation:fadeInUp .4s cubic-bezier(.16,1,.3,1) both; }
+.return-alert::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,#c8961e,#f0c040,#ffe080,#f0c040,#c8961e);
+  background-size:300% 100%; animation:shimmer 2.5s linear infinite;
+}
+@keyframes shimmer{0%{background-position:100% 0;}100%{background-position:-100% 0;}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.ra-icon { font-size:26px; flex-shrink:0; animation:bounce 1.2s ease-in-out infinite; }
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.ra-title { font-size:13px; font-weight:700; color:#5a3d05; margin-bottom:5px; }
+.ra-text { font-size:12px; color:#7a5a0a; line-height:1.65; }
+.ra-text strong { color:#4a2d00; }
+
+.token-guide { background:#fff; border:1.5px solid rgba(26,122,60,.15); border-radius:12px; padding:14px 16px; margin-bottom:14px; display:none; }
+.token-guide.show { display:block; animation:fadeInUp .4s cubic-bezier(.16,1,.3,1) .08s both; }
+.tg-title { font-size:11px; font-weight:600; color:var(--green); margin-bottom:10px; }
+.tg-step { display:flex; align-items:flex-start; gap:10px; margin-bottom:8px; font-size:12px; color:rgba(0,0,0,.5); line-height:1.5; }
+.tg-step:last-child { margin-bottom:0; }
+.tg-num { width:20px; height:20px; border-radius:50%; background:var(--green); color:#fff; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.tg-step strong { color:#1a2e20; }
+
+.txn-section { display:none; }
+.txn-section.show { display:block; animation:fadeInUp .4s cubic-bezier(.16,1,.3,1) .15s both; }
+
+.success-area { text-align:center; padding:6px 0 18px; }
+.s-ring {
+  width:74px; height:74px; border-radius:50%;
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  display:flex; align-items:center; justify-content:center; margin:0 auto 14px;
+  font-size:30px;
+  box-shadow:0 0 0 10px rgba(26,122,60,.08),0 0 0 20px rgba(26,122,60,.04),0 16px 30px rgba(26,122,60,.2);
+  animation:ringPop .7s cubic-bezier(.16,1,.3,1) .1s both;
+}
+@keyframes ringPop{0%{transform:scale(0) rotate(-20deg);opacity:0;}60%{transform:scale(1.15) rotate(5deg);opacity:1;}100%{transform:scale(1) rotate(0);opacity:1;}}
+.s-title { font-size:20px; font-weight:700; color:#1a2e20; margin-bottom:5px; animation:fadeInUp .5s cubic-bezier(.16,1,.3,1) .25s both; }
+.s-sub { font-size:13px; color:rgba(0,0,0,.4); margin-bottom:14px; line-height:1.6; animation:fadeInUp .5s cubic-bezier(.16,1,.3,1) .35s both; }
+.txn-pill {
+  display:inline-flex; align-items:center; gap:7px;
+  background:#fffbea; border:1px solid rgba(200,150,30,.25); border-radius:20px;
+  padding:6px 14px; font-size:12px; color:#9a7010; font-weight:500; margin-bottom:18px;
+  animation:fadeInUp .5s cubic-bezier(.16,1,.3,1) .45s both;
+}
+.balance-box {
+  background:linear-gradient(135deg,#1a7a3c,#2db85e); border-radius:16px;
+  padding:20px; text-align:center; margin-bottom:16px;
+  box-shadow:0 8px 24px rgba(26,122,60,.3);
+  animation:fadeInUp .5s cubic-bezier(.16,1,.3,1) .5s both;
+}
+.balance-box .bl { font-size:11px; color:rgba(255,255,255,.6); }
+.balance-box .bv { font-size:20px; font-weight:700; color:#fff; margin:4px 0 2px; }
+.balance-box .bs { font-size:11px; color:rgba(255,255,255,.5); }
+
+/* Divider between CI and intl buttons */
+.pay-divider {
+  display:flex; align-items:center; gap:10px;
+  margin:12px 0; font-size:11px; color:rgba(0,0,0,.3);
+}
+.pay-divider::before, .pay-divider::after {
+  content:''; flex:1; height:1px; background:rgba(0,0,0,.08);
+}
+/* Masquer le divider et le bouton MF pour CI */
+.hide-mf { display:none !important; }
+</style>
+</head>
+<body>
+
+<div id="notification"></div>
+<div class="loading"><div class="spinner"></div><div class="loading-text" id="loading-text">Traitement en cours...</div></div>
+
+<!-- ══ MODAL PAYS ══ -->
+<div class="country-overlay" id="countryOverlay">
+  <div class="country-modal">
+    <div class="cm-flag">🌍</div>
+    <div class="cm-title">Où êtes-vous situé ?</div>
+    <div class="cm-sub">Votre pays détermine le mode de paiement et les informations de recharge disponibles.</div>
+    <div class="cm-btns">
+      <button class="cm-btn cm-ci" onclick="choisirPays('ci')">🇨🇮 &nbsp; Je suis en Côte d'Ivoire</button>
+      <button class="cm-btn cm-intl" onclick="choisirPays('intl')">🌐 &nbsp; Je suis dans un autre pays</button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="brand-bar">
+    <div>
+      <div class="brand-name">AGRI<span>Tech</span></div>
+      <div class="brand-sub">Plateforme de recharge mobile</div>
+    </div>
+    <div class="secure"><div class="sdot"></div> Sécurisé</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tab1">Recharge</div>
+    <div class="tab" id="tab2">Paiement</div>
+    <div class="tab" id="tab3">Succès</div>
+  </div>
+
+  <div class="body">
+
+    <!-- ÉTAPE 1 -->
+    <div class="step active" id="step1">
+
+      <!-- Badge pays -->
+      <div class="pays-badge" id="paysBadge">
+        <span id="paysFlag">🌍</span>
+        <span>Pays : <strong id="paysLabel">—</strong></span>
+        <span class="pays-change" onclick="showCountryModal()">Changer</span>
+      </div>
+
+      <div class="sl">Votre opérateur</div>
+      <div class="ops">
+        <div class="op" onclick="pickOp(this,'mtn')"><input type="radio" name="operator" value="mtn"><div class="op-ck">✓</div><div class="op-ico" style="background:linear-gradient(135deg,#f5a623,#e07800);">MTN</div><div class="op-name">MTN</div></div>
+        <div class="op" onclick="pickOp(this,'moov')"><input type="radio" name="operator" value="moov"><div class="op-ck">✓</div><div class="op-ico" style="background:linear-gradient(135deg,#0096c7,#023e8a);">MOV</div><div class="op-name">Moov</div></div>
+        <div class="op" onclick="pickOp(this,'orange')"><input type="radio" name="operator" value="orange"><div class="op-ck">✓</div><div class="op-ico" style="background:linear-gradient(135deg,#ff6b00,#c1440e);">ORG</div><div class="op-name">Orange</div></div>
+        <div class="op" onclick="pickOp(this,'wave')"><input type="radio" name="operator" value="wave"><div class="op-ck">✓</div><div class="op-ico" style="background:linear-gradient(135deg,#00b4d8,#005f73);">WAV</div><div class="op-name">Wave</div></div>
+        <div class="op" onclick="pickOp(this,'tmoney')"><input type="radio" name="operator" value="tmoney"><div class="op-ck">✓</div><div class="op-ico" style="background:linear-gradient(135deg,#9b2dca,#4a0060);">T-M</div><div class="op-name">T-Money</div></div>
+      </div>
+      <span class="err-msg" id="operatorError"></span>
+
+      <div style="margin-top:16px;">
+        <div class="sl">Montant de rechargement</div>
+        <div class="amts">
+          <div class="amt" onclick="pickAmt(this,'5 500',5500)"><span class="amt-v">5 500</span><span class="amt-c">F CFA</span></div>
+          <div class="amt" onclick="pickAmt(this,'10 500',10500)"><span class="amt-v">10 500</span><span class="amt-c">F CFA</span></div>
+          <div class="amt" onclick="pickAmt(this,'18 500',18500)"><span class="amt-v">18 500</span><span class="amt-c">F CFA</span></div>
+          <div class="amt" onclick="pickAmt(this,'35 500',35500)"><span class="amt-v">35 500</span><span class="amt-c">F CFA</span></div>
+          <div class="amt" onclick="pickAmt(this,'50 000',50000)"><span class="amt-v">50 000</span><span class="amt-c">F CFA</span></div>
+          <div class="amt" onclick="pickAmt(this,'100 000',100000)"><span class="amt-v">100 000</span><span class="amt-c">F CFA</span></div>
+          <div class="amt" onclick="pickAmt(this,'200 000',200000)"><span class="amt-v">200 000</span><span class="amt-c">F CFA</span></div>
+        </div>
+        <input type="hidden" id="amount" value="">
+        <span class="err-msg" id="amountError"></span>
+      </div>
+
+      <!-- Email — masqué pour CI -->
+      <div class="field email-field" id="emailField" style="margin-top:16px;">
+        <label>Adresse Gmail</label>
+        <div class="inp-wrap">
+          <span class="inp-ico">✉️</span>
+          <input type="email" id="gmail" placeholder="exemple@gmail.com"/>
+        </div>
+        <span class="err-msg" id="gmailError"></span>
+      </div>
+
+      <div class="field">
+        <label>Numéro de téléphone</label>
+        <div class="inp-wrap">
+          <span class="inp-ico">📱</span>
+          <input type="tel" id="phone" placeholder="07 00 00 00 00" maxlength="14"/>
+        </div>
+        <span class="err-msg" id="phoneError"></span>
+      </div>
+
+      <button class="btn btn-green" onclick="goConfirm()">Continuer →</button>
+    </div>
+
+    <!-- ÉTAPE 2 -->
+    <div class="step" id="step2">
+      <div class="sl">Effectuer le paiement</div>
+
+      <div class="cf-card">
+        <div class="cf-row"><span class="cf-lbl">Opérateur</span><span class="cf-val" id="c-op">—</span></div>
+        <div class="cf-row" id="c-gmail-row"><span class="cf-lbl">Gmail</span><span class="cf-val" id="c-gmail" style="font-size:13px;">—</span></div>
+        <div class="cf-row"><span class="cf-lbl">Numéro client</span><span class="cf-val" id="c-phone">—</span></div>
+      </div>
+
+      <div class="total-band">
+        <div><div class="total-lbl">Montant à payer</div><div class="total-sub">Franc CFA</div></div>
+        <div class="total-val" id="c-amt">—</div>
+      </div>
+
+      <!-- ══ PAIEMENT CÔTE D'IVOIRE (non-Wave) ══ -->
+      <div id="ciPaySection">
+        <div class="ci-panel" id="ciPanel">
+          <div class="ci-panel-header">
+            <div>
+              <div class="ci-panel-title">🇨🇮 Paiement en Côte d'Ivoire</div>
+              <div class="ci-panel-sub">Envoyez le montant au numéro ci-dessous</div>
+            </div>
+          </div>
+          <div class="ci-panel-body">
+            <div class="ci-info-row">
+              <div>
+                <div class="ci-info-label">Numéro de dépôt</div>
+                <div class="ci-info-val" id="ciNumero">—</div>
+              </div>
+              <button class="ci-copy-btn" onclick="copierNumero()">📋 Copier</button>
+            </div>
+            <div class="ci-info-row">
+              <div>
+                <div class="ci-info-label">Nom du destinataire</div>
+                <div class="ci-info-val">AGRITech AGRITech</div>
+              </div>
+              <button class="ci-copy-btn" onclick="copierNom()">📋 Copier</button>
+            </div>
+            <div class="ci-steps">
+              <div class="ci-step"><div class="ci-step-num">1</div><span>Ouvrez votre application <strong id="ciAppLabel">Mobile Money</strong></span></div>
+              <div class="ci-step"><div class="ci-step-num">2</div><span>Envoyez <strong id="ciMontantLabel">—</strong> au numéro <strong id="ciNumeroLabel">—</strong></span></div>
+              <div class="ci-step"><div class="ci-step-num">3</div><span>Entrez votre <strong>ID de transaction</strong> dans le champ ci-dessous</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ WAVE CI PANEL ══ -->
+        <div class="wave-panel" id="wavePanel">
+          <div class="wave-panel-header">
+            <div>
+              <div class="wave-panel-title">〰️ Paiement Wave — Côte d'Ivoire</div>
+              <div class="wave-panel-sub">Cliquez sur le bouton pour payer via Wave</div>
+            </div>
+          </div>
+          <div class="wave-panel-body">
+            <div class="wave-notice">
+              Veuillez payer le paiement avec les frais Merci 🙏<br>
+              <strong>AGRITech AGRITech</strong>
+            </div>
+            <button class="btn-wave" id="waveLinkBtn" onclick="ouvrirWave()">
+              〰️ &nbsp;Payer avec Wave
+            </button>
+            <div class="wave-steps">
+              <div class="wave-step"><div class="wave-step-num">1</div><span>Cliquez sur le bouton ci-dessus pour ouvrir la page de paiement Wave</span></div>
+              <div class="wave-step"><div class="wave-step-num">2</div><span>Effectuez le paiement de <strong id="waveMontantLabel">—</strong> F CFA</span></div>
+              <div class="wave-step"><div class="wave-step-num">3</div><span>Revenez ici et entrez votre <strong>ID de transaction</strong> ci-dessous</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Divider "ou" — masqué pour CI -->
+        <div class="pay-divider" id="payDivider">ou</div>
+      </div>
+
+      <!-- Bouton paiement international — masqué pour CI -->
+      <button class="btn btn-gold" id="payBtn" onclick="ouvrirMF()" style="margin-bottom:14px;">
+        🌐 &nbsp;Paiement international — MoneyFusion
+      </button>
+
+      <div class="return-alert" id="returnAlert">
+        <div class="ra-icon">👋</div>
+        <div>
+          <div class="ra-title">Bienvenue de retour !</div>
+          <div class="ra-text">
+            Votre paiement est en cours de validation.<br>
+            Entrez votre <strong>ID de transaction</strong> ci-dessous pour créditer votre solde.
+          </div>
+        </div>
+      </div>
+
+      <div class="token-guide" id="tokenGuide">
+        <div class="tg-title">📍 Où trouver votre ID de transaction ?</div>
+        <div class="tg-step"><div class="tg-num">1</div><span>Sur la <strong>page de confirmation</strong>, repérez la section "Détails du paiement"</span></div>
+        <div class="tg-step"><div class="tg-num">2</div><span>Copiez la valeur <strong>"Token" ou "ID transaction"</strong></span></div>
+        <div class="tg-step"><div class="tg-num">3</div><span>Collez-le dans le champ ci-dessous et confirmez</span></div>
+      </div>
+
+      <div class="txn-section show" id="txnSection">
+        <div class="field">
+          <label>ID de transaction</label>
+          <div class="inp-wrap">
+            <span class="inp-ico">🔑</span>
+            <input type="text" id="transactionId" placeholder="Collez ici votre ID de transaction" autocomplete="off" autocorrect="off" spellcheck="false"/>
+          </div>
+          <span class="err-msg" id="txnError"></span>
+        </div>
+        <button class="btn btn-green" onclick="confirmerTransaction()">✅ &nbsp;Confirmer le paiement</button>
+      </div>
+
+      <button class="btn btn-ghost" id="modifyBtn" onclick="goTo(1,'back')">← Modifier</button>
+    </div>
+
+    <!-- ÉTAPE 3 — SUCCÈS -->
+    <div class="step" id="step3">
+      <div class="success-area">
+        <div class="s-ring">📨</div>
+        <div class="s-title">Demande envoyée !</div>
+        <div class="s-sub">Votre demande est en cours de vérification par l'administrateur. Votre solde sera crédité sous peu.</div>
+        <div class="txn-pill">🔖 &nbsp;<span id="s-txn-pill">—</span></div>
+      </div>
+      <div class="balance-box">
+        <div class="bl">Statut</div>
+        <div class="bv" id="new-balance">⏳ En attente</div>
+        <div class="bs">Validation en cours par l'admin</div>
+      </div>
+      <div class="cf-card">
+        <div class="cf-row"><span class="cf-lbl">Opérateur</span><span class="cf-val" id="s-op">—</span></div>
+        <div class="cf-row" id="s-gmail-row"><span class="cf-lbl">Gmail</span><span class="cf-val" id="s-gmail" style="font-size:13px;">—</span></div>
+        <div class="cf-row"><span class="cf-lbl">Numéro</span><span class="cf-val" id="s-phone">—</span></div>
+        <div class="cf-row"><span class="cf-lbl">Montant rechargé</span><span class="cf-val hl" id="s-amt">—</span></div>
+        <div class="cf-row"><span class="cf-lbl">ID Transaction</span><span class="cf-val" id="s-txn" style="font-size:11px;color:rgba(0,0,0,.4);">—</span></div>
+      </div>
+      <button class="btn btn-green" onclick="restart()">+ Nouvelle recharge</button>
+      <button class="btn btn-ghost" onclick="window.location.href='accueil.html'">🏠 Retour à l'accueil</button>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp }         from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+  import { getDatabase, ref, set, push, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+  const app = initializeApp({
+    apiKey:"AIzaSyDaFEepJKO8TbePfgnYlX0N3-CcaV75fy4", authDomain:"agri-5af15.firebaseapp.com",
+    databaseURL:"https://agri-5af15-default-rtdb.firebaseio.com", projectId:"agri-5af15",
+    storageBucket:"agri-5af15.firebasestorage.app", messagingSenderId:"1010902928190",
+    appId:"1:1010902928190:web:57d2555d69e2c023057a6f"
+  });
+  const auth = getAuth(app);
+  const db   = getDatabase(app);
+
+  const MF_LINK   = 'https://my.moneyfusion.net/69a1e3df72d40f4062a204f5';
+  const WAVE_LINK = 'https://pay.wave.com/m/M_ci_Dxkj_yGq4c7E/c/ci/';
+  const SS_KEY    = 'agritech_recharge_state';
+
+  // ✅ Numéros CI par opérateur — Wave utilise un lien dédié (pas de numéro)
+  const CI_NUMEROS = {
+    mtn    : { numero: '05 85 84 24 93', app: 'MTN Mobile Money' },
+    orange : { numero: 'ecrivez au service client', app: 'Orange Money' },
+    wave   : { numero: null, app: 'Wave', useLink: true },   // ← lien Wave, pas de numéro
+    moov   : { numero: '01 73 75 02 25',  app: 'Moov Money' },
+    tmoney : { numero: null,              app: 'T-Money' }
+  };
+
+  const S = { op:'', opLabel:'', amtLabel:'', amtNum:0, phone:'', gmail:'', pays:'' };
+  let currentUser = null;
+  let currentStep = 1;
+
+  const $  = id => document.getElementById(id);
+  const qs = s  => document.querySelector(s);
+
+  function showLoading(m='Traitement...') { $('loading-text').textContent=m; qs('.loading').style.display='flex'; }
+  function hideLoading() { qs('.loading').style.display='none'; }
+  function showNotif(m, t='success') {
+    const n=$('notification'); n.textContent=m;
+    n.style.background = t==='success' ? '#43a047' : '#d32f2f';
+    n.style.display='block'; clearTimeout(n._t);
+    n._t = setTimeout(()=>n.style.display='none', 5500);
+  }
+  function showErr(id,m){ const e=$(id); if(e){e.textContent=m;e.style.opacity='1';} }
+  function clearErrors(){ ['operatorError','amountError','gmailError','phoneError','txnError'].forEach(id=>{ const e=$(id); if(e){e.textContent='';e.style.opacity='0';} }); }
+
+  function sanitizeForFirebase(id) {
+    return id.trim().replace(/[.#$[\]]/g, '_');
+  }
+
+  // ══ Applique la visibilité du bouton MoneyFusion selon le pays ══
+  function applyMfVisibility(pays) {
+    const isCi = pays === 'ci';
+    $('payBtn').classList.toggle('hide-mf', isCi);
+    $('payDivider').classList.toggle('hide-mf', isCi);
+  }
+
+  // ══ GESTION DU PAYS ══
+  window.showCountryModal = () => {
+    $('countryOverlay').classList.remove('hidden');
+  };
+
+  window.choisirPays = (pays) => {
+    S.pays = pays;
+    $('countryOverlay').classList.add('hidden');
+
+    if (pays === 'ci') {
+      $('paysFlag').textContent   = '🇨🇮';
+      $('paysLabel').textContent  = 'Côte d\'Ivoire';
+      $('emailField').classList.add('hidden');
+    } else {
+      $('paysFlag').textContent   = '🌐';
+      $('paysLabel').textContent  = 'International';
+      $('emailField').classList.remove('hidden');
+    }
+
+    applyMfVisibility(pays);
+  };
+
+  // ══ MàJ panneau CI selon l'opérateur sélectionné ══
+  function updateCiPanel() {
+    if (S.pays !== 'ci' || !S.op) return;
+    const info = CI_NUMEROS[S.op];
+    const panel    = $('ciPanel');
+    const wPanel   = $('wavePanel');
+
+    // Masquer les deux d'abord
+    panel.classList.remove('show');
+    wPanel.classList.remove('show');
+
+    if (!info) return;
+
+    // ✅ Wave → afficher le panneau Wave avec lien
+    if (info.useLink) {
+      $('waveMontantLabel').textContent = S.amtNum > 0 ? S.amtLabel : '—';
+      wPanel.classList.add('show');
+      return;
+    }
+
+    // Autres opérateurs → panneau numéro classique
+    if (!info.numero) return;
+
+    panel.classList.add('show');
+    $('ciNumero').textContent      = info.numero;
+    $('ciNumeroLabel').textContent = info.numero;
+    $('ciAppLabel').textContent    = info.app;
+    $('ciMontantLabel').textContent = S.amtNum > 0 ? S.amtLabel + ' F CFA' : '—';
+  }
+
+  // ══ COPIER ══
+  window.copierNumero = () => {
+    const info = CI_NUMEROS[S.op];
+    if (!info || !info.numero) return;
+    const raw = info.numero.replace(/\s/g, '');
+    navigator.clipboard.writeText(raw).then(() => showNotif('📋 Numéro copié !', 'success'));
+  };
+  window.copierNom = () => {
+    navigator.clipboard.writeText('AGRITech').then(() => showNotif('📋 Nom copié !', 'success'));
+  };
+
+  // ══ OUVRIR WAVE ══
+  window.ouvrirWave = () => {
+    const btn = $('waveLinkBtn');
+    // Bloquer immédiatement pour empêcher tout double clic
+    if (btn.disabled) return;
+    btn.disabled = true;
+    btn.innerHTML    = '✅ &nbsp;Page Wave ouverte';
+    btn.style.background = 'linear-gradient(135deg,#1a7a3c,#2db85e)';
+    btn.style.opacity = '.75';
+
+    sessionStorage.setItem(SS_KEY, JSON.stringify({...S, waveOuvert:true}));
+
+    $('returnAlert').classList.add('show');
+    $('tokenGuide').classList.add('show');
+    $('modifyBtn').style.display = 'none';
+
+    setTimeout(()=>$('transactionId').focus(), 500);
+    window.open(WAVE_LINK, '_blank');
+  };
+
+  window.goTo = (n, dir) => {
+    const isBack  = dir === 'back' || n < currentStep;
+    const oldStep = $('step' + currentStep);
+    const newStep = $('step' + n);
+
+    oldStep.style.animation = isBack
+      ? 'stepOutBack .28s cubic-bezier(.4,0,1,1) both'
+      : 'stepOutFwd .28s cubic-bezier(.4,0,1,1) both';
+
+    setTimeout(() => {
+      oldStep.classList.remove('active','enter-back');
+      oldStep.style.display  = 'none';
+      oldStep.style.animation = '';
+      newStep.style.display = 'block';
+      newStep.classList.remove('active','enter-back');
+      if(isBack) newStep.classList.add('enter-back');
+      else newStep.classList.add('active');
+
+      for(let i=1;i<=3;i++){
+        const t=$('tab'+i); t.classList.remove('active','done');
+        if(i===n) t.classList.add('active'); else if(i<n) t.classList.add('done');
+      }
+      currentStep = n;
+      window.scrollTo({top:0,behavior:'smooth'});
+    }, 260);
+  };
+
+  window.pickOp = (el, v) => {
+    document.querySelectorAll('.op').forEach(e=>e.classList.remove('sel'));
+    el.classList.add('sel');
+    el.querySelector('input[type="radio"]').checked = true;
+    S.op = v; S.opLabel = el.querySelector('.op-name').textContent.trim();
+    updateCiPanel();
+  };
+
+  window.pickAmt = (el, label, num) => {
+    document.querySelectorAll('.amt').forEach(e=>e.classList.remove('sel'));
+    el.classList.add('sel');
+    S.amtLabel = label; S.amtNum = parseInt(num); $('amount').value = num;
+    updateCiPanel();
+  };
+
+  function isValidGmail(email) {
+    return /^[a-zA-Z0-9._%+\-]+@gmail\.com$/.test(email.trim());
+  }
+
+  window.goConfirm = () => {
+    const phone = $('phone').value.trim();
+    const gmail = $('gmail').value.trim();
+    clearErrors(); let ok = true;
+
+    if (!S.pays) { showNotif('Veuillez choisir votre pays', 'error'); showCountryModal(); return; }
+    if (!S.op)   { showErr('operatorError','Veuillez sélectionner un opérateur'); ok=false; }
+    if (S.amtNum < 100) { showErr('amountError','Montant minimum : 100 FCFA'); ok=false; }
+
+    if (S.pays === 'intl') {
+      if (!gmail) { showErr('gmailError','Veuillez saisir votre adresse Gmail'); ok=false; }
+      else if (!isValidGmail(gmail)) { showErr('gmailError','L\'adresse doit être une adresse @gmail.com valide'); ok=false; }
+    }
+
+    if (!phone) { showErr('phoneError','Veuillez saisir votre numéro'); ok=false; }
+    if (!ok) return;
+    if (!currentUser) { showNotif('🔒 Veuillez vous connecter','error'); return; }
+
+    S.phone = phone; S.gmail = S.pays === 'ci' ? '' : gmail;
+
+    $('c-op').textContent    = S.opLabel;
+    $('c-gmail').textContent = S.gmail || '—';
+    $('c-phone').textContent = S.phone;
+    $('c-amt').textContent   = S.amtLabel + ' F';
+
+    $('c-gmail-row').style.display = S.pays === 'ci' ? 'none' : 'flex';
+
+    if (S.pays === 'ci') {
+      $('ciPaySection').style.display = 'block';
+      updateCiPanel();
+    } else {
+      $('ciPaySection').style.display = 'none';
+    }
+
+    applyMfVisibility(S.pays);
+
+    goTo(2);
+  };
+
+  window.ouvrirMF = () => {
+    sessionStorage.setItem(SS_KEY, JSON.stringify({...S, mfOuvert:true}));
+
+    const btn = $('payBtn');
+    btn.innerHTML    = '✅ &nbsp;Page MoneyFusion ouverte';
+    btn.style.background = 'linear-gradient(135deg,#1a7a3c,#2db85e)';
+    btn.style.color  = '#fff';
+    btn.style.boxShadow = '0 8px 24px rgba(26,122,60,.3)';
+    btn.style.opacity = '.75';
+    btn.disabled = true;
+
+    $('returnAlert').classList.add('show');
+    $('tokenGuide').classList.add('show');
+    $('modifyBtn').style.display = 'none';
+
+    setTimeout(()=>$('transactionId').focus(), 500);
+    window.open(MF_LINK, '_blank');
+  };
+
+  window.confirmerTransaction = async () => {
+    const rawTxnId  = $('transactionId').value.trim();
+    const safeTxnId = sanitizeForFirebase(rawTxnId);
+
+    clearErrors();
+
+    if (!rawTxnId || rawTxnId.length < 4) {
+      showErr('txnError','Veuillez saisir votre ID de transaction (min. 4 caractères)');
+      return;
+    }
+    if (!currentUser) { showNotif('🔒 Veuillez vous connecter','error'); return; }
+
+    showLoading('Envoi de votre demande...');
+    try {
+      const dupSnap = await get(ref(db,`submitted_txns/${safeTxnId}`));
+      if (dupSnap.exists()) {
+        hideLoading();
+        showErr('txnError','⚠️ Cet ID a déjà été soumis — attendez la validation admin');
+        return;
+      }
+
+      const snap = await get(ref(db,`users/${currentUser.uid}/balance`));
+      const ancienSolde = snap.val() || 0;
+
+      await set(ref(db,`submitted_txns/${safeTxnId}`), {
+        userId: currentUser.uid,
+        originalTxnId: rawTxnId,
+        amount: S.amtNum,
+        date: new Date().toISOString()
+      });
+
+      await set(push(ref(db,'transactions')), {
+        operator: S.op, opLabel: S.opLabel, phone: S.phone, gmail: S.gmail,
+        amount: S.amtNum,
+        pays: S.pays,
+        transactionId: rawTxnId,
+        transactionIdSafe: safeTxnId,
+        adminStatus: 'pending', credited: false,
+        balanceAvant: ancienSolde, balanceApres: ancienSolde + S.amtNum,
+        userId: currentUser.uid, userEmail: currentUser.email,
+        date: new Date().toISOString()
+      });
+
+      await set(push(ref(db,`recharges/${currentUser.uid}`)), {
+        operator: S.op, opLabel: S.opLabel, phone: S.phone, gmail: S.gmail,
+        amount: S.amtNum,
+        pays: S.pays,
+        transactionId: rawTxnId,
+        adminStatus: 'pending',
+        balanceAvant: ancienSolde,
+        date: new Date().toISOString()
+      });
+
+      sessionStorage.removeItem(SS_KEY);
+
+      $('s-op').textContent       = S.opLabel;
+      $('s-gmail').textContent    = S.gmail || '—';
+      $('s-gmail-row').style.display = S.pays === 'ci' ? 'none' : 'flex';
+      $('s-phone').textContent    = S.phone;
+      $('s-amt').textContent      = S.amtLabel + ' F';
+      $('s-txn').textContent      = rawTxnId;
+      $('s-txn-pill').textContent = rawTxnId;
+      $('new-balance').textContent= '⏳ En cours de validation';
+
+      hideLoading();
+      showNotif('📨 Demande envoyée ! En attente de validation par l\'admin.', 'success');
+      setTimeout(()=>goTo(3), 700);
+
+    } catch(err) {
+      hideLoading();
+      showNotif('❌ Erreur : ' + err.message, 'error');
+    }
+  };
+
+  function restaurerEtat() {
+    const raw = sessionStorage.getItem(SS_KEY);
+    if (!raw) return false;
+    try {
+      const saved = JSON.parse(raw);
+      if (!saved.mfOuvert && !saved.waveOuvert) return false;
+      Object.assign(S, saved);
+
+      $('c-op').textContent    = S.opLabel;
+      $('c-gmail').textContent = S.gmail || '—';
+      $('c-phone').textContent = S.phone;
+      $('c-amt').textContent   = S.amtLabel + ' F';
+      $('c-gmail-row').style.display = S.pays === 'ci' ? 'none' : 'flex';
+
+      if (S.pays === 'ci') {
+        $('ciPaySection').style.display = 'block';
+        updateCiPanel();
+
+        // Restaurer le bouton Wave si c'était Wave
+        if (saved.waveOuvert) {
+          const wBtn = $('waveLinkBtn');
+          wBtn.innerHTML = '✅ &nbsp;Page Wave ouverte';
+          wBtn.style.background = 'linear-gradient(135deg,#1a7a3c,#2db85e)';
+          wBtn.style.opacity = '.75';
+          wBtn.disabled = true;
+        }
+      } else {
+        $('ciPaySection').style.display = 'none';
+      }
+
+      applyMfVisibility(S.pays);
+
+      // Restaurer le bouton MF si c'était MF
+      if (saved.mfOuvert) {
+        const btn = $('payBtn');
+        btn.innerHTML = '✅ &nbsp;Page MoneyFusion ouverte';
+        btn.style.background = 'linear-gradient(135deg,#1a7a3c,#2db85e)';
+        btn.style.color = '#fff'; btn.style.opacity = '.75'; btn.disabled = true;
+      }
+
+      $('returnAlert').classList.add('show');
+      $('tokenGuide').classList.add('show');
+      $('modifyBtn').style.display = 'none';
+
+      setTimeout(()=>$('transactionId').focus(), 500);
+      return true;
+    } catch(e){ return false; }
+  }
+
+  window.restart = () => {
+    sessionStorage.removeItem(SS_KEY);
+    S.op=''; S.opLabel=''; S.amtLabel=''; S.amtNum=0; S.phone=''; S.gmail=''; S.pays='';
+    $('phone').value=''; $('gmail').value=''; $('amount').value=''; $('transactionId').value='';
+
+    document.querySelectorAll('.op').forEach(e=>{ e.classList.remove('sel'); const r=e.querySelector('input[type="radio"]'); if(r)r.checked=false; });
+    document.querySelectorAll('.amt').forEach(e=>e.classList.remove('sel'));
+
+    $('ciPanel').classList.remove('show');
+    $('wavePanel').classList.remove('show');
+
+    // Réinitialiser bouton Wave
+    const wBtn = $('waveLinkBtn');
+    wBtn.innerHTML = '〰️ &nbsp;Payer avec Wave';
+    wBtn.disabled = false;
+    wBtn.removeAttribute('style');
+
+    const btn = $('payBtn');
+    btn.innerHTML = '🌐 &nbsp;Paiement international — MoneyFusion';
+    btn.disabled = false;
+    btn.removeAttribute('style');
+    btn.classList.remove('hide-mf');
+    btn.style.marginBottom = '14px';
+    $('payDivider').classList.remove('hide-mf');
+
+    $('returnAlert').classList.remove('show');
+    $('tokenGuide').classList.remove('show');
+    $('modifyBtn').style.display = 'block';
+
+    for(let i=2;i<=3;i++){
+      const s=$('step'+i);
+      s.classList.remove('active','enter-back');
+      s.style.display='none'; s.style.animation='';
+    }
+    $('step1').style.display='block';
+    $('step1').classList.add('active');
+    currentStep = 1;
+
+    for(let i=1;i<=3;i++){
+      const t=$('tab'+i); t.classList.remove('active','done');
+      if(i===1) t.classList.add('active');
+    }
+    clearErrors();
+    window.scrollTo({top:0,behavior:'smooth'});
+
+    showCountryModal();
+  };
+
+  onAuthStateChanged(auth, user => {
+    if(user){
+      currentUser = user;
+      if(restaurerEtat()) {
+        $('step1').style.display='none';
+        $('step1').classList.remove('active');
+        $('step2').style.display='block';
+        $('step2').classList.add('active');
+        $('tab1').classList.remove('active'); $('tab1').classList.add('done');
+        $('tab2').classList.add('active');
+        currentStep = 2;
+      } else {
+        showCountryModal();
+      }
+    } else {
+      currentUser = null;
+      showNotif('🔒 Veuillez vous connecter','error');
+      setTimeout(()=>window.location.href='login.html', 2000);
+    }
+  });
+</script>
+</body>
+</html>

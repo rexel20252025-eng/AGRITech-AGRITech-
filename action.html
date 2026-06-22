@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AGRITech — Investissement</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green: #2d6a4f;
+      --green-light: #52b788;
+      --green-pale: #d8f3dc;
+      --gold: #b7882c;
+      --gold-light: #f0d080;
+      --text: #1a2e1e;
+      --muted: #6b8f71;
+      --bg: #f8fdf9;
+      --border: #d0e8d4;
+      --shadow: rgba(45,106,79,0.10);
+      --card-bg: #ffffff;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      padding-bottom: 90px;
+      color: var(--text);
+    }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%);
+      padding: 28px 20px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .header-badge {
+      display: inline-block;
+      background: rgba(183,136,44,0.25);
+      border: 1px solid rgba(183,136,44,0.5);
+      color: #f0d080;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .header h1 span { color: var(--gold-light); }
+    .header p {
+      color: rgba(255,255,255,0.75);
+      font-size: 0.85rem;
+      font-weight: 300;
+      max-width: 280px;
+    }
+    .header-stats { display: flex; gap: 16px; margin-top: 20px; }
+    .stat-chip {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 8px 14px;
+      color: white;
+    }
+    .stat-chip .s-val { font-size: 1rem; font-weight: 700; font-family: 'Cormorant Garamond', serif; }
+    .stat-chip .s-lab { font-size: 0.58rem; font-weight: 500; color: rgba(255,255,255,0.65); letter-spacing: 0.5px; text-transform: uppercase; }
+
+    /* SECTION TITLE */
+    .section-head {
+      padding: 24px 20px 8px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-head h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .section-head .line {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--border), transparent);
+    }
+
+    /* GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      padding: 0 16px 16px;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--card-bg);
+      border-radius: 18px;
+      border: 1.5px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 2px 16px var(--shadow);
+      transition: transform 0.22s, box-shadow 0.22s;
+      position: relative;
+    }
+    .card:active { transform: scale(0.97); }
+    .card-tier-1 { border-color: #b7d5be; }
+    .card-tier-2 { border-color: #89c49a; }
+    .card-tier-3 { border-color: #52b788; }
+    .card-tier-4 { border-color: #40916c; }
+    .card-tier-5 { border-color: #2d6a4f; }
+    .card-tier-6 { border-color: #1b4332; }
+    .card-tier-7 { border-color: var(--gold); box-shadow: 0 4px 24px rgba(183,136,44,0.22); }
+
+    .card-img {
+      width: 100%; height: 110px;
+      display: block;
+      background: linear-gradient(135deg, #d8f3dc, #95d5b2);
+      position: relative;
+    }
+    .card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .tier-badge {
+      position: absolute; top: 8px; left: 8px;
+      background: rgba(255,255,255,0.92);
+      border-radius: 8px;
+      padding: 3px 8px;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+    .card-tier-7 .tier-badge { color: var(--gold); }
+
+    .profit-badge {
+      position: absolute; top: 8px; right: 8px;
+      background: var(--green);
+      color: white;
+      border-radius: 8px;
+      padding: 3px 7px;
+      font-size: 0.58rem;
+      font-weight: 700;
+    }
+    .card-tier-7 .profit-badge { background: var(--gold); }
+
+    .card-body { padding: 12px 12px 14px; }
+    .card-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .card-cost {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+    .card-tier-7 .card-cost { color: var(--gold); }
+
+    .card-stats { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+    .cs-row {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--bg);
+      border-radius: 7px;
+      padding: 4px 8px;
+      font-size: 0.68rem;
+    }
+    .cs-label { color: var(--muted); font-weight: 500; }
+    .cs-val { color: var(--text); font-weight: 700; }
+    .cs-val.good { color: var(--green-light); }
+    .card-tier-7 .cs-val.good { color: var(--gold); }
+
+    .btn-buy {
+      width: 100%;
+      background: linear-gradient(135deg, var(--green), var(--green-light));
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: opacity 0.2s, transform 0.1s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-buy:active { transform: scale(0.97); opacity: 0.85; }
+    .card-tier-7 .btn-buy { background: linear-gradient(135deg, #b7882c, #d4a94a); }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(20,40,25,0.65);
+      z-index: 999;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { display: flex; animation: fadeIn 0.2s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal {
+      background: white;
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 480px;
+      padding: 0 0 32px;
+      max-height: 92vh;
+      overflow-y: auto;
+      animation: slideUp 0.28s cubic-bezier(0.22,1,0.36,1);
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    .modal-handle {
+      width: 36px; height: 4px;
+      background: #ddd;
+      border-radius: 2px;
+      margin: 12px auto 0;
+    }
+    .modal-img {
+      width: 100%; height: 160px;
+      overflow: hidden;
+      margin: 16px 0 0;
+    }
+    .modal-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .modal-content { padding: 20px 22px; }
+    .modal-tag {
+      display: inline-block;
+      background: var(--green-pale);
+      color: var(--green);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    .modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .modal-subtitle {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .recap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .recap-item {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .recap-item.highlight {
+      background: linear-gradient(135deg, #1b4332, #2d6a4f);
+      border-color: transparent;
+    }
+    .recap-item.highlight .ri-label { color: rgba(255,255,255,0.65); }
+    .recap-item.highlight .ri-val { color: white; }
+    .ri-label {
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+    .ri-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .ri-val.green { color: var(--green-light); }
+    .modal-divider { height: 1px; background: var(--border); margin: 0 0 16px; }
+    .info-block {
+      background: #fffbf0;
+      border: 1.5px solid #f0d080;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .info-block .ib-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+    .info-block p { font-size: 0.75rem; color: #7a5c00; line-height: 1.5; }
+    .btn-confirm {
+      width: 100%;
+      background: linear-gradient(135deg, #2d6a4f, #52b788);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      margin-bottom: 10px;
+      transition: opacity 0.2s;
+    }
+    .btn-confirm:active { opacity: 0.85; }
+    .btn-cancel {
+      width: 100%;
+      background: transparent;
+      color: var(--muted);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .gold-modal .modal-tag { background: #fff8e1; color: var(--gold); }
+    .gold-modal .recap-item.highlight { background: linear-gradient(135deg, #7a4f00, #b7882c); }
+    .gold-modal .btn-confirm { background: linear-gradient(135deg, #b7882c, #d4a94a); }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: white; border-top: 1.5px solid var(--border);
+      display: flex; justify-content: space-around; align-items: center;
+      padding: 8px 0 14px; z-index: 100;
+      box-shadow: 0 -4px 20px rgba(45,106,79,0.08);
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 3px; cursor: pointer; padding: 4px 16px;
+      border-radius: 12px; transition: all 0.2s; text-decoration: none;
+    }
+    .nav-icon { transition: transform 0.2s; color: #aac4b0; }
+    .nav-label { font-size: 0.6rem; font-weight: 600; color: var(--muted); letter-spacing: 0.3px; }
+    .nav-item.active .nav-label { color: var(--green); font-weight: 700; }
+    .nav-item.active .nav-icon { transform: scale(1.15); color: var(--green); }
+    .nav-dot { width: 4px; height: 4px; background: var(--green); border-radius: 50%; display: none; }
+    .nav-item.active .nav-dot { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-badge">🌱 Investissement Agricole</div>
+  <h1>AGRITech<br><span>Machines</span></h1>
+  <p>Investissez dans nos machines agricoles et récoltez des bénéfices quotidiens.</p>
+  <div class="header-stats">
+    <div class="stat-chip"><div class="s-val">7</div><div class="s-lab">Machines</div></div>
+    <div class="stat-chip"><div class="s-val">Max 20j</div><div class="s-lab">Cycle</div></div>
+    <div class="stat-chip"><div class="s-val">100%</div><div class="s-lab">Garanti</div></div>
+  </div>
+</div>
+
+<!-- SECTION TITLE -->
+<div class="section-head">
+  <h2>Choisissez votre machine</h2>
+  <div class="line"></div>
+</div>
+
+<!-- CARDS GRID -->
+<div class="grid">
+
+  <!-- Machine 1 -->
+  <div class="card card-tier-1">
+    <div class="card-img">
+      <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&fit=crop" alt="Machine Agricole 1"/>
+      <div class="tier-badge">Débutant</div>
+      <div class="profit-badge">+1 000/j</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Machine Agricole 1</div>
+      <div class="card-cost">5 500 FCFA</div>
+      <div class="card-stats">
+        <div class="cs-row"><span class="cs-label">Bénéfice/j</span><span class="cs-val good">+1 000 FCFA</span></div>
+        <div class="cs-row"><span class="cs-label">Cycle</span><span class="cs-val">20 jours</span></div>
+        <div class="cs-row"><span class="cs-label">Total</span><span class="cs-val">19 00 FCFA</span></div>
+      </div>
+      <button class="btn-buy" id="btn1" onclick="ouvrirRecap(1)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Acheter
+      </button>
+    </div>
+  </div>
+
+  <!-- Machine 2 -->
+  <div class="card card-tier-2">
+    <div class="card-img">
+      <img src="https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400&fit=crop" alt="Machine Agricole 2"/>
+      <div class="tier-badge">Standard</div>
+      <div class="profit-badge">+2 500/j</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Machine Agricole 2</div>
+      <div class="card-cost">10 500 FCFA</div>
+      <div class="card-stats">
+        <div class="cs-row"><span class="cs-label">Bénéfice/j</span><span class="cs-val good">+2 500 FCFA</span></div>
+        <div class="cs-row"><span class="cs-label">Cycle</span><span class="cs-val">19 jours</span></div>
+        <div class="cs-row"><span class="cs-label">Total</span><span class="cs-val">47 500 FCFA</span></div>
+      </div>
+      <button class="btn-buy" id="btn2" onclick="ouvrirRecap(2)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Acheter
+      </button>
+    </div>
+  </div>
+
+  <!-- Machine 3 -->
+  <div class="card card-tier-3">
+    <div class="card-img">
+      <img src="https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=400&fit=crop" alt="Machine Agricole 3"/>
+      <div class="tier-badge">Avancé</div>
+      <div class="profit-badge">+4 000/j</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Machine Agricole 3</div>
+      <div class="card-cost">18 500 FCFA</div>
+      <div class="card-stats">
+        <div class="cs-row"><span class="cs-label">Bénéfice/j</span><span class="cs-val good">+4 000 FCFA</span></div>
+        <div class="cs-row"><span class="cs-label">Cycle</span><span class="cs-val">18 jours</span></div>
+        <div class="cs-row"><span class="cs-label">Total</span><span class="cs-val">72 000 FCFA</span></div>
+      </div>
+      <button class="btn-buy" id="btn3" onclick="ouvrirRecap(3)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Acheter
+      </button>
+    </div>
+  </div>
+
+  <!-- Machine 4 -->
+  <div class="card card-tier-4">
+    <div class="card-img">
+      <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&fit=crop" alt="Machine Agricole 4"/>
+      <div class="tier-badge">Expert</div>
+      <div class="profit-badge">+8 000/j</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Machine Agricole 4</div>
+      <div class="card-cost">35 500 FCFA</div>
+      <div class="card-stats">
+        <div class="cs-row"><span class="cs-label">Bénéfice/j</span><span class="cs-val good">+8 000 FCFA</span></div>
+        <div class="cs-row"><span class="cs-label">Cycle</span><span class="cs-val">17 jours</span></div>
+        <div class="cs-row"><span class="cs-label">Total</span><span class="cs-val">136 000 FCFA</span></div>
+      </div>
+      <button class="btn-buy" id="btn4" onclick="ouvrirRecap(4)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Acheter
+      </button>
+    </div>
+  </div>
+
+  <!-- Machine 5 -->
+  <div class="card card-tier-5">
+    <div class="card-img">
+      <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&fit=crop" alt="Machine Agricole 5"/>
+      <div class="tier-badge">Premium</div>
+      <div class="profit-badge">+15 000/j</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Machine Agricole 5</div>
+      <div class="card-cost">50 000 FCFA</div>
+      <div class="card-stats">
+        <div class="cs-row"><span class="cs-label">Bénéfice/j</span><span class="cs-val good">+15 000 FCFA</span></div>
+        <div class="cs-row"><span class="cs-label">Cycle</span><span class="cs-val">16 jours</span></div>
+        <div class="cs-row"><span class="cs-label">Total</span><span class="cs-val">240 000 FCFA</span></div>
+      </div>
+      <button class="btn-buy" id="btn5" onclick="ouvrirRecap(5)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Acheter
+      </button>
+    </div>
+  </div>
+
+  <!-- Machine 6 -->
+  <div class="card card-tier-6">
+    <div class="card-img">
+      <img src="https://images.unsplash.com/photo-1473973266408-ed4e27abdd47?w=400&fit=crop" alt="Machine Agricole 6"/>
+      <div class="tier-badge">Élite</div>
+      <div class="profit-badge">+25 400/j</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Machine Agricole 6</div>
+      <div class="card-cost">100 000 FCFA</div>
+      <div class="card-stats">
+        <div class="cs-row"><span class="cs-label">Bénéfice/j</span><span class="cs-val good">+25 400 FCFA</span></div>
+        <div class="cs-row"><span class="cs-label">Cycle</span><span class="cs-val">14 jours</span></div>
+        <div class="cs-row"><span class="cs-label">Total</span><span class="cs-val">355 600 FCFA</span></div>
+      </div>
+      <button class="btn-buy" id="btn6" onclick="ouvrirRecap(6)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Acheter
+      </button>
+    </div>
+  </div>
+
+  <!-- Machine 7 : pleine largeur -->
+  <div class="card card-tier-7" style="grid-column: 1 / -1;">
+    <div class="card-img" style="height: 130px;">
+      <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&fit=crop" alt="Machine Agricole 7"/>
+      <div class="tier-badge">⭐ Prestige</div>
+      <div class="profit-badge">+50 000/j</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Machine Agricole 7</div>
+      <div class="card-cost">200 000 FCFA</div>
+      <div class="card-stats">
+        <div class="cs-row"><span class="cs-label">Bénéfice/j</span><span class="cs-val good">+50 000 FCFA</span></div>
+        <div class="cs-row"><span class="cs-label">Cycle</span><span class="cs-val">09 jours</span></div>
+        <div class="cs-row"><span class="cs-label">Total</span><span class="cs-val">450 000 FCFA</span></div>
+      </div>
+      <button class="btn-buy" id="btn7" onclick="ouvrirRecap(7)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Acheter — Investissement Prestige
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBox">
+    <div class="modal-handle"></div>
+    <div class="modal-img" id="modalImg"></div>
+    <div class="modal-content">
+      <div class="modal-tag" id="modalVipBadge">Investissement Agricole</div>
+      <div class="modal-title" id="modalTitle">Machine Agricole</div>
+      <div class="modal-subtitle" id="modalSubtitle">Récapitulatif de votre investissement</div>
+
+      <div class="recap-grid">
+        <div class="recap-item">
+          <div class="ri-label">💰 Coût d'achat</div>
+          <div class="ri-val" id="modalAmount">—</div>
+        </div>
+        <div class="recap-item">
+          <div class="ri-label">📅 Durée du cycle</div>
+          <div class="ri-val" id="mCycle">—</div>
+        </div>
+        <div class="recap-item">
+          <div class="ri-label">📈 Bénéfice / jour</div>
+          <div class="ri-val green" id="modalDaily">—</div>
+        </div>
+        <div class="recap-item highlight">
+          <div class="ri-label">🏆 Bénéfice total</div>
+          <div class="ri-val" id="modalTotal">—</div>
+        </div>
+      </div>
+
+      <div class="modal-divider"></div>
+
+      <div class="info-block">
+        <div class="ib-icon">⚡</div>
+        <p>Votre investissement démarre immédiatement. Les bénéfices sont crédités chaque jour sur votre compte AGRITech. <strong>Le retrait est disponible dès le premier jour !</strong></p>
+      </div>
+
+      <button class="btn-confirm" id="confirmBtn" onclick="window.confirmInvestment()">✅ Confirmer l'investissement</button>
+      <button class="btn-cancel" id="btnCancel">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a class="nav-item" href="accueil.html">
+    <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21V12h6v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="nav-label">Accueil</div>
+    <div class="nav-dot"></div>
+  </a>
+  <a class="nav-item active" href="action.html">
+    <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="nav-label">Action</div>
+    <div class="nav-dot"></div>
+  </a>
+  <a class="nav-item" href="partage.html">
+    <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="2"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" stroke="currentColor" stroke-width="2"/></svg></div>
+    <div class="nav-label">Partage</div>
+    <div class="nav-dot"></div>
+  </a>
+  <a class="nav-item" href="compte.html">
+    <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    <div class="nav-label">Compte</div>
+    <div class="nav-dot"></div>
+  </a>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCRIPT CLASSIQUE — UI uniquement (pas Firebase)
+     ═══════════════════════════════════════════════ -->
+<script>
+  // Données visuelles uniquement (nom, image, gold)
+  // Les chiffres financiers viennent exclusivement de PRODUCT_CONFIG (script module)
+  window.PRODUCT_DATA = {
+    1: { nom:"Machine Agricole 1", gold:false, img:"https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&fit=crop" },
+    2: { nom:"Machine Agricole 2", gold:false, img:"https://images.unsplash.com/photo-1560493676-04071c5f467b?w=800&fit=crop" },
+    3: { nom:"Machine Agricole 3", gold:false, img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=800&fit=crop" },
+    4: { nom:"Machine Agricole 4", gold:false, img:"https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&fit=crop" },
+    5: { nom:"Machine Agricole 5", gold:false, img:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&fit=crop" },
+    6: { nom:"Machine Agricole 6", gold:false, img:"https://images.unsplash.com/photo-1473973266408-ed4e27abdd47?w=800&fit=crop" },
+    7: { nom:"Machine Agricole 7", gold:true,  img:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&fit=crop" }
+  };
+
+  window.selectedProductId = null;
+
+  function fmt(n) {
+    return new Intl.NumberFormat('fr-FR').format(n) + " FCFA";
+  }
+
+  function ouvrirRecap(id) {
+    window.selectedProductId = id;
+    const p = window.PRODUCT_DATA[id];
+    // Lire les chiffres depuis PRODUCT_CONFIG_PUBLIC (exposé par le script module)
+    const c = window.PRODUCT_CONFIG_PUBLIC ? window.PRODUCT_CONFIG_PUBLIC[id] : null;
+    if (!p || !c) return;
+
+    document.getElementById("modalVipBadge").textContent  = p.nom + " — Investissement Agricole";
+    document.getElementById("modalTitle").textContent     = p.nom;
+    document.getElementById("modalSubtitle").textContent  = "Récapitulatif complet de votre investissement";
+    document.getElementById("modalAmount").textContent    = fmt(c.price);
+    document.getElementById("mCycle").textContent         = c.cycleDuration + " jours";
+    document.getElementById("modalDaily").textContent     = "+" + fmt(c.dailyRevenue);
+    document.getElementById("modalTotal").textContent     = fmt(c.totalRevenue);
+    document.getElementById("modalImg").innerHTML         =
+      '<img src="' + p.img + '" alt="' + p.nom + '" style="width:100%;height:100%;object-fit:cover;"/>';
+
+    const box = document.getElementById("modalBox");
+    if (p.gold) box.classList.add("gold-modal");
+    else        box.classList.remove("gold-modal");
+
+    document.getElementById("modalOverlay").classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function fermerModal() {
+    document.getElementById("modalOverlay").classList.remove("open");
+    document.body.style.overflow = "";
+    window.selectedProductId = null;
+  }
+
+  window.fermerModal = fermerModal;
+
+  document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("btnCancel").onclick = fermerModal;
+    document.getElementById("modalOverlay").onclick = function(e) {
+      if (e.target === this) fermerModal();
+    };
+  });
+</script>
+
+<!-- ═══════════════════════════════════════════════
+     SCRIPT MODULE — Firebase + logique métier
+     ═══════════════════════════════════════════════ -->
+<script type="module">
+  import { initializeApp }        from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getAnalytics }         from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+  import { getDatabase, ref, get, onValue, push, update, serverTimestamp }
+                                  from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyDaFEepJKO8TbePfgnYlX0N3-CcaV75fy4",
+    authDomain:        "agri-5af15.firebaseapp.com",
+    databaseURL:       "https://agri-5af15-default-rtdb.firebaseio.com",
+    projectId:         "agri-5af15",
+    storageBucket:     "agri-5af15.firebasestorage.app",
+    messagingSenderId: "1010902928190",
+    appId:             "1:1010902928190:web:57d2555d69e2c023057a6f",
+    measurementId:     "G-XYB13DQZSP"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  getAnalytics(app);
+  const auth = getAuth(app);
+  const db   = getDatabase(app);
+
+  // ── SOURCE UNIQUE DE VÉRITÉ pour les données financières ──
+  const PRODUCT_CONFIG = {
+    1: { productId:1, price:5500,   dailyRevenue:1000,  cycleDuration:20, totalRevenue:20000,  limit:1  },
+    2: { productId:2, price:10500,  dailyRevenue:2500,  cycleDuration:19, totalRevenue:47500,  limit:1  },
+    3: { productId:3, price:18500,  dailyRevenue:4000,  cycleDuration:18, totalRevenue:72000,  limit:1  },
+    4: { productId:4, price:35500,  dailyRevenue:8000,  cycleDuration:17, totalRevenue:136000, limit:1  },
+    5: { productId:5, price:50000,  dailyRevenue:15000, cycleDuration:16, totalRevenue:240000, limit:5  },
+    6: { productId:6, price:100000, dailyRevenue:25400, cycleDuration:14, totalRevenue:355600, limit:5  },
+    7: { productId:7, price:200000, dailyRevenue:50000, cycleDuration:5,  totalRevenue:450000, limit:10 }
+  };
+
+  // Exposer en global pour que ouvrirRecap() (script classique) puisse y accéder
+  window.PRODUCT_CONFIG_PUBLIC = PRODUCT_CONFIG;
+
+  let currentUser  = null;
+  let currentSolde = 0;
+
+  // ── Notification ──
+  function showNotification(message, type = 'success') {
+    const notif = document.createElement('div');
+    notif.style.cssText = `
+      position:fixed; top:20px; left:50%; transform:translateX(-50%);
+      background:${type === 'success'
+        ? 'linear-gradient(135deg,#2d6a4f,#52b788)'
+        : 'linear-gradient(135deg,#f44336,#e53935)'};
+      color:white; padding:14px 24px; border-radius:50px; z-index:10000;
+      font-size:13px; font-weight:700; box-shadow:0 4px 20px rgba(0,0,0,0.25);
+      white-space:nowrap;
+    `;
+    notif.textContent = message;
+    document.body.appendChild(notif);
+    setTimeout(() => notif.remove(), 3500);
+  }
+
+  // ── Écoute du solde en temps réel ──
+  function setupBalanceListener(uid) {
+    const balanceRef = ref(db, `users/${uid}/balance`);
+    onValue(balanceRef, snapshot => {
+      currentSolde = snapshot.val() || 0;
+    });
+  }
+
+  // ── Vérifie le nombre d'investissements actifs pour un produit ──
+  async function checkActiveInvestments(uid, productId) {
+    const invRef = ref(db, `investments/${uid}`);
+    const snap   = await get(invRef);
+    if (!snap.exists()) return 0;
+    return Object.values(snap.val()).filter(inv =>
+      inv.productId === productId && inv.status === "active"
+    ).length;
+  }
+
+  // ── Confirmation d'achat ──
+  async function confirmInvestment() {
+    const productId = window.selectedProductId;
+    if (!productId) return;
+
+    const product     = PRODUCT_CONFIG[productId];
+    const productData = window.PRODUCT_DATA[productId];
+    const btn         = document.getElementById("confirmBtn");
+
+    if (!currentUser) {
+      showNotification("Veuillez vous connecter pour investir", "error");
+      setTimeout(() => location.href = "login.html", 1500);
+      return;
+    }
+    if (currentSolde < product.price) {
+      showNotification("Solde insuffisant pour cet investissement", "error");
+      window.fermerModal();
+      return;
+    }
+
+    btn.disabled    = true;
+    btn.textContent = "En cours...";
+
+    try {
+      const active = await checkActiveInvestments(currentUser.uid, product.productId);
+      if (active >= product.limit) {
+        showNotification("Limite d'investissement atteinte", "error");
+        window.fermerModal();
+        return;
+      }
+
+      const newBalance = currentSolde - product.price;
+      const now        = new Date();
+      const updates    = {};
+
+      updates[`users/${currentUser.uid}/balance`] = newBalance;
+
+      const invRef = push(ref(db, `investments/${currentUser.uid}`));
+      updates[`investments/${currentUser.uid}/${invRef.key}`] = {
+        productId:      product.productId,
+        productName:    productData.nom,
+        amount:         product.price,
+        dailyRevenue:   product.dailyRevenue,
+        totalRevenue:   product.totalRevenue,
+        remainingDays:  product.cycleDuration,
+        startDate:      now.toISOString(),
+        status:         "active",
+        totalCollected: 0,
+        lastCollection: now.toISOString(),
+        timestamp:      serverTimestamp()
+      };
+
+      await update(ref(db), updates);
+      showNotification("✅ Investissement activé ! Retrait disponible immédiatement.");
+      window.fermerModal();
+      updateInvestmentLimits(currentUser.uid);
+      setTimeout(() => location.href = "agricol.html", 2200);
+
+    } catch (e) {
+      console.error(e);
+      showNotification("Erreur serveur, réessayez", "error");
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = "✅ Confirmer l'investissement";
+    }
+  }
+
+  // ── Désactive les boutons si limite atteinte ──
+  async function updateInvestmentLimits(uid) {
+    for (const id in PRODUCT_CONFIG) {
+      const product = PRODUCT_CONFIG[id];
+      const active  = await checkActiveInvestments(uid, product.productId);
+      const btn     = document.getElementById(`btn${id}`);
+      if (!btn) continue;
+      if (active >= product.limit) {
+        btn.disabled           = true;
+        btn.innerHTML          = "Limite atteinte";
+        btn.style.opacity      = "0.6";
+        btn.style.cursor       = "not-allowed";
+      } else {
+        btn.disabled      = false;
+        btn.style.opacity = "1";
+        btn.style.cursor  = "pointer";
+        btn.innerHTML     = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg> Acheter`;
+      }
+    }
+  }
+
+  window.confirmInvestment = confirmInvestment;
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      currentUser = user;
+      setupBalanceListener(user.uid);
+      updateInvestmentLimits(user.uid);
+    } else {
+      currentUser  = null;
+      currentSolde = 0;
+    }
+  });
+</script>
+
+</body>
+</html>

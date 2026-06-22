@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGRITech</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #060f07;
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 6px;
+  }
+  .poster {
+    width: 100%;
+    max-width: 400px;
+    background: linear-gradient(145deg, #071209 0%, #0c1f0e 100%);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .header {
+    padding: 5px 8px 4px;
+    text-align: center;
+    background: linear-gradient(180deg, rgba(200,148,15,0.08) 0%, transparent 100%);
+    border-bottom: 1px solid rgba(200,148,15,0.25);
+  }
+  .brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 12px;
+    font-weight: 900;
+    color: #D4A017;
+    letter-spacing: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .brand-sub {
+    font-size: 5.5px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+  .title-row {
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .title-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(200,148,15,0.5)); }
+  .title-line.r { background: linear-gradient(to left, transparent, rgba(200,148,15,0.5)); }
+  .main-title {
+    font-size: 6.5px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #e8c86a;
+    white-space: nowrap;
+  }
+  .table-wrap { padding: 4px 4px 6px; overflow-x: auto; }
+  table { width: 100%; min-width: 280px; border-collapse: collapse; }
+  thead th {
+    padding: 3px 4px;
+    font-size: 6px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #c8940f;
+    text-align: center;
+    background: rgba(200,148,15,0.1);
+    border-bottom: 1px solid rgba(200,148,15,0.4);
+    white-space: nowrap;
+  }
+  thead th:first-child { text-align: left; }
+  tbody td {
+    padding: 2px 4px;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  tbody td:first-child { text-align: left; }
+  .mach-cell { display: flex; align-items: center; gap: 4px; }
+  .mach-num {
+    width: 14px; height: 14px;
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; flex-shrink: 0;
+  }
+  .mach-name { font-size: 6.5px; font-weight: 700; color: #fff; line-height: 1.2; }
+  .mach-lvl  { font-size: 5px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 0; }
+  .val-price  { font-size: 6.5px; font-weight: 600; color: rgba(255,255,255,0.75); }
+  .val-profit { font-size: 7px; font-weight: 700; color: #5ecf62; }
+  .val-cycle  { font-size: 6.5px; color: rgba(255,255,255,0.35); }
+  .val-total  { font-size: 7px; font-weight: 700; color: #f0c040; }
+  .l1 .mach-num { background: rgba(158,158,158,0.12); border: 1px solid rgba(158,158,158,0.25); }
+  .l1 .mach-lvl { color: #9e9e9e; }
+  .l2 .mach-num { background: rgba(33,150,243,0.12); border: 1px solid rgba(33,150,243,0.25); }
+  .l2 .mach-lvl { color: #64b5f6; }
+  .l3 .mach-num { background: rgba(103,58,183,0.12); border: 1px solid rgba(103,58,183,0.25); }
+  .l3 .mach-lvl { color: #b39ddb; }
+  .l4 .mach-num { background: rgba(255,152,0,0.12); border: 1px solid rgba(255,152,0,0.25); }
+  .l4 .mach-lvl { color: #ffb74d; }
+  .l5 .mach-num { background: rgba(244,67,54,0.12); border: 1px solid rgba(244,67,54,0.25); }
+  .l5 .mach-lvl { color: #ef9a9a; }
+  .l6 .mach-num { background: rgba(212,160,23,0.18); border: 1px solid rgba(212,160,23,0.45); }
+  .l6 .mach-lvl { color: #f0c040; }
+  .l7 .mach-num { background: rgba(212,160,23,0.28); border: 2px solid rgba(212,160,23,0.7); }
+  .l7 .mach-lvl { color: #f2c96e; }
+  .elite-tr   { background: linear-gradient(90deg, rgba(212,160,23,0.07), transparent); }
+  .prestige-tr{ background: linear-gradient(90deg, rgba(212,160,23,0.13), rgba(212,160,23,0.04), transparent); }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="header">
+    <div class="brand">🌾 AGRITech 🌾</div>
+    <div class="brand-sub">Agriculture · Technologie · Prospérité</div>
+    <div class="title-row">
+      <div class="title-line"></div>
+      <div class="main-title">Tableau d'Investissement</div>
+      <div class="title-line r"></div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Machine</th>
+          <th>Prix d'achat</th>
+          <th>Bénéfice / Jour</th>
+          <th>Cycle</th>
+          <th>Total cycle</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr class="l1">
+          <td><div class="mach-cell"><div class="mach-num">🚜</div><div><div class="mach-name">Machine Agricole 1</div><div class="mach-lvl">⬡ Débutant</div></div></div></td>
+          <td><span class="val-price">5 500 FCFA</span></td>
+          <td><span class="val-profit">+1 000 FCFA</span></td>
+          <td><span class="val-cycle">20 j</span></td>
+          <td><span class="val-total">20 000 FCFA</span></td>
+        </tr>
+
+        <tr class="l2">
+          <td><div class="mach-cell"><div class="mach-num">🌱</div><div><div class="mach-name">Machine Agricole 2</div><div class="mach-lvl">◈ Standard</div></div></div></td>
+          <td><span class="val-price">10 500 FCFA</span></td>
+          <td><span class="val-profit">+2 500 FCFA</span></td>
+          <td><span class="val-cycle">19 j</span></td>
+          <td><span class="val-total">47 500 FCFA</span></td>
+        </tr>
+
+        <tr class="l3">
+          <td><div class="mach-cell"><div class="mach-num">⚙️</div><div><div class="mach-name">Machine Agricole 3</div><div class="mach-lvl">◆ Avancé</div></div></div></td>
+          <td><span class="val-price">18 500 FCFA</span></td>
+          <td><span class="val-profit">+4 000 FCFA</span></td>
+          <td><span class="val-cycle">18 j</span></td>
+          <td><span class="val-total">72 000 FCFA</span></td>
+        </tr>
+
+        <tr class="l4">
+          <td><div class="mach-cell"><div class="mach-num">🔧</div><div><div class="mach-name">Machine Agricole 4</div><div class="mach-lvl">▲ Expert</div></div></div></td>
+          <td><span class="val-price">35 500 FCFA</span></td>
+          <td><span class="val-profit">+8 000 FCFA</span></td>
+          <td><span class="val-cycle">17 j</span></td>
+          <td><span class="val-total">136 000 FCFA</span></td>
+        </tr>
+
+        <tr class="l5">
+          <td><div class="mach-cell"><div class="mach-num">💎</div><div><div class="mach-name">Machine Agricole 5</div><div class="mach-lvl">★ Premium</div></div></div></td>
+          <td><span class="val-price">50 000 FCFA</span></td>
+          <td><span class="val-profit">+13 000 FCFA</span></td>
+          <td><span class="val-cycle">14 j</span></td>
+          <td><span class="val-total">182 000 FCFA</span></td>
+        </tr>
+
+        <tr class="l6 elite-tr">
+          <td><div class="mach-cell"><div class="mach-num">👑</div><div><div class="mach-name">Machine Agricole 6</div><div class="mach-lvl">⭐ Élite</div></div></div></td>
+          <td><span class="val-price">100 000 FCFA</span></td>
+          <td><span class="val-profit" style="color:#f0c040;">+35 400 FCFA</span></td>
+          <td><span class="val-cycle">9 j</span></td>
+          <td><span class="val-total">318 600 FCFA</span></td>
+        </tr>
+
+        <tr class="l7 prestige-tr">
+          <td><div class="mach-cell"><div class="mach-num">🌟</div><div><div class="mach-name">Machine Agricole 7</div><div class="mach-lvl">✦ Prestige</div></div></div></td>
+          <td><span class="val-price">200 000 FCFA</span></td>
+          <td><span class="val-profit" style="color:#f2c96e;">+85 000 FCFA</span></td>
+          <td><span class="val-cycle">5 j</span></td>
+          <td><span class="val-total" style="color:#f2c96e;">425 000 FCFA</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

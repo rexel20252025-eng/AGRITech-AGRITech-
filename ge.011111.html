@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AGRITech — Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green-deep:  #0d3320;
+      --green:       #1a5c38;
+      --green-mid:   #2d8a56;
+      --green-light: #4db87a;
+      --green-pale:  #e8f7ef;
+      --gold:        #c9933a;
+      --gold-light:  #f2c96e;
+      --red:         #c0392b;
+      --red-light:   #e74c3c;
+      --text:        #0d1f15;
+      --muted:       #5a7a65;
+      --bg:          #f2faf5;
+      --card:        #ffffff;
+      --border:      #cce8d8;
+    }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+    }
+
+    /* ── LOGIN SCREEN ── */
+    #loginScreen {
+      min-height: 100vh;
+      background: var(--green-deep);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      position: relative; overflow: hidden;
+    }
+    #loginScreen::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 80% 10%, rgba(77,184,122,0.18) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 50% at 15% 85%, rgba(201,147,58,0.12) 0%, transparent 60%);
+    }
+    .login-box {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.13);
+      border-radius: 28px;
+      padding: 44px 36px 40px;
+      width: 100%; max-width: 400px;
+      position: relative; z-index: 2;
+      backdrop-filter: blur(10px);
+    }
+    .login-logo {
+      text-align: center; margin-bottom: 32px;
+    }
+    .login-logo .eyebrow {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--green-light); margin-bottom: 8px;
+    }
+    .login-logo h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 800; color: #fff;
+    }
+    .login-logo h1 em {
+      font-style: italic;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .login-logo .sub {
+      font-size: 0.72rem; color: rgba(255,255,255,0.4);
+      margin-top: 6px; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block; font-size: 0.67rem; font-weight: 700;
+      color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 7px;
+    }
+    .field input {
+      width: 100%;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 14px; padding: 14px 16px;
+      color: white; font-family: 'Outfit', sans-serif; font-size: 0.92rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .field input:focus { border-color: var(--green-light); }
+    .field input::placeholder { color: rgba(255,255,255,0.25); }
+    .btn-login {
+      width: 100%; border: none; cursor: pointer;
+      background: linear-gradient(135deg, var(--green), var(--green-light));
+      color: white; font-family: 'Outfit', sans-serif;
+      font-size: 0.92rem; font-weight: 700;
+      padding: 16px; border-radius: 14px;
+      margin-top: 8px;
+      box-shadow: 0 8px 24px rgba(26,92,56,0.35);
+      transition: transform 0.15s, box-shadow 0.2s;
+    }
+    .btn-login:active { transform: scale(0.98); box-shadow: 0 3px 10px rgba(26,92,56,0.2); }
+    .login-err {
+      background: rgba(192,57,43,0.2); border: 1px solid rgba(231,76,60,0.3);
+      border-radius: 10px; padding: 10px 14px;
+      font-size: 0.77rem; color: #ff8a80;
+      margin-bottom: 14px; display: none;
+      text-align: center;
+    }
+    .login-hint {
+      text-align: center; margin-top: 18px;
+      font-size: 0.65rem; color: rgba(255,255,255,0.25);
+    }
+    .login-hint strong { color: rgba(255,255,255,0.45); }
+
+    /* ── ADMIN PANEL ── */
+    #adminPanel { display: none; }
+
+    /* HEADER */
+    .adm-header {
+      background: var(--green-deep);
+      padding: 0;
+      position: relative; overflow: hidden;
+    }
+    .adm-header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 85% -10%, rgba(77,184,122,0.2) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 10% 90%, rgba(201,147,58,0.15) 0%, transparent 60%);
+    }
+    .adm-header-inner {
+      padding: 36px 20px 24px;
+      position: relative; z-index: 2;
+    }
+    .adm-top-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 24px;
+    }
+    .page-eyebrow {
+      font-size: 0.6rem; font-weight: 600; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--green-light);
+      display: flex; align-items: center; gap: 7px; margin-bottom: 6px;
+    }
+    .page-eyebrow::before {
+      content: ''; width: 18px; height: 1.5px;
+      background: var(--green-light); display: inline-block;
+    }
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem; font-weight: 800; color: #fff; line-height: 1.1;
+    }
+    .page-title em {
+      font-style: italic;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .btn-logout {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px; padding: 10px 16px;
+      color: rgba(255,255,255,0.7); font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      transition: background 0.2s;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.14); }
+
+    /* STATS */
+    .adm-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .ast {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px; padding: 14px 10px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .ast::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--green-light), transparent);
+      opacity: 0.4;
+    }
+    .ast-n { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: #fff; display: block; line-height: 1.2; }
+    .ast-l { font-size: 0.57rem; font-weight: 500; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.4px; }
+
+    /* SEARCH + FILTERS */
+    .adm-toolbar {
+      padding: 18px 16px 10px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .search-wrap { position: relative; }
+    .search-wrap input {
+      width: 100%; background: white;
+      border: 1.5px solid var(--border); border-radius: 14px;
+      padding: 13px 16px 13px 44px;
+      font-family: 'Outfit', sans-serif; font-size: 0.88rem;
+      color: var(--text); outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-wrap input:focus { border-color: var(--green-mid); }
+    .search-icon {
+      position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); pointer-events: none;
+    }
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .fbtn {
+      padding: 7px 14px; border-radius: 20px; border: 1.5px solid var(--border);
+      background: white; font-family: 'Outfit', sans-serif;
+      font-size: 0.7rem; font-weight: 600; cursor: pointer;
+      color: var(--muted); transition: all 0.2s;
+    }
+    .fbtn.active { background: var(--green); border-color: var(--green); color: white; }
+
+    /* SECTION TITLE */
+    .sec { padding: 6px 20px 10px; display: flex; align-items: center; gap: 12px; }
+    .sec h2 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); white-space: nowrap; }
+    .sec-line { flex: 1; height: 1px; background: linear-gradient(to right, var(--border), transparent); }
+    .sec-count {
+      font-size: 0.65rem; font-weight: 700; color: white;
+      background: var(--green-mid); border-radius: 20px;
+      padding: 2px 9px;
+    }
+
+    /* LOADING */
+    .loading { text-align: center; padding: 60px 20px; }
+    .loader { width: 38px; height: 38px; border: 3px solid var(--border); border-top-color: var(--green-mid); border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 14px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading p { font-size: 0.82rem; color: var(--muted); }
+
+    /* EMPTY */
+    .empty-state { text-align: center; padding: 60px 20px; display: none; }
+    .empty-state p { font-size: 0.85rem; color: var(--muted); }
+
+    /* INV CARDS */
+    .inv-list { padding: 0 16px 100px; display: flex; flex-direction: column; gap: 14px; }
+
+    .inv-item {
+      background: var(--card);
+      border-radius: 20px; border: 1.5px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 3px 14px rgba(13,51,32,0.06);
+      animation: fadeUp 0.35s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+    .inv-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 16px 10px;
+    }
+    .inv-user { display: flex; align-items: center; gap: 10px; }
+    .user-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), var(--green-light));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 700; color: white; flex-shrink: 0;
+    }
+    .user-email { font-size: 0.75rem; font-weight: 600; color: var(--text); word-break: break-all; }
+    .user-uid { font-size: 0.58rem; color: var(--muted); margin-top: 2px; }
+    .s-pill {
+      padding: 4px 11px; border-radius: 20px;
+      font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px;
+    }
+    .s-active { background: rgba(77,184,122,0.15); color: var(--green-mid); border: 1px solid rgba(77,184,122,0.3); }
+    .s-done   { background: rgba(201,147,58,0.12); color: var(--gold); border: 1px solid rgba(201,147,58,0.3); }
+
+    .inv-body { padding: 0 16px 6px; }
+    .prod-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; font-weight: 700; color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 10px; }
+    .met {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 8px 6px; text-align: center;
+    }
+    .met-l { font-size: 0.55rem; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+    .met-v { font-family: 'Playfair Display', serif; font-size: 0.85rem; font-weight: 700; color: var(--text); }
+    .met-v.g { color: var(--green-mid); }
+    .met-v.o { color: var(--gold); }
+    .met-v.r { color: var(--red); }
+
+    /* Progress */
+    .prog-wrap { margin-bottom: 12px; }
+    .prog-info { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--muted); margin-bottom: 5px; }
+    .prog-track { height: 6px; background: var(--green-pale); border-radius: 10px; overflow: hidden; }
+    .prog-fill {
+      height: 100%; border-radius: 10px;
+      background: linear-gradient(90deg, var(--green), var(--green-light));
+    }
+
+    /* Date info */
+    .date-info { font-size: 0.65rem; color: var(--muted); margin-bottom: 12px; }
+    .date-info span { color: var(--text); font-weight: 600; }
+
+    /* DELETE BUTTON */
+    .inv-foot { padding: 0 16px 14px; }
+    .btn-delete {
+      width: 100%; border: none; cursor: pointer;
+      background: linear-gradient(135deg, #7f1f1f, var(--red-light));
+      color: white; font-family: 'Outfit', sans-serif;
+      font-size: 0.84rem; font-weight: 700;
+      padding: 14px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 5px 18px rgba(192,57,43,0.28);
+      transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+    }
+    .btn-delete:active { transform: scale(0.97); }
+    .btn-delete:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* CONFIRM MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; opacity: 0; pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: auto; }
+    .modal {
+      background: white; border-radius: 24px;
+      padding: 32px 28px; width: 100%; max-width: 360px;
+      text-align: center;
+      transform: scale(0.92); transition: transform 0.25s cubic-bezier(0.22,1,0.36,1);
+    }
+    .modal-overlay.show .modal { transform: scale(1); }
+    .modal-icon { font-size: 3rem; margin-bottom: 14px; }
+    .modal h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .modal p { font-size: 0.8rem; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+    .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .mbtn-cancel {
+      padding: 13px; border-radius: 14px; border: 1.5px solid var(--border);
+      background: white; font-family: 'Outfit', sans-serif;
+      font-size: 0.84rem; font-weight: 700; cursor: pointer; color: var(--muted);
+    }
+    .mbtn-confirm {
+      padding: 13px; border-radius: 14px; border: none;
+      background: linear-gradient(135deg, #7f1f1f, var(--red-light));
+      color: white; font-family: 'Outfit', sans-serif;
+      font-size: 0.84rem; font-weight: 700; cursor: pointer;
+      box-shadow: 0 5px 16px rgba(192,57,43,0.3);
+    }
+
+    /* NOTIF */
+    .notif {
+      position: fixed; top: 20px; left: 50%;
+      transform: translateX(-50%) translateY(-90px);
+      background: linear-gradient(135deg, var(--green), var(--green-light));
+      color: white; padding: 13px 22px; border-radius: 50px;
+      font-size: 0.84rem; font-weight: 700;
+      z-index: 9999; white-space: nowrap;
+      box-shadow: 0 8px 30px rgba(26,92,56,0.35);
+      transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s;
+      opacity: 0; pointer-events: none;
+    }
+    .notif.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .notif.err  { background: linear-gradient(135deg, #7f0000, #c62828); }
+    .notif.ok   { background: linear-gradient(135deg, var(--green), var(--green-light)); }
+
+    /* USER GROUP HEADER */
+    .user-group-header {
+      padding: 12px 16px 6px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ugh-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--green-deep), var(--green));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700; color: white; flex-shrink: 0;
+    }
+    .ugh-email { font-size: 0.73rem; font-weight: 700; color: var(--text); }
+    .ugh-count {
+      background: var(--green-pale); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1px 8px;
+      font-size: 0.6rem; font-weight: 700; color: var(--green-mid);
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="eyebrow">AGRITech</div>
+      <h1>Panel <em>Admin</em></h1>
+      <div class="sub">Espace d'administration</div>
+    </div>
+    <div class="login-err" id="loginErr"></div>
+    <div class="field">
+      <label>Adresse e-mail</label>
+      <input type="email" id="loginEmail" placeholder="admin@agritech.ci"/>
+    </div>
+    <div class="field">
+      <label>Mot de passe</label>
+      <input type="password" id="loginPass" placeholder="••••••••"/>
+    </div>
+    <button class="btn-login" id="btnLogin" onclick="doLogin()">🔐 Se connecter</button>
+    <div class="login-hint">Accès réservé aux <strong>administrateurs</strong></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     ADMIN PANEL
+════════════════════════════════════ -->
+<div id="adminPanel">
+
+  <!-- HEADER -->
+  <div class="adm-header">
+    <div class="adm-header-inner">
+      <div class="adm-top-row">
+        <div>
+          <div class="page-eyebrow">AGRITech Admin</div>
+          <div class="page-title">Tous les <em>Investissements</em></div>
+        </div>
+        <button class="btn-logout" onclick="doLogout()">
+          <span>⎋</span> Déconnexion
+        </button>
+      </div>
+      <div class="adm-stats">
+        <div class="ast">
+          <span class="ast-n" id="stUsers">—</span>
+          <span class="ast-l">Utilisateurs</span>
+        </div>
+        <div class="ast">
+          <span class="ast-n" id="stInvs">—</span>
+          <span class="ast-l">Investissements</span>
+        </div>
+        <div class="ast">
+          <span class="ast-n" id="stTotal">—</span>
+          <span class="ast-l">Total investi</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="adm-toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="text" id="searchInput" placeholder="Rechercher un utilisateur ou une machine…" oninput="filterAndRender()"/>
+    </div>
+    <div class="filter-row">
+      <button class="fbtn active" data-f="all" onclick="setFilter(this)">Tous</button>
+      <button class="fbtn" data-f="active" onclick="setFilter(this)">🟢 Actifs</button>
+      <button class="fbtn" data-f="completed" onclick="setFilter(this)">✅ Terminés</button>
+    </div>
+  </div>
+
+  <!-- SECTION -->
+  <div class="sec">
+    <h2>Liste</h2>
+    <div class="sec-line"></div>
+    <div class="sec-count" id="resCount">0</div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading" id="loadWrap">
+    <div class="loader"></div>
+    <p>Chargement des données…</p>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div class="empty-state" id="emptyState">
+    <p>🌾 Aucun investissement trouvé.</p>
+  </div>
+
+  <!-- LIST -->
+  <div class="inv-list" id="invList"></div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal">
+    <div class="modal-icon">🗑️</div>
+    <h3>Supprimer l'investissement ?</h3>
+    <p id="modalDesc">Cette action est irréversible. Le montant <strong>ne sera pas</strong> remboursé automatiquement.</p>
+    <div class="modal-btns">
+      <button class="mbtn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="mbtn-confirm" id="modalConfirmBtn">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIF -->
+<div class="notif" id="notif"></div>
+
+<script type="module">
+  import { initializeApp }        from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+  import { getDatabase, ref, get, remove }
+    from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDaFEepJKO8TbePfgnYlX0N3-CcaV75fy4",
+    authDomain: "agri-5af15.firebaseapp.com",
+    databaseURL: "https://agri-5af15-default-rtdb.firebaseio.com",
+    projectId: "agri-5af15",
+    storageBucket: "agri-5af15.firebasestorage.app",
+    messagingSenderId: "1010902928190",
+    appId: "1:1010902928190:web:57d2555d69e2c023057a6f",
+    measurementId: "G-XYB13DQZSP"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getDatabase(app);
+
+  const PRODUCT_CONFIG = {
+    1: { price:5500,   dailyRevenue:1000,  cycleDuration:20, totalRevenue:20000  },
+    2: { price:10500,  dailyRevenue:2500,  cycleDuration:19, totalRevenue:47500  },
+    3: { price:18500,  dailyRevenue:4000,  cycleDuration:18, totalRevenue:72000  },
+    4: { price:35500,  dailyRevenue:8000,  cycleDuration:17, totalRevenue:136000 },
+    5: { price:50000,  dailyRevenue:13000, cycleDuration:16, totalRevenue:208000 },
+    6: { price:100000, dailyRevenue:25400, cycleDuration:14, totalRevenue:355600 },
+    7: { price:200000, dailyRevenue:50000, cycleDuration:9,  totalRevenue:450000 }
+  };
+
+  let _allData   = [];   // [{uid, email, invKey, inv}]
+  let _filter    = 'all';
+  let _pendingDel = null;
+
+  window.fmt = n => new Intl.NumberFormat('fr-FR').format(Math.max(0, Math.floor(n))) + " FCFA";
+
+  function midnight(date) {
+    const d = new Date(date); d.setHours(0,0,0,0); return d;
+  }
+
+  function getProgress(inv) {
+    const cfg   = PRODUCT_CONFIG[inv.productId];
+    const cycle = cfg ? cfg.cycleDuration : (inv.remainingDays || 60);
+    const today = midnight(new Date());
+    const start = midnight(new Date(inv.startDate));
+    const passed     = Math.floor((today - start) / 86400000);
+    const activeDays = Math.min(passed, cycle);
+    const left = Math.max(0, cycle - activeDays);
+    const pct  = Math.min(100, Math.round((activeDays / cycle) * 100));
+    return { cycle, activeDays, left, pct };
+  }
+
+  // ── Load all investments ──
+  async function loadAll() {
+    document.getElementById('loadWrap').style.display = 'block';
+    document.getElementById('invList').innerHTML = '';
+    _allData = [];
+
+    try {
+      const [usersSnap, investSnap] = await Promise.all([
+        get(ref(db, 'users')),
+        get(ref(db, 'investments'))
+      ]);
+
+      const users   = usersSnap.exists()  ? usersSnap.val()  : {};
+      const invests = investSnap.exists() ? investSnap.val() : {};
+
+      for (const [uid, userInvs] of Object.entries(invests)) {
+        if (!userInvs) continue;
+        const email = users[uid]?.email || uid.slice(0,12) + '…';
+        for (const [invKey, inv] of Object.entries(userInvs)) {
+          if (!inv) continue;
+          _allData.push({ uid, email, invKey, inv });
+        }
+      }
+
+      updateGlobalStats();
+      filterAndRender();
+    } catch (e) {
+      console.error(e);
+      showNotif("Erreur de chargement", true);
+    } finally {
+      document.getElementById('loadWrap').style.display = 'none';
+    }
+  }
+
+  function updateGlobalStats() {
+    const uids  = new Set(_allData.map(d => d.uid));
+    const total = _allData.reduce((s, d) => s + (d.inv.amount || 0), 0);
+    document.getElementById('stUsers').textContent  = uids.size;
+    document.getElementById('stInvs').textContent   = _allData.length;
+    document.getElementById('stTotal').textContent  = fmt(total);
+  }
+
+  window.filterAndRender = function() {
+    const q  = (document.getElementById('searchInput').value || '').toLowerCase();
+    let list = _allData.filter(d => {
+      const matchSearch = !q || d.email.toLowerCase().includes(q)
+        || (d.inv.productName || '').toLowerCase().includes(q)
+        || d.uid.toLowerCase().includes(q);
+      const matchFilter = _filter === 'all' || d.inv.status === _filter;
+      return matchSearch && matchFilter;
+    });
+
+    document.getElementById('resCount').textContent = list.length;
+    document.getElementById('emptyState').style.display = list.length ? 'none' : 'block';
+
+    // Group by user
+    const byUser = {};
+    for (const d of list) {
+      if (!byUser[d.uid]) byUser[d.uid] = { email: d.email, items: [] };
+      byUser[d.uid].items.push(d);
+    }
+
+    const html = Object.entries(byUser).map(([uid, grp], gi) =>
+      renderGroup(uid, grp, gi)
+    ).join('');
+
+    document.getElementById('invList').innerHTML = html;
+  };
+
+  function renderGroup(uid, grp, gi) {
+    const initials = grp.email.slice(0,2).toUpperCase();
+    const items = grp.items.map((d, i) => renderItem(d, gi * 0.05 + i * 0.07)).join('');
+    return `
+      <div>
+        <div class="user-group-header">
+          <div class="ugh-avatar">${initials}</div>
+          <div class="ugh-email">${grp.email}</div>
+          <div class="ugh-count">${grp.items.length} inv.</div>
+        </div>
+        ${items}
+      </div>`;
+  }
+
+  function renderItem(d, delay) {
+    const { uid, email, invKey, inv } = d;
+    const cfg   = PRODUCT_CONFIG[inv.productId] || {};
+    const daily = cfg.dailyRevenue || inv.dailyRevenue || 0;
+    const prog  = getProgress(inv);
+    const done  = inv.status === 'completed' || prog.left === 0;
+    const status = done ? 'completed' : 'active';
+    const collected = inv.totalCollected || 0;
+    const remaining = Math.max(0, (cfg.totalRevenue || 0) - collected);
+    const startFmt  = new Date(inv.startDate).toLocaleDateString('fr-FR');
+
+    return `
+      <div class="inv-item" id="item-${uid}-${invKey}" style="animation-delay:${delay}s">
+        <div class="inv-head">
+          <div class="inv-user">
+            <div class="user-avatar">${email.slice(0,2).toUpperCase()}</div>
+            <div>
+              <div class="user-email">${email}</div>
+              <div class="user-uid">${uid.slice(0,16)}…</div>
+            </div>
+          </div>
+          <div class="s-pill ${done ? 's-done' : 's-active'}">${done ? '✅ Terminé' : '🟢 Actif'}</div>
+        </div>
+        <div class="inv-body">
+          <div class="prod-name">🌾 ${inv.productName || 'Machine #' + inv.productId}</div>
+
+          <div class="metrics">
+            <div class="met">
+              <div class="met-l">Investi</div>
+              <div class="met-v">${fmt(inv.amount || 0)}</div>
+            </div>
+            <div class="met">
+              <div class="met-l">Par jour</div>
+              <div class="met-v g">+${fmt(daily)}</div>
+            </div>
+            <div class="met">
+              <div class="met-l">Collecté</div>
+              <div class="met-v o">${fmt(collected)}</div>
+            </div>
+          </div>
+
+          <div class="prog-wrap">
+            <div class="prog-info">
+              <span>${prog.activeDays}/${prog.cycle} jours</span>
+              <span>${prog.pct}% — ${prog.left} j. restant${prog.left > 1 ? 's' : ''}</span>
+            </div>
+            <div class="prog-track">
+              <div class="prog-fill" style="width:${prog.pct}%"></div>
+            </div>
+          </div>
+
+          <div class="date-info">
+            📅 Début : <span>${startFmt}</span> &nbsp;·&nbsp;
+            💸 Restant : <span>${fmt(remaining)}</span>
+          </div>
+        </div>
+        <div class="inv-foot">
+          <button class="btn-delete" onclick="window.askDelete('${uid}','${invKey}','${inv.productName || 'cette machine'}','${email}')">
+            🗑️ Supprimer cet investissement
+          </button>
+        </div>
+      </div>`;
+  }
+
+  // ── DELETE FLOW ──
+  window.askDelete = function(uid, invKey, prodName, email) {
+    _pendingDel = { uid, invKey };
+    document.getElementById('modalDesc').innerHTML =
+      `Supprimer <strong>${prodName}</strong> de <strong>${email}</strong> ?<br>
+       <small style="color:#999;font-size:0.7rem">Cette action est irréversible.</small>`;
+    document.getElementById('modalConfirmBtn').onclick = confirmDelete;
+    document.getElementById('confirmModal').classList.add('show');
+  };
+
+  window.closeModal = function() {
+    document.getElementById('confirmModal').classList.remove('show');
+    _pendingDel = null;
+  };
+
+  async function confirmDelete() {
+    if (!_pendingDel) return;
+    const { uid, invKey } = _pendingDel;
+    closeModal();
+
+    const itemEl = document.getElementById('item-' + uid + '-' + invKey);
+    if (itemEl) { itemEl.style.opacity = '0.4'; itemEl.style.pointerEvents = 'none'; }
+
+    try {
+      await remove(ref(db, `investments/${uid}/${invKey}`));
+      _allData = _allData.filter(d => !(d.uid === uid && d.invKey === invKey));
+      updateGlobalStats();
+      filterAndRender();
+      showNotif("✅ Investissement supprimé !");
+    } catch (e) {
+      console.error(e);
+      if (itemEl) { itemEl.style.opacity = '1'; itemEl.style.pointerEvents = ''; }
+      showNotif("Erreur lors de la suppression", true);
+    }
+  }
+
+  // ── FILTER ──
+  window.setFilter = function(btn) {
+    document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    _filter = btn.dataset.f;
+    filterAndRender();
+  };
+
+  // ── NOTIF ──
+  window.showNotif = function(msg, err = false) {
+    const el = document.getElementById('notif');
+    el.textContent = msg;
+    el.className = 'notif' + (err ? ' err' : ' ok');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 3500);
+  };
+
+  // ── LOGIN ──
+  window.doLogin = async function() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPass').value;
+    const errEl = document.getElementById('loginErr');
+    const btn   = document.getElementById('btnLogin');
+    errEl.style.display = 'none';
+    btn.textContent = '⏳ Connexion…'; btn.disabled = true;
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch (e) {
+      btn.textContent = '🔐 Se connecter'; btn.disabled = false;
+      const msgs = {
+        'auth/invalid-credential':     'Email ou mot de passe incorrect.',
+        'auth/user-not-found':         'Utilisateur introuvable.',
+        'auth/wrong-password':         'Mot de passe incorrect.',
+        'auth/too-many-requests':      'Trop de tentatives. Réessayez plus tard.',
+        'auth/invalid-email':          'Adresse e-mail invalide.',
+      };
+      errEl.textContent = msgs[e.code] || 'Erreur : ' + e.message;
+      errEl.style.display = 'block';
+    }
+  };
+
+  window.doLogout = async function() {
+    await signOut(auth);
+  };
+
+  // Allow Enter key on login
+  document.getElementById('loginPass').addEventListener('keydown', e => {
+    if (e.key === 'Enter') window.doLogin();
+  });
+  document.getElementById('loginEmail').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('loginPass').focus();
+  });
+
+  // ── AUTH STATE ──
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      loadAll();
+    } else {
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('adminPanel').style.display = 'none';
+    }
+  });
+
+  // Close modal on overlay click
+  document.getElementById('confirmModal').addEventListener('click', function(e) {
+    if (e.target === this) window.closeModal();
+  });
+</script>
+</body>
+</html>
