@@ -616,7 +616,7 @@ input:focus { border-color: var(--g2); background: #fff; box-shadow: 0 0 0 4px r
         <span class="fee-val" id="feeGross">—</span>
       </div>
       <div class="fee-row">
-        <span class="fee-label">Frais (18%)</span>
+        <span class="fee-label">Frais (1%)</span>
         <span class="fee-val red" id="feeCost">—</span>
       </div>
       <div class="fee-row">
@@ -652,7 +652,7 @@ input:focus { border-color: var(--g2); background: #fff; box-shadow: 0 0 0 4px r
       <ul class="info-list">
         <li>
           <span class="info-num">1</span>
-          Les heures de retrait sont de <strong>10h à 17h</strong> uniquement.
+          Les heures de retrait sont de <strong>08h20 à 20h20</strong> uniquement.
         </li>
         <li>
           <span class="info-num">2</span>
@@ -660,7 +660,7 @@ input:focus { border-color: var(--g2); background: #fff; box-shadow: 0 0 0 4px r
         </li>
         <li>
           <span class="info-num">3</span>
-          Les frais de retrait sont de <strong>18%</strong> sur le montant demandé.
+          Les frais de retrait sont de <strong>1%</strong> sur le montant demandé.
         </li>
         <li>
           <span class="info-num">4</span>
@@ -712,11 +712,13 @@ let currentUser      = null;
 let userData         = null;
 let hasActiveInvest  = false; // ← clé : est-ce que l'utilisateur a investi ?
 
-const FEE_RATE   = 0.18;
+const FEE_RATE   = 0.01;
 const MIN_AMOUNT = 1000;
 const MAX_DAILY  = 2;
-const HOUR_OPEN  = 10;
-const HOUR_CLOSE = 17;
+const HOUR_OPEN  = 8;
+const MIN_OPEN   = 20;
+const HOUR_CLOSE = 20;
+const MIN_CLOSE  = 20;
 
 const OP_GRAD = {
   MTN     : 'linear-gradient(135deg,#ffd600,#ff9800)',
@@ -792,19 +794,22 @@ const applyInvestmentLock = (locked) => {
 /* ── TIME CHECK ── */
 const checkTime = () => {
   const now  = new Date();
-  const hour = now.getHours();
-  const open = hour >= HOUR_OPEN && hour < HOUR_CLOSE;
+  const minutesNow = now.getHours() * 60 + now.getMinutes();
+  const openMin = HOUR_OPEN * 60 + MIN_OPEN;
+  const closeMin = HOUR_CLOSE * 60 + MIN_CLOSE;
+  const open = minutesNow >= openMin && minutesNow < closeMin;
   const el   = document.getElementById('timeStatusText');
   const wrap = document.getElementById('timeStatus');
 
   if (open) {
-    el.innerHTML = `<strong style="color:var(--g1)">Retraits ouverts</strong> — Jusqu'à ${HOUR_CLOSE}h00`;
+    el.innerHTML = `<strong style="color:var(--g1)">Retraits ouverts</strong> — Jusqu'à 20h20`;
     wrap.style.background = '#f0fbf5';
+    wrap.style.borderColor = 'var(--border)';
     wrap.querySelector('.countdown-dot').style.background = 'var(--g3)';
   } else {
-    const next = hour < HOUR_OPEN
-      ? `Ouverture à ${HOUR_OPEN}h00`
-      : `Ouverture demain à ${HOUR_OPEN}h00`;
+    const next = minutesNow < openMin
+      ? `Ouverture à 08h20`
+      : `Ouverture demain à 08h20`;
     el.innerHTML = `<strong style="color:#c08010">Retraits fermés</strong> — ${next}`;
     wrap.style.background = '#fff8ec';
     wrap.style.borderColor = '#f0d080';
@@ -847,7 +852,7 @@ const renderAccounts = (accountsObj) => {
   const sel = document.getElementById('accountSelector');
   if (!accountsObj) {
     sel.innerHTML = `<div class="no-accounts">Aucun compte lié. <a href="compteBancaire.html">Ajouter un compte →</a></div>`;
-    return;
+  return;
   }
   const entries = Object.entries(accountsObj);
   if (!entries.length) {
@@ -904,7 +909,7 @@ window.submitWithdraw = async () => {
     return;
   }
 
-  if (!checkTime()) return toast('⛔ Retraits fermés (10h–17h)', 'warning');
+  if (!checkTime()) return toast('⛔ Retraits fermés (08h20–20h20)', 'warning');
 
   const amount  = parseFloat(document.getElementById('amount').value) || 0;
   const pin     = getPin();
