@@ -107,43 +107,6 @@ body {
 .ci-step-num { width:20px; height:20px; border-radius:50%; background:var(--green); color:#fff; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 .ci-step strong { color:#1a2e20; }
 
-/* ── WAVE PANEL ── */
-.wave-panel {
-  background:linear-gradient(135deg,#e8f4fd,#f0f8ff);
-  border:2px solid #00b4d8; border-radius:18px;
-  overflow:hidden; margin-bottom:14px;
-  display:none;
-}
-.wave-panel.show { display:block; animation:fadeInUp .4s cubic-bezier(.16,1,.3,1) both; }
-.wave-panel-header {
-  background:linear-gradient(135deg,#005f73,#00b4d8);
-  padding:13px 18px; display:flex; align-items:center; gap:10px;
-}
-.wave-panel-title { font-size:13px; font-weight:700; color:#fff; }
-.wave-panel-sub { font-size:11px; color:rgba(255,255,255,.65); margin-top:1px; }
-.wave-panel-body { padding:16px 18px 18px; }
-.wave-notice {
-  background:#fff; border:1px solid rgba(0,180,216,.2); border-radius:11px;
-  padding:13px 14px; margin-bottom:14px; font-size:13px;
-  color:#1a2e20; font-weight:500; line-height:1.6; text-align:center;
-}
-.wave-notice strong { color:#005f73; }
-.btn-wave {
-  width:100%; border:none; border-radius:13px; padding:14px;
-  font-family:'Inter',sans-serif; font-size:14px; font-weight:700;
-  cursor:pointer; transition:all .25s cubic-bezier(.16,1,.3,1);
-  background:linear-gradient(135deg,#005f73,#00b4d8); color:#fff;
-  box-shadow:0 8px 24px rgba(0,180,216,.35);
-  display:flex; align-items:center; justify-content:center; gap:8px;
-}
-.btn-wave:hover { box-shadow:0 12px 30px rgba(0,180,216,.5); transform:translateY(-2px); }
-.btn-wave:active { transform:scale(.97); }
-.btn-wave:disabled { opacity:.7; cursor:not-allowed; transform:none !important; }
-.wave-steps { margin-top:14px; }
-.wave-step { display:flex; align-items:flex-start; gap:10px; font-size:12px; color:rgba(0,0,0,.5); margin-bottom:8px; line-height:1.5; }
-.wave-step-num { width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,#005f73,#00b4d8); color:#fff; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.wave-step strong { color:#1a2e20; }
-
 .card {
   width:100%; max-width:420px; background:#fff; border-radius:24px;
   border:1px solid rgba(26,122,60,.14);
@@ -239,8 +202,6 @@ body {
 .btn-green:hover { box-shadow:0 12px 32px rgba(26,122,60,.4); transform:translateY(-2px); }
 .btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#1a0e00; font-weight:600; box-shadow:0 8px 24px rgba(200,150,30,.3); }
 .btn-gold:hover { box-shadow:0 12px 30px rgba(200,150,30,.45); transform:translateY(-2px); }
-.btn-orange { background:linear-gradient(135deg,#e95420,#f77f00); color:#fff; font-weight:600; box-shadow:0 8px 24px rgba(233,84,32,.3); margin-bottom:10px; }
-.btn-orange:hover { box-shadow:0 12px 30px rgba(233,84,32,.42); transform:translateY(-2px); }
 .btn-ghost { background:transparent; border:1.5px solid rgba(0,0,0,.1); color:rgba(0,0,0,.4); margin-top:8px; }
 .btn-ghost:hover { background:#f5f5f5; color:rgba(0,0,0,.6); transform:translateY(-1px); }
 
@@ -324,7 +285,7 @@ body {
 .balance-box .bv { font-size:20px; font-weight:700; color:#fff; margin:4px 0 2px; }
 .balance-box .bs { font-size:11px; color:rgba(255,255,255,.5); }
 
-/* Divider between CI and intl buttons */
+/* Divider entre CI et intl buttons */
 .pay-divider {
   display:flex; align-items:center; gap:10px;
   margin:12px 0; font-size:11px; color:rgba(0,0,0,.3);
@@ -443,7 +404,7 @@ body {
         <div class="total-val" id="c-amt">—</div>
       </div>
 
-      <!-- ══ PAIEMENT CÔTE D'IVOIRE (non-Wave) ══ -->
+      <!-- ══ PAIEMENT CÔTE D'IVOIRE ══ -->
       <div id="ciPaySection">
         <div class="ci-panel" id="ciPanel">
           <div class="ci-panel-header">
@@ -471,30 +432,6 @@ body {
               <div class="ci-step"><div class="ci-step-num">1</div><span>Ouvrez votre application <strong id="ciAppLabel">Mobile Money</strong></span></div>
               <div class="ci-step"><div class="ci-step-num">2</div><span>Envoyez <strong id="ciMontantLabel">—</strong> au numéro <strong id="ciNumeroLabel">—</strong></span></div>
               <div class="ci-step"><div class="ci-step-num">3</div><span>Entrez votre <strong>ID de transaction</strong> dans le champ ci-dessous</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ══ WAVE CI PANEL ══ -->
-        <div class="wave-panel" id="wavePanel">
-          <div class="wave-panel-header">
-            <div>
-              <div class="wave-panel-title">〰️ Paiement Wave — Côte d'Ivoire</div>
-              <div class="wave-panel-sub">Cliquez sur le bouton pour payer via Wave</div>
-            </div>
-          </div>
-          <div class="wave-panel-body">
-            <div class="wave-notice">
-              Veuillez payer le paiement avec les frais Merci 🙏<br>
-              <strong>AGRITech AGRITech</strong>
-            </div>
-            <button class="btn-wave" id="waveLinkBtn" onclick="ouvrirWave()">
-              〰️ &nbsp;Payer avec Wave
-            </button>
-            <div class="wave-steps">
-              <div class="wave-step"><div class="wave-step-num">1</div><span>Cliquez sur le bouton ci-dessus pour ouvrir la page de paiement Wave</span></div>
-              <div class="wave-step"><div class="wave-step-num">2</div><span>Effectuez le paiement de <strong id="waveMontantLabel">—</strong> F CFA</span></div>
-              <div class="wave-step"><div class="wave-step-num">3</div><span>Revenez ici et entrez votre <strong>ID de transaction</strong> ci-dessous</span></div>
             </div>
           </div>
         </div>
@@ -583,15 +520,14 @@ body {
   const db   = getDatabase(app);
 
   const MF_LINK   = 'https://my.moneyfusion.net/69a1e3df72d40f4062a204f5';
-  const WAVE_LINK = 'https://pay.wave.com/m/M_ci_Dxkj_yGq4c7E/c/ci/';
   const SS_KEY    = 'agritech_recharge_state';
 
-  // ✅ Numéros CI par opérateur — Wave utilise un lien dédié (pas de numéro)
+  // Numéros CI par opérateur
   const CI_NUMEROS = {
-    mtn    : { numero: '225 05 84 78 55 69', app: 'MTN Mobile Money' },
+    mtn    : { numero: ' 05 84 78 55 69', app: 'MTN Mobile Money' },
     orange : { numero: 'ecrivez au service client', app: 'Orange Money' },
-    wave   : { numero: '225 07 16 79 45 84', app: 'Wave', useLink: true },   // ← lien Wave, pas de numéro
-    moov   : { numero: '225 01 73 75 02 25',  app: 'Moov Money' },
+    wave   : { numero: ' 07 16 79 45 84', app: 'Wave' },
+    moov   : { numero: ' 01 73 75 02 25',  app: 'Moov Money' },
     tmoney : { numero: null,              app: 'T-Money' }
   };
 
@@ -617,7 +553,7 @@ body {
     return id.trim().replace(/[.#$[\]]/g, '_');
   }
 
-  // ══ Applique la visibilité du bouton MoneyFusion selon le pays ══
+  // Applique la visibilité du bouton MoneyFusion selon le pays
   function applyMfVisibility(pays) {
     const isCi = pays === 'ci';
     $('payBtn').classList.toggle('hide-mf', isCi);
@@ -646,28 +582,14 @@ body {
     applyMfVisibility(pays);
   };
 
-  // ══ MàJ panneau CI selon l'opérateur sélectionné ══
+  // MàJ panneau CI selon l'opérateur sélectionné
   function updateCiPanel() {
     if (S.pays !== 'ci' || !S.op) return;
     const info = CI_NUMEROS[S.op];
-    const panel    = $('ciPanel');
-    const wPanel   = $('wavePanel');
+    const panel = $('ciPanel');
 
-    // Masquer les deux d'abord
     panel.classList.remove('show');
-    wPanel.classList.remove('show');
-
-    if (!info) return;
-
-    // ✅ Wave → afficher le panneau Wave avec lien
-    if (info.useLink) {
-      $('waveMontantLabel').textContent = S.amtNum > 0 ? S.amtLabel : '—';
-      wPanel.classList.add('show');
-      return;
-    }
-
-    // Autres opérateurs → panneau numéro classique
-    if (!info.numero) return;
+    if (!info || !info.numero) return;
 
     panel.classList.add('show');
     $('ciNumero').textContent      = info.numero;
@@ -685,26 +607,6 @@ body {
   };
   window.copierNom = () => {
     navigator.clipboard.writeText('AGRITech').then(() => showNotif('📋 Nom copié !', 'success'));
-  };
-
-  // ══ OUVRIR WAVE ══
-  window.ouvrirWave = () => {
-    const btn = $('waveLinkBtn');
-    // Bloquer immédiatement pour empêcher tout double clic
-    if (btn.disabled) return;
-    btn.disabled = true;
-    btn.innerHTML    = '✅ &nbsp;Page Wave ouverte';
-    btn.style.background = 'linear-gradient(135deg,#1a7a3c,#2db85e)';
-    btn.style.opacity = '.75';
-
-    sessionStorage.setItem(SS_KEY, JSON.stringify({...S, waveOuvert:true}));
-
-    $('returnAlert').classList.add('show');
-    $('tokenGuide').classList.add('show');
-    $('modifyBtn').style.display = 'none';
-
-    setTimeout(()=>$('transactionId').focus(), 500);
-    window.open(WAVE_LINK, '_blank');
   };
 
   window.goTo = (n, dir) => {
@@ -890,7 +792,7 @@ body {
     if (!raw) return false;
     try {
       const saved = JSON.parse(raw);
-      if (!saved.mfOuvert && !saved.waveOuvert) return false;
+      if (!saved.mfOuvert) return false;
       Object.assign(S, saved);
 
       $('c-op').textContent    = S.opLabel;
@@ -902,22 +804,13 @@ body {
       if (S.pays === 'ci') {
         $('ciPaySection').style.display = 'block';
         updateCiPanel();
-
-        // Restaurer le bouton Wave si c'était Wave
-        if (saved.waveOuvert) {
-          const wBtn = $('waveLinkBtn');
-          wBtn.innerHTML = '✅ &nbsp;Page Wave ouverte';
-          wBtn.style.background = 'linear-gradient(135deg,#1a7a3c,#2db85e)';
-          wBtn.style.opacity = '.75';
-          wBtn.disabled = true;
-        }
       } else {
         $('ciPaySection').style.display = 'none';
       }
 
       applyMfVisibility(S.pays);
 
-      // Restaurer le bouton MF si c'était MF
+      // Restaurer le bouton MF
       if (saved.mfOuvert) {
         const btn = $('payBtn');
         btn.innerHTML = '✅ &nbsp;Page MoneyFusion ouverte';
@@ -943,13 +836,6 @@ body {
     document.querySelectorAll('.amt').forEach(e=>e.classList.remove('sel'));
 
     $('ciPanel').classList.remove('show');
-    $('wavePanel').classList.remove('show');
-
-    // Réinitialiser bouton Wave
-    const wBtn = $('waveLinkBtn');
-    wBtn.innerHTML = '〰️ &nbsp;Payer avec Wave';
-    wBtn.disabled = false;
-    wBtn.removeAttribute('style');
 
     const btn = $('payBtn');
     btn.innerHTML = '🌐 &nbsp;Paiement international — MoneyFusion';
