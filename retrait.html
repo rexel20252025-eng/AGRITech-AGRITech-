@@ -504,11 +504,11 @@ input:focus { border-color: var(--g2); background: #fff; box-shadow: 0 0 0 4px r
   <div class="bal-row">
     <div>
       <div class="bal-amount" id="balanceDisplay">0<span>FCFA</span></div>
-      <div class="bal-info" id="withdrawCountDisplay">Retraits aujourd'hui : 0 / 2</div>
+      <div class="bal-info" id="withdrawCountDisplay">Retraits aujourd'hui : 0 / 5</div>
     </div>
     <div class="bal-badge">
       <div style="font-size:10px;opacity:.7;margin-bottom:2px;">Retraits restants</div>
-      <strong id="withdrawsLeft">2</strong>
+      <strong id="withdrawsLeft">5</strong>
     </div>
   </div>
 </div>
@@ -603,7 +603,12 @@ input:focus { border-color: var(--g2); background: #fff; box-shadow: 0 0 0 4px r
         <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
         Somme à retirer
       </label>
-      <div class="amount-wrap">
+      <!-- Notice retrait forcé -->
+    <div id="forcedWithdrawNotice" style="display:none; background:#fff3e0; border:1.5px solid #f0c060; border-radius:11px; padding:11px 14px; margin-bottom:12px; font-size:12px; color:#7a5000;">
+      <strong>Retrait total requis</strong><br>
+      Votre solde est compris entre 418 000 FCFA et 1 000 000 FCFA. Vous devez retirer la totalité de votre solde.
+    </div>
+        <div class="amount-wrap">
         <input type="number" id="amount" placeholder="Ex : 5000" min="1000" oninput="calcFee()">
         <span class="amount-suffix">FCFA</span>
       </div>
@@ -656,7 +661,7 @@ input:focus { border-color: var(--g2); background: #fff; box-shadow: 0 0 0 4px r
         </li>
         <li>
           <span class="info-num">2</span>
-          Le minimum de retrait est de <strong>1 000 FCFA</strong>. Vous pouvez lancer le retrait <strong>2 fois par jour</strong>.
+          Le minimum de retrait est de <strong>1 000 FCFA</strong>. Vous pouvez lancer le retrait <strong>5 fois par jour</strong>.
         </li>
         <li>
           <span class="info-num">3</span>
@@ -665,6 +670,10 @@ input:focus { border-color: var(--g2); background: #fff; box-shadow: 0 0 0 4px r
         <li>
           <span class="info-num">4</span>
           Un investissement actif est <strong>obligatoire</strong> pour effectuer un retrait.
+        </li>
+        <li>
+          <span class="info-num">5</span>
+          Pour un solde entre <strong>418 000 FCFA et 1 000 000 FCFA</strong>, le retrait doit être total.
         </li>
       </ul>
     </div>
@@ -714,7 +723,9 @@ let hasActiveInvest  = false; // ← clé : est-ce que l'utilisateur a investi ?
 
 const FEE_RATE   = 0.01;
 const MIN_AMOUNT = 1000;
-const MAX_DAILY  = 2;
+const MAX_DAILY  = 5;
+const FORCED_WITHDRAW_MIN = 418000;
+const FORCED_WITHDRAW_MAX = 1000000;
 const HOUR_OPEN  = 8;
 const MIN_OPEN   = 20;
 const HOUR_CLOSE = 20;
@@ -896,6 +907,24 @@ const updateBalanceUI = (data, todayCount) => {
     `Retraits aujourd'hui : ${todayCount} / ${MAX_DAILY}`;
   document.getElementById('withdrawsLeft').textContent =
     Math.max(0, MAX_DAILY - todayCount);
+
+  // Mode retrait forcé total
+  const forcedMode = balance >= FORCED_WITHDRAW_MIN && balance <= FORCED_WITHDRAW_MAX;
+  const amountInput = document.getElementById('amount');
+  const forcedNotice = document.getElementById('forcedWithdrawNotice');
+  if (forcedNotice) {
+    if (forcedMode && balance > 0) {
+      forcedNotice.style.display = 'block';
+      amountInput.value = balance;
+      amountInput.readOnly = true;
+      amountInput.style.opacity = '0.8';
+      calcFee();
+    } else {
+      forcedNotice.style.display = 'none';
+      amountInput.readOnly = false;
+      amountInput.style.opacity = '1';
+    }
+  }
 };
 
 /* ── SUBMIT (global) ── */
@@ -917,9 +946,16 @@ window.submitWithdraw = async () => {
 
   if (!accEl)              return toast('⚠️ Sélectionnez un compte', 'error');
   if (amount < MIN_AMOUNT) return toast(`⚠️ Minimum ${MIN_AMOUNT.toLocaleString('fr-FR')} FCFA`, 'error');
+
+  // Règle retrait forcé total
+  const balance = Math.round(parseFloat(userData.balance || 0));
+  const forcedMode = balance >= FORCED_WITHDRAW_MIN && balance <= FORCED_WITHDRAW_MAX;
+  if (forcedMode && amount !== balance) {
+    return toast('⚠️ Retrait total obligatoire : 418 000 - 1 000 000 FCFA', 'error');
+  }
+
   if (pin.length < 4)      return toast('⚠️ Mot de passe requis (4 chiffres)', 'error');
 
-  const balance = Math.round(parseFloat(userData.balance || 0));
   if (amount > balance) return toast('⚠️ Solde insuffisant', 'error');
 
   const todayCount = await getTodayCount(currentUser.uid);
