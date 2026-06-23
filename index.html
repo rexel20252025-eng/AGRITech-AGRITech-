@@ -55,17 +55,17 @@
       z-index: 0;
     }
 
-    .leaf-deco {
+   .leaf-deco {
       position: fixed; font-size: 7rem; opacity: 0.04; z-index: 0; user-select: none;
     }
-    .leaf-deco.tl { top: 10px; left: 10px; transform: rotate(-20deg); }
-    .leaf-deco.br { bottom: 10px; right: 10px; transform: rotate(160deg); }
+   .leaf-deco.tl { top: 10px; left: 10px; transform: rotate(-20deg); }
+   .leaf-deco.br { bottom: 10px; right: 10px; transform: rotate(160deg); }
 
-    .wrapper { position: relative; z-index: 1; width: 100%; max-width: 400px; }
+   .wrapper { position: relative; z-index: 1; width: 100%; max-width: 400px; }
 
     /* ── Logo ── */
-    .logo { text-align: center; margin-bottom: 18px; animation: fadeDown 0.5s ease both; }
-    .logo-icon {
+   .logo { text-align: center; margin-bottom: 18px; animation: fadeDown 0.5s ease both; }
+   .logo-icon {
       width: 52px; height: 52px;
       background: linear-gradient(135deg, var(--green), var(--green-light));
       border-radius: 16px;
@@ -74,36 +74,36 @@
       box-shadow: 0 6px 20px rgba(45,106,79,0.25);
       margin-bottom: 8px;
     }
-    .logo-name { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 700; color: var(--green); letter-spacing: 3px; line-height: 1; }
-    .logo-sub  { font-size: 0.65rem; font-weight: 500; color: var(--muted); letter-spacing: 4px; text-transform: uppercase; margin-top: 2px; }
+   .logo-name { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; font-weight: 700; color: var(--green); letter-spacing: 3px; line-height: 1; }
+   .logo-sub { font-size: 0.65rem; font-weight: 500; color: var(--muted); letter-spacing: 4px; text-transform: uppercase; margin-top: 2px; }
 
     /* ── Tabs ── */
-    .tabs {
+   .tabs {
       display: flex; background: var(--white); border: 1.5px solid var(--border);
       border-radius: 14px; padding: 4px; margin-bottom: 14px;
       box-shadow: 0 2px 12px var(--shadow); animation: fadeDown 0.5s 0.1s ease both;
     }
-    .tab {
+   .tab {
       flex: 1; padding: 9px; text-align: center; font-size: 0.82rem; font-weight: 600;
       color: var(--muted); border-radius: 10px; cursor: pointer;
       transition: all 0.25s ease; letter-spacing: 0.5px;
     }
-    .tab.active {
+   .tab.active {
       background: linear-gradient(135deg, var(--green), var(--green-light));
       color: white; box-shadow: 0 3px 12px rgba(45,106,79,0.3);
     }
 
     /* ── Card ── */
-    .card {
+   .card {
       background: var(--white); border: 1.5px solid var(--border);
       border-radius: 20px; padding: 22px 20px;
       box-shadow: 0 4px 30px var(--shadow); animation: fadeUp 0.5s 0.15s ease both;
     }
 
-    .form { display: none; flex-direction: column; gap: 10px; }
-    .form.active { display: flex; }
+   .form { display: none; flex-direction: column; gap: 10px; }
+   .form.active { display: flex; }
 
-    .field-group { display: flex; flex-direction: column; gap: 4px; position: relative; }
+   .field-group { display: flex; flex-direction: column; gap: 4px; position: relative; }
 
     label { font-size: 0.72rem; font-weight: 600; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
 
@@ -123,71 +123,71 @@
     input::placeholder { color: #aac4b0; }
 
     /* ── Phone row ── */
-    .phone-input-row {
+   .phone-input-row {
       display: flex; border: 1.5px solid var(--border);
       border-radius: 10px; overflow: hidden; background: var(--bg);
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .phone-input-row:focus-within {
+   .phone-input-row:focus-within {
       border-color: var(--green-light);
       box-shadow: 0 0 0 3px rgba(82,183,136,0.15); background: white;
     }
-    .country-selector {
+   .country-selector {
       display: flex; align-items: center; gap: 5px; padding: 9px 10px;
       background: #f0faf3; border-right: 1.5px solid var(--border);
       cursor: pointer; user-select: none; min-width: 80px;
       font-size: 1rem; transition: background 0.2s; flex-shrink: 0;
     }
-    .country-selector:hover { background: #e3f5e9; }
-    .phone-input-row input {
-      border: none !important; border-radius: 0 !important;
-      background: transparent !important; box-shadow: none !important; flex: 1;
+   .country-selector:hover { background: #e3f5e9; }
+   .phone-input-row input {
+      border: none!important; border-radius: 0!important;
+      background: transparent!important; box-shadow: none!important; flex: 1;
     }
-    .phone-input-row input:focus { box-shadow: none !important; }
+   .phone-input-row input:focus { box-shadow: none!important; }
 
     /* ── Country dropdown ── */
-    .country-dropdown {
+   .country-dropdown {
       display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
       background: white; border: 1.5px solid var(--border); border-radius: 12px;
       box-shadow: 0 8px 30px rgba(45,106,79,0.15); z-index: 100; overflow: hidden;
     }
-    .country-dropdown.open { display: block; }
-    .country-option { display: flex; align-items: center; gap: 10px; padding: 9px 14px; cursor: pointer; transition: background 0.15s; }
-    .country-option:hover { background: #f0faf3; }
-    .country-option .flag { font-size: 1.2rem; }
-    .country-option .cname { flex: 1; font-size: 0.82rem; font-weight: 500; color: var(--text); }
-    .country-option .code  { font-size: 0.75rem; font-weight: 700; color: var(--green); }
+   .country-dropdown.open { display: block; }
+   .country-option { display: flex; align-items: center; gap: 10px; padding: 9px 14px; cursor: pointer; transition: background 0.15s; }
+   .country-option:hover { background: #f0faf3; }
+   .country-option.flag { font-size: 1.2rem; }
+   .country-option.cname { flex: 1; font-size: 0.82rem; font-weight: 500; color: var(--text); }
+   .country-option.code { font-size: 0.75rem; font-weight: 700; color: var(--green); }
 
     /* ── Parrainage ── */
-    .parrainage-box {
+   .parrainage-box {
       border: 1.5px dashed var(--border); border-radius: 10px;
       padding: 10px 12px; background: #f0faf3;
       display: flex; flex-direction: column; gap: 4px;
     }
-    .parrainage-label {
+   .parrainage-label {
       font-size: 0.72rem; font-weight: 600; color: var(--gold);
       letter-spacing: 0.5px; text-transform: uppercase;
       display: flex; align-items: center; gap: 5px;
     }
-    .parrainage-box input { background: white; border-color: #d4e8d9; }
+   .parrainage-box input { background: white; border-color: #d4e8d9; }
 
     /* ── Divider ── */
-    .divider { display: flex; align-items: center; gap: 8px; margin: 2px 0; }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-    .divider span { font-size: 0.7rem; color: var(--muted); font-weight: 500; }
+   .divider { display: flex; align-items: center; gap: 8px; margin: 2px 0; }
+   .divider::before,.divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+   .divider span { font-size: 0.7rem; color: var(--muted); font-weight: 500; }
 
     /* ── Messages feedback ── */
-    .msg {
+   .msg {
       font-size: 0.76rem; font-weight: 500;
       padding: 8px 11px; border-radius: 9px; display: none;
     }
-    .msg.error   { background: #fdf0ef; color: var(--red);   border: 1px solid #f5c5c2; }
-    .msg.success { background: #edf7f0; color: var(--green); border: 1px solid #b0ddbf; }
-    .msg.referral-status.valid   { background: #edf7f0; color: var(--green); border: 1px solid #b0ddbf; }
-    .msg.referral-status.invalid { background: #fdf0ef; color: var(--red);   border: 1px solid #f5c5c2; }
+   .msg.error { background: #fdf0ef; color: var(--red); border: 1px solid #f5c5c2; }
+   .msg.success { background: #edf7f0; color: var(--green); border: 1px solid #b0ddbf; }
+   .msg.referral-status.valid { background: #edf7f0; color: var(--green); border: 1px solid #b0ddbf; }
+   .msg.referral-status.invalid { background: #fdf0ef; color: var(--red); border: 1px solid #f5c5c2; }
 
     /* ── Button ── */
-    .btn {
+   .btn {
       width: 100%; padding: 12px;
       background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
       color: white; border: none; border-radius: 12px;
@@ -197,12 +197,12 @@
       transition: transform 0.15s, box-shadow 0.15s; margin-top: 4px;
       display: flex; align-items: center; justify-content: center; gap: 8px;
     }
-    .btn:hover    { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(45,106,79,0.4); }
-    .btn:active   { transform: translateY(0); }
-    .btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none !important; }
+   .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(45,106,79,0.4); }
+   .btn:active { transform: translateY(0); }
+   .btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none!important; }
 
     /* ── Spinner ── */
-    .spinner {
+   .spinner {
       width: 15px; height: 15px;
       border: 2px solid rgba(255,255,255,0.35); border-top-color: white;
       border-radius: 50%; animation: spin 0.65s linear infinite; display: none;
@@ -210,16 +210,14 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── Footer ── */
-    .page-footer {
+   .page-footer {
       text-align: center; margin-top: 14px; font-size: 0.68rem;
       color: #aac4b0; letter-spacing: 0.5px;
       animation: fadeUp 0.5s 0.3s ease both;
     }
 
-    /* ══════════════════════════════
-       MODAL BIENVENUE
-    ══════════════════════════════ */
-    .modal-overlay {
+    /* MODAL BIENVENUE */
+   .modal-overlay {
       position: fixed; inset: 0;
       background: rgba(8, 24, 12, 0.68);
       backdrop-filter: blur(8px);
@@ -228,9 +226,9 @@
       opacity: 0; pointer-events: none;
       transition: opacity 0.4s ease;
     }
-    .modal-overlay.show { opacity: 1; pointer-events: all; }
+   .modal-overlay.show { opacity: 1; pointer-events: all; }
 
-    .modal {
+   .modal {
       background: var(--white); border-radius: 26px;
       padding: 0 0 26px; max-width: 360px; width: 100%;
       text-align: center;
@@ -239,83 +237,55 @@
       transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
       position: relative; overflow: hidden;
     }
-    .modal-overlay.show .modal { transform: translateY(0) scale(1); }
+   .modal-overlay.show.modal { transform: translateY(0) scale(1); }
 
-    /* Arc décoratif en haut */
-    .modal-header {
+   .modal-header {
       background: linear-gradient(135deg, var(--green), var(--green-light));
       padding: 28px 24px 22px;
       position: relative;
       margin-bottom: 0;
     }
-    .modal-header::after {
+   .modal-header::after {
       content: '';
       position: absolute; bottom: -18px; left: 0; right: 0;
       height: 36px;
       background: var(--white);
       border-radius: 50% 50% 0 0 / 100% 100% 0 0;
     }
-    .modal-emoji {
-      font-size: 3.6rem; display: block;
-      animation: bounceIn 0.7s 0.25s ease both;
-      position: relative; z-index: 1;
-    }
-    .modal-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.7rem; font-weight: 700; color: white;
-      margin-top: 8px; line-height: 1.2; position: relative; z-index: 1;
-    }
-    .modal-company {
-      font-size: 0.62rem; letter-spacing: 4px; text-transform: uppercase;
-      color: rgba(255,255,255,0.75); margin-top: 4px; position: relative; z-index: 1;
-    }
+   .modal-emoji { font-size: 3.6rem; display: block; animation: bounceIn 0.7s 0.25s ease both; position: relative; z-index: 1; }
+   .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 700; color: white; margin-top: 8px; line-height: 1.2; position: relative; z-index: 1; }
+   .modal-company { font-size: 0.62rem; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.75); margin-top: 4px; position: relative; z-index: 1; }
+   .modal-body { padding: 28px 24px 0; }
 
-    .modal-body { padding: 28px 24px 0; }
-
-    /* Badge bonus */
-    .bonus-badge {
+   .bonus-badge {
       background: linear-gradient(135deg, #fffcf0, #fef5d4);
       border: 2px solid var(--gold); border-radius: 18px;
       padding: 18px 20px 14px; margin-bottom: 18px;
       position: relative;
     }
-    .bonus-gift {
-      position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
-      font-size: 2rem; line-height: 1;
-      background: white; border-radius: 50%; padding: 4px 6px;
-      box-shadow: 0 2px 10px rgba(183,136,44,0.25);
-    }
-    .bonus-amount {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2.4rem; font-weight: 700; color: var(--gold); line-height: 1; margin-bottom: 3px;
-    }
-    .bonus-label { font-size: 0.7rem; font-weight: 700; color: #a07020; letter-spacing: 0.8px; text-transform: uppercase; }
-    .bonus-sub   { font-size: 0.68rem; color: #c09040; margin-top: 4px; }
+   .bonus-gift { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 2rem; line-height: 1; background: white; border-radius: 50%; padding: 4px 6px; box-shadow: 0 2px 10px rgba(183,136,44,0.25); }
+   .bonus-amount { font-family: 'Cormorant Garamond', serif; font-size: 2.4rem; font-weight: 700; color: var(--gold); line-height: 1; margin-bottom: 3px; }
+   .bonus-label { font-size: 0.7rem; font-weight: 700; color: #a07020; letter-spacing: 0.8px; text-transform: uppercase; }
+   .bonus-sub { font-size: 0.68rem; color: #c09040; margin-top: 4px; }
 
-    /* Texte de bienvenue */
-    .welcome-text {
-      font-size: 0.84rem; color: var(--muted); line-height: 1.65;
-      margin-bottom: 20px;
-    }
-    .welcome-text strong { color: var(--text); }
+   .welcome-text { font-size: 0.84rem; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
+   .welcome-text strong { color: var(--text); }
 
-    /* Bouton passer */
-    .btn-skip {
+   .btn-skip {
       width: 100%; padding: 10px 18px;
       background: transparent; color: var(--muted);
       border: 1.5px solid var(--border); border-radius: 12px;
       font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500;
       cursor: pointer; transition: all 0.2s;
     }
-    .btn-skip:hover { background: var(--green-pale); color: var(--green); border-color: var(--green-light); }
+   .btn-skip:hover { background: var(--green-pale); color: var(--green); border-color: var(--green-light); }
 
-    /* ── Animations ── */
     @keyframes fadeDown { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeUp   { from { opacity: 0; transform: translateY(14px);  } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes bounceIn {
-      0%   { transform: scale(0.3); opacity: 0; }
-      60%  { transform: scale(1.2); }
-      100% { transform: scale(1);   opacity: 1; }
+      0% { transform: scale(0.3); opacity: 0; }
+      60% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
@@ -324,16 +294,14 @@
   <div class="leaf-deco tl">🌿</div>
   <div class="leaf-deco br">🌿</div>
 
-  <!-- ══════════ MODAL BIENVENUE ══════════ -->
+  <!-- MODAL BIENVENUE -->
   <div class="modal-overlay" id="welcomeModal">
     <div class="modal">
-
       <div class="modal-header">
         <span class="modal-emoji">🌱</span>
-        <div class="modal-title">Bienvenue chez AGRITech !</div>
+        <div class="modal-title">Bienvenue chez AGRITech!</div>
         <div class="modal-company">Agriculture &amp; Technologie</div>
       </div>
-
       <div class="modal-body">
         <div class="bonus-badge">
           <span class="bonus-gift">🎁</span>
@@ -341,13 +309,11 @@
           <div class="bonus-label">Bonus d'inscription offert</div>
           <div class="bonus-sub">✅ Crédité automatiquement sur votre compte</div>
         </div>
-
         <p class="welcome-text">
-          Félicitations <strong id="welcomeUsername">ami(e)</strong> ! 🎉<br>
+          Félicitations <strong id="welcomeUsername">ami(e)</strong>! 🎉<br>
           Votre compte AGRITech a été créé avec succès.<br><br>
           Rejoignez notre communauté de milliers d'agriculteurs connectés et bâtissons ensemble une agriculture moderne et prospère en Afrique de l'Ouest. 🌍🌾
         </p>
-
         <button class="btn-skip" onclick="closeWelcomeModal()">
           Continuer →
         </button>
@@ -355,9 +321,8 @@
     </div>
   </div>
 
-  <!-- ══════════ PAGE PRINCIPALE ══════════ -->
+  <!-- PAGE PRINCIPALE -->
   <div class="wrapper">
-
     <div class="logo">
       <div class="logo-icon">🌱</div>
       <div class="logo-name">AGRITech</div>
@@ -370,10 +335,8 @@
     </div>
 
     <div class="card">
-
-      <!-- ══ CONNEXION ══ -->
+      <!-- CONNEXION -->
       <form class="form active" id="loginFormData">
-
         <div class="field-group">
           <label>Numéro de téléphone <span style="color:var(--red)">*</span></label>
           <div class="phone-input-row">
@@ -393,29 +356,23 @@
             <div class="country-option" onclick="pickCountryLogin('🇸🇳','Sénégal','+221')"><span class="flag">🇸🇳</span><span class="cname">Sénégal</span><span class="code">+221</span></div>
           </div>
         </div>
-
         <div class="field-group">
           <label>Code PIN</label>
           <input type="password" id="loginPassword" placeholder="••••••" maxlength="6"/>
         </div>
-
         <div id="loginError" class="msg error"></div>
-
         <button class="btn" type="submit">
           <span id="loginBtnText">Se connecter</span>
           <div class="spinner" id="loginSpinner"></div>
         </button>
-
       </form>
 
-      <!-- ══ INSCRIPTION ══ -->
+      <!-- INSCRIPTION -->
       <form class="form" id="signupFormData">
-
         <div class="field-group">
           <label>Nom et prénom</label>
           <input type="text" id="signupUsername" placeholder="Ex: Koné Mamadou"/>
         </div>
-
         <div class="field-group">
           <label>Numéro de téléphone <span style="color:var(--red)">*</span></label>
           <div class="phone-input-row">
@@ -436,42 +393,33 @@
           </div>
           <input type="hidden" id="selectedCountry" name="country"/>
         </div>
-
         <div class="divider"><span>Sécurité</span></div>
-
         <div class="field-group">
           <label>Choisir un code PIN</label>
           <input type="password" id="signupPassword" placeholder="••••••" maxlength="6" inputmode="numeric"/>
         </div>
-
         <div class="field-group">
           <label>Répéter le code PIN</label>
           <input type="password" id="confirmPassword" placeholder="••••••" maxlength="6" inputmode="numeric"/>
         </div>
-
         <div class="divider"><span>Optionnel</span></div>
-
         <div class="parrainage-box">
           <div class="parrainage-label">🎁 Code de parrainage</div>
           <input type="text" id="referralCode" placeholder="Entrez le code de parrainage"/>
           <div id="referralStatus" class="msg referral-status"></div>
         </div>
-
-        <div id="signupError"   class="msg error"></div>
+        <div id="signupError" class="msg error"></div>
         <div id="signupSuccess" class="msg success"></div>
-
         <button class="btn" type="submit">
           <span id="signupBtnText">Créer mon compte</span>
           <div class="spinner" id="signupSpinner"></div>
         </button>
-
       </form>
     </div>
-
     <div class="page-footer">© 2025 AGRITech — Tous droits réservés</div>
   </div>
 
-  <!-- ══════════ SCRIPT UI ══════════ -->
+  <!-- SCRIPT UI -->
   <script>
     /* ── Tabs ── */
     function switchTab(tab) {
@@ -502,8 +450,8 @@
     }
     document.addEventListener('click', function(e) {
       if (!e.target.closest('.field-group')) {
-        document.getElementById('countryDropdown').classList.remove('open');
-        document.getElementById('countryDropdownLogin').classList.remove('open');
+        document.getElementById('countryDropdown')?.classList.remove('open');
+        document.getElementById('countryDropdownLogin')?.classList.remove('open');
       }
     });
 
@@ -519,36 +467,27 @@
 
     /* ── Loading state ── */
     function setLoading(type, loading) {
-      const text    = document.getElementById(type + 'BtnText');
+      const text = document.getElementById(type + 'BtnText');
       const spinner = document.getElementById(type + 'Spinner');
-      const formId  = type === 'login' ? 'loginFormData' : 'signupFormData';
-      const btn     = document.getElementById(formId)?.querySelector('button[type=submit]');
-      if (text)    text.style.opacity    = loading ? '0.6' : '1';
-      if (spinner) spinner.style.display = loading ? 'block' : 'none';
-      if (btn)     btn.disabled          = loading;
+      const formId = type === 'login'? 'loginFormData' : 'signupFormData';
+      const btn = document.getElementById(formId)?.querySelector('button[type=submit]');
+      if (text) text.style.opacity = loading? '0.6' : '1';
+      if (spinner) spinner.style.display = loading? 'block' : 'none';
+      if (btn) btn.disabled = loading;
     }
   </script>
 
-  <!-- ══════════ FIREBASE ══════════ -->
+  <!-- FIREBASE -->
 <script type="module">
-
-/* ================= IMPORT FIREBASE 12.9.0 ================= */
-
-import { initializeApp } 
+import { initializeApp }
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-
-import { getAnalytics } 
+import { getAnalytics }
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
-
 import { getAuth, createUserWithEmailAndPassword,
          signInWithEmailAndPassword, onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-
 import { getDatabase, ref, set, get }
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
-
-
-/* ================= CONFIGURATION ================= */
 
 const firebaseConfig = {
   apiKey: "AIzaSyDaFEepJKO8TbePfgnYlX0N3-CcaV75fy4",
@@ -561,19 +500,13 @@ const firebaseConfig = {
   measurementId: "G-XYB13DQZSP"
 };
 
-
-/* ================= INITIALISATION ================= */
-
-const app       = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const auth      = getAuth(app);
-const database  = getDatabase(app);
-
+const auth = getAuth(app);
+const database = getDatabase(app);
 
 /* ================= UTILS ================= */
-
 class Utils {
-
   static generateReferralCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     return Array.from({ length: 6 }, () =>
@@ -587,7 +520,7 @@ class Utils {
     if (snapshot.exists()) {
       const users = snapshot.val();
       for (const uid in users) {
-        if (users[uid].referralCode === code)
+        if (users[uid].referralCode === code.toUpperCase())
           return { userId: uid, username: users[uid].username };
       }
     }
@@ -598,7 +531,7 @@ class Utils {
     const el = document.getElementById(id);
     if (!el) return;
     el.textContent = text;
-    el.style.display = text ? 'block' : 'none';
+    el.style.display = text? 'block' : 'none';
     if (type) el.className = 'msg ' + type;
   }
 
@@ -616,66 +549,67 @@ class Utils {
     const el = document.getElementById('referralStatus');
     if (!el) return;
     el.textContent = msg;
-    el.className = `msg referral-status ${isValid ? 'valid' : 'invalid'}`;
-    el.style.display = msg ? 'block' : 'none';
+    el.className = `msg referral-status ${isValid? 'valid' : 'invalid'}`;
+    el.style.display = msg? 'block' : 'none';
   }
 
   static updateUserDisplay(userData) {
-    const nameEl  = document.getElementById('user-name');
-    const idEl    = document.getElementById('user-id');
+    const nameEl = document.getElementById('user-name');
+    const idEl = document.getElementById('user-id');
     const emailEl = document.getElementById('user-email');
-
-    if (nameEl  && userData?.username)
+    if (nameEl && userData?.username)
       nameEl.textContent = `Hello 👋 ${userData.username}`;
-
     if (idEl && userData?.phoneNumber)
       idEl.textContent = userData.phoneNumber;
-
     if (emailEl && userData?.phoneNumber)
       emailEl.textContent = `${userData.phoneNumber}@temp.com`;
   }
 }
 
-
 /* ================= FORM MANAGER ================= */
-
 class FormManager {
-
   static async handleSignup(event) {
     event.preventDefault();
     Utils.clearMessages();
     setLoading('signup', true);
 
     try {
-      const username   = document.getElementById('signupUsername').value.trim();
-      const telephone  = document.getElementById('signupTelephone').value.trim();
-      const password   = document.getElementById('signupPassword').value;
+      const username = document.getElementById('signupUsername').value.trim();
+      const telephone = document.getElementById('signupTelephone').value.trim();
+      const password = document.getElementById('signupPassword').value;
       const confirmPwd = document.getElementById('confirmPassword').value;
-      const referralCode = document.getElementById('referralCode')?.value.trim();
+      const referralCodeInput = document.getElementById('referralCode')?.value.trim().toUpperCase();
 
-      if (!username || !telephone || !password)
+      if (!username ||!telephone ||!password)
         throw new Error('Veuillez remplir tous les champs');
 
-      if (password !== confirmPwd)
+      if (password!== confirmPwd)
         throw new Error('Les codes PIN ne correspondent pas');
 
       if (password.length < 6)
         throw new Error('Le code PIN doit contenir au moins 6 chiffres');
 
+      // Vérifier le code de parrainage s'il est présent
+      let referrerData = null;
+      if (referralCodeInput) {
+        referrerData = await Utils.checkReferralCode(referralCodeInput);
+        if (!referrerData) {
+          throw new Error('Code de parrainage invalide');
+        }
+      }
+
       const email = `${telephone}@temp.com`;
-
-      const userCredential =
-        await createUserWithEmailAndPassword(auth, email, password);
-
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       const newCode = Utils.generateReferralCode();
 
+      // Bonus fixe : 200 FCFA
       await set(ref(database, `users/${user.uid}`), {
         username,
         phoneNumber: telephone,
         balance: 200,
         referralCode: newCode,
-        referredBy: null,
+        referredBy: referrerData? referrerData.userId : null,
         createdAt: Date.now()
       });
 
@@ -688,25 +622,18 @@ class FormManager {
     }
   }
 
-
   static async handleLogin(event) {
     event.preventDefault();
     Utils.clearMessages();
     setLoading('login', true);
-
     try {
       const telephone = document.getElementById('loginTelephone').value.trim();
-      const password  = document.getElementById('loginPassword').value;
-
-      if (!telephone || !password)
+      const password = document.getElementById('loginPassword').value;
+      if (!telephone ||!password)
         throw new Error('Veuillez remplir tous les champs');
-
       const email = `${telephone}@temp.com`;
-
       await signInWithEmailAndPassword(auth, email, password);
-
       window.location.href = 'accueil.html';
-
     } catch (error) {
       setLoading('login', false);
       Utils.showMsg('loginError', 'Numéro ou code PIN incorrect', 'error');
@@ -714,18 +641,42 @@ class FormManager {
   }
 }
 
+/* ================= PARRAINAGE AUTO-FILL ================= */
+async function autoFillReferralCode() {
+  const params = new URLSearchParams(window.location.search);
+  const refCode = params.get('ref');
+
+  if (!refCode) return;
+
+  // Basculer sur Inscription
+  switchTab('register');
+
+  const refInput = document.getElementById('referralCode');
+  if (refInput) {
+    refInput.value = refCode.toUpperCase();
+
+    // Vérifier que le code existe
+    const referrer = await Utils.checkReferralCode(refCode);
+    if (referrer) {
+      refInput.style.background = '#edf7f0';
+      refInput.style.borderColor = 'var(--green-light)';
+      Utils.updateReferralStatus(true, `Code parrain ${refCode.toUpperCase()} appliqué ✓`);
+    } else {
+      Utils.updateReferralStatus(false, `Code ${refCode.toUpperCase()} invalide`);
+    }
+  }
+}
 
 /* ================= INIT ================= */
-
 document.addEventListener('DOMContentLoaded', () => {
-
   document.getElementById('signupFormData')
-    ?.addEventListener('submit', FormManager.handleSignup);
-
+   ?.addEventListener('submit', FormManager.handleSignup);
   document.getElementById('loginFormData')
-    ?.addEventListener('submit', FormManager.handleLogin);
-});
+   ?.addEventListener('submit', FormManager.handleLogin);
 
+  // Auto-fill parrainage depuis l'URL?ref=XXXXXX
+  autoFillReferralCode();
+});
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
@@ -737,6 +688,6 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-</script> 
+</script>
 </body>
 </html>
