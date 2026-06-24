@@ -306,14 +306,14 @@
     }
     if (available > 0) {
       const days = daily > 0 ? Math.round(available / daily) : 1;
-      const sub  = days > 1 ? `${days} jours de bénéfices disponibles` : "Bénéfices du jour prêts";
+      const sub  = days > 1 ? `${days} jours de bénéfices disponibles` : "Veuillez le récupérer et le retirer";
       return `
         <button class="btn-collect" onclick="window._collect('${key}')">
           <div class="bci">
             <div class="bci-left">
               <div class="bci-icon-wrap">💸</div>
               <div>
-                <span class="bci-text-main">Votre bénéfice du jour est prêt veuillez le récupérer</span>
+                <span class="bci-text-main">Votre bénéfice est prêt</span>
                 <span class="bci-text-sub">${sub}</span>
               </div>
             </div>
