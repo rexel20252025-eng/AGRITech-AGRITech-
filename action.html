@@ -340,6 +340,113 @@
     .gold-modal .recap-item.highlight { background: linear-gradient(135deg, #7a4f00, #b7882c); }
     .gold-modal .btn-confirm { background: linear-gradient(135deg, #b7882c, #d4a94a); }
 
+    /* ══════════ ALERTE CENTRÉE — Solde réservé au retrait ══════════ */
+    .alert-overlay {
+      position: fixed; inset: 0;
+      background: rgba(20,40,25,0.55);
+      z-index: 1200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+      padding: 20px;
+    }
+    .alert-overlay.open { display: flex; animation: alertFadeIn 0.25s ease; }
+    @keyframes alertFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .alert-box {
+      background: #ffffff;
+      width: 100%;
+      max-width: 340px;
+      border-radius: 26px;
+      padding: 30px 26px 26px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 30px 70px rgba(0,0,0,0.35), 0 0 0 1px rgba(183,136,44,0.15);
+      animation: alertPop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes alertPop {
+      0%   { transform: scale(0.75) translateY(20px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .alert-box::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #b7882c, #f0d080, #b7882c);
+    }
+    .alert-icon-wrap {
+      width: 74px; height: 74px;
+      margin: 6px auto 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fffbf0, #fff3d6);
+      border: 2px solid #f0d080;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      animation: alertIconPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes alertIconPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(183,136,44,0.25); }
+      50%      { box-shadow: 0 0 0 12px rgba(183,136,44,0); }
+    }
+    .alert-icon-wrap svg { display: block; }
+    .alert-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.25;
+    }
+    .alert-text {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-bottom: 6px;
+    }
+    .alert-amount-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #fffbf0, #fff3d6);
+      border: 1.5px solid #f0d080;
+      color: #8a6300;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 7px 16px;
+      border-radius: 20px;
+      margin: 14px 0 22px;
+    }
+    .alert-actions { display: flex; flex-direction: column; gap: 10px; }
+    .alert-btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #b7882c, #d4a94a);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 15px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.86rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(183,136,44,0.3);
+      transition: transform 0.15s, opacity 0.2s;
+    }
+    .alert-btn-primary:active { transform: scale(0.97); opacity: 0.9; }
+    .alert-btn-secondary {
+      width: 100%;
+      background: transparent;
+      color: var(--muted);
+      border: none;
+      padding: 4px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
     /* BOTTOM NAV */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0;
@@ -582,6 +689,28 @@
   </div>
 </div>
 
+<!-- ALERTE — Solde réservé au retrait -->
+<div class="alert-overlay" id="alertOverlay">
+  <div class="alert-box">
+    <div class="alert-icon-wrap">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+        <path d="M12 9v4M12 17h.01" stroke="#b7882c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#b7882c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="alert-title">Somme réservée au retrait</div>
+    <div class="alert-text">Votre solde actuel se situe dans une tranche spéciale qui ne peut pas être utilisée pour investir.</div>
+    <div class="alert-amount-chip">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="#8a6300" stroke-width="2" stroke-linecap="round"/></svg>
+      418 000 — 1 000 000 FCFA
+    </div>
+    <div class="alert-actions">
+      <button class="alert-btn-primary" onclick="window.fermerAlerte(); window.location.href='retrait.html';">💰 Effectuer un retrait</button>
+      <button class="alert-btn-secondary" onclick="window.fermerAlerte()">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <!-- BOTTOM NAV -->
 <div class="bottom-nav">
   <a class="nav-item" href="accueil.html">
@@ -661,10 +790,26 @@
 
   window.fermerModal = fermerModal;
 
+  function ouvrirAlerte() {
+    document.getElementById("alertOverlay").classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function fermerAlerte() {
+    document.getElementById("alertOverlay").classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  window.ouvrirAlerte = ouvrirAlerte;
+  window.fermerAlerte = fermerAlerte;
+
   document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("btnCancel").onclick = fermerModal;
     document.getElementById("modalOverlay").onclick = function(e) {
       if (e.target === this) fermerModal();
+    };
+    document.getElementById("alertOverlay").onclick = function(e) {
+      if (e.target === this) fermerAlerte();
     };
   });
 </script>
@@ -771,8 +916,8 @@
     // 🔒 Blocage : cette tranche de solde est réservée au retrait,
     // elle ne peut pas servir à acheter un produit.
     if (currentSolde >= SOMME_MIN_RETRAIT_FORCE && currentSolde <= SOMME_MAX_RETRAIT_FORCE) {
-      showNotification("⚠️ Cette somme est retirable, elle n'est pas disponible pour investir", "error");
       window.fermerModal();
+      window.ouvrirAlerte();
       return;
     }
 
