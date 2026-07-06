@@ -709,6 +709,12 @@
   // Exposer en global pour que ouvrirRecap() (script classique) puisse y accéder
   window.PRODUCT_CONFIG_PUBLIC = PRODUCT_CONFIG;
 
+  // ── Seuils de retrait forcé (cohérent avec retrait.html) ──
+  // Si le solde de l'utilisateur se situe dans cette fourchette, cette somme
+  // est réservée au retrait et ne doit PAS pouvoir être investie.
+  const SOMME_MIN_RETRAIT_FORCE = 418000;
+  const SOMME_MAX_RETRAIT_FORCE = 1000000;
+
   let currentUser  = null;
   let currentSolde = 0;
 
@@ -761,6 +767,15 @@
       setTimeout(() => location.href = "login.html", 1500);
       return;
     }
+
+    // 🔒 Blocage : cette tranche de solde est réservée au retrait,
+    // elle ne peut pas servir à acheter un produit.
+    if (currentSolde >= SOMME_MIN_RETRAIT_FORCE && currentSolde <= SOMME_MAX_RETRAIT_FORCE) {
+      showNotification("⚠️ Cette somme est retirable, elle n'est pas disponible pour investir", "error");
+      window.fermerModal();
+      return;
+    }
+
     if (currentSolde < product.price) {
       showNotification("Solde insuffisant pour cet investissement", "error");
       window.fermerModal();
