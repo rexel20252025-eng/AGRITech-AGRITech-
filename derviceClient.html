@@ -316,7 +316,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-[#3aaa4b]"></span>
             En ligne · 7j/7
           </span>
-          <a href="tel:+2250706648633" class="text-[13.5px] font-semibold text-ink hover:text-agri-600 transition-colors">
+          <a href="tel:+2250705526257" class="text-[13.5px] font-semibold text-ink hover:text-agri-600 transition-colors">
             
           </a>
         </div>
@@ -365,6 +365,38 @@
                 Veuillez contacter un responsable
               </button>
               <p class="text-[12.5px] text-muted mt-3">S'ouvre dans WhatsApp · Aucune inscription requise</p>
+
+              <!-- Divider -->
+              <div class="flex items-center gap-3 mt-6">
+                <div class="h-px flex-1 bg-line"></div>
+                <span class="text-[12px] text-muted font-medium">ou</span>
+                <div class="h-px flex-1 bg-line"></div>
+              </div>
+
+              <!-- QR Code option -->
+              <div class="mt-6 flex flex-col sm:flex-row items-center sm:items-start gap-5 bg-[#f9f8f6] border border-line rounded-[22px] p-5">
+                <div class="shrink-0 bg-white rounded-[16px] border border-line p-2.5 shadow-soft">
+                  <img
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=https://wa.me/qr/SC5LTF3UVA4JM1"
+                    alt="QR code WhatsApp AGRITech"
+                    width="120"
+                    height="120"
+                    class="rounded-[8px]"
+                    loading="lazy"
+                  >
+                </div>
+                <div class="text-center sm:text-left">
+                  <p class="text-[11.5px] font-semibold uppercase tracking-wider text-muted">Scanner pour discuter</p>
+                  <p class="font-display text-[19px] mt-1 text-ink">Utilisez votre appareil photo</p>
+                  <p class="text-[13.5px] text-muted mt-1.5 max-w-[280px]">Scannez ce code avec l'appareil photo de votre téléphone pour ouvrir directement la conversation WhatsApp.</p>
+                  <a href="https://wa.me/qr/SC5LTF3UVA4JM1" target="_blank" rel="noopener"
+                    class="inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-agri-600 hover:text-agri-700 mt-3"
+                  >
+                    Ou ouvrir directement le lien
+                    <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                  </a>
+                </div>
+              </div>
             </div>
 
             <!-- Progressive Form: slides down -->
@@ -443,7 +475,7 @@
     const previewText = document.getElementById('message-preview-text');
     const toast = document.getElementById('toast');
 
-    const WA_NUMBER = '2250706648633';
+    const WA_NUMBER = '2250705526257';
     const WA_BASE = 'https://wa.me/' + WA_NUMBER + '?text=';
 
     let formOpened = false;
